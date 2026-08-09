@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="310" viewBox="0 0 900 310" role="img" aria-labelledby="title desc">
+  <title id="title">Priya's Aquafresh logo</title>
+  <desc id="desc">Priya's Aquafresh India&apos;s No. 1 RO/Alkaline Water Purifiers logo</desc>
+  <rect width="900" height="310" fill="#ffffff"/>
+  <g transform="translate(28 42)">
+    <text x="82" y="102" fill="#0871cf" font-family="Arial Black, Arial, sans-serif" font-size="104" font-weight="900" letter-spacing="-6">Priya&apos;s</text>
+    <text x="0" y="214" fill="#12a8e6" font-family="Arial Black, Arial, sans-serif" font-size="108" font-weight="900" letter-spacing="-6">Aquafresh</text>
+    <text x="260" y="268" fill="#1f2937" font-family="Arial, sans-serif" font-size="42" font-weight="400" letter-spacing="-1">
+      India&apos;s <tspan font-weight="900">No. 1</tspan> RO/Alkaline Water Purifiers
+    </text>
+    <text x="766" y="52" fill="#1f2937" font-family="Arial, sans-serif" font-size="45" font-weight="400">®</text>
+    <path d="M474 104c45-38 102-53 160-30 52 20 97 16 144-16-30 49-86 75-148 62-56-12-104-12-156 22v-38Z" fill="#08a236"/>
+    <path d="M487 132c48-24 92-30 138-17 42 12 84 13 126-6-31 33-75 50-127 42-47-7-88-1-137 20v-39Z" fill="#19a9e6"/>
+    <path d="M670 78c24-19 36-51 48-78 24 34 44 65 31 103-11 33-45 50-78 38 29-11 45-34 44-67-12 32-22 48-45 69-24-18-26-42 0-65Z" fill="#0ca43a"/>
+    <path d="M738 116c49-5 81-26 104-65-5 52-39 88-104 102 20-12 32-22 44-43-15 8-28 13-44 16v-10Z" fill="#0ca43a"/>
+    <path d="M742 126c38 0 69-12 93-36-11 41-41 64-90 75 14-10 23-21 30-35-11 3-21 5-33 6v-10Z" fill="#a7d600"/>
+    <path d="M534 39c-9 18-11 31 7 46-23-5-37-25-26-49 7-16 17-25 23-36 8 16 22 32 14 53-4-8-9-13-18-14Z" fill="#0871cf"/>
+    <path d="M548 55c-4 13-2 24 10 34-16-3-26-16-21-31 4-12 11-20 18-29 8 13 11 23 6 36-3-5-7-8-13-10Z" fill="#12a8e6"/>
+  </g>
+</svg>

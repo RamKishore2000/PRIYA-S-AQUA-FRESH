@@ -1,0 +1,194 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-mono: "Courier New", monospace;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+button,
+a,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: #99f6e4;
+  color: #0f172a;
+}
+
+.range-thumb {
+  pointer-events: none;
+}
+
+.range-thumb::-webkit-slider-thumb {
+  pointer-events: auto;
+  height: 20px;
+  width: 20px;
+  appearance: none;
+  border-radius: 9999px;
+  border: 3px solid #0d9488;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgb(15 23 42 / 0.18);
+  cursor: pointer;
+}
+
+.range-thumb::-webkit-slider-runnable-track {
+  appearance: none;
+  background: transparent;
+}
+
+.range-thumb::-moz-range-thumb {
+  pointer-events: auto;
+  height: 20px;
+  width: 20px;
+  border: 3px solid #0d9488;
+  border-radius: 9999px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgb(15 23 42 / 0.18);
+  cursor: pointer;
+}
+
+.range-thumb::-moz-range-track {
+  background: transparent;
+}
+
+.water-hero-bg {
+  animation: waterHeroDrift 18s ease-in-out infinite alternate;
+}
+
+.hero-copy-enter {
+  animation: heroCopyEnter 700ms ease both;
+}
+
+.hero-image-enter {
+  animation: heroImageEnter 700ms ease both;
+}
+
+.hero-image-exit {
+  animation: heroImageExit 700ms ease both;
+}
+
+.hero-progress {
+  animation: heroProgress 4500ms linear both;
+  transform-origin: left;
+}
+
+.hero-progress.paused {
+  animation-play-state: paused;
+}
+
+.hero-bubble {
+  position: absolute;
+  height: 12px;
+  width: 12px;
+  border-radius: 9999px;
+  border: 1px solid rgb(255 255 255 / 0.72);
+  background: rgb(255 255 255 / 0.38);
+  animation: heroBubble 7s ease-in-out infinite;
+}
+
+.animation-delay-1000 {
+  animation-delay: 1000ms;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2000ms;
+}
+
+@keyframes waterHeroDrift {
+  from {
+    background-position: center;
+  }
+  to {
+    background-position: 52% 48%;
+  }
+}
+
+@keyframes heroCopyEnter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroImageEnter {
+  from {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes heroImageExit {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+}
+
+@keyframes heroProgress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes heroBubble {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateY(-18px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .water-hero-bg,
+  .hero-copy-enter,
+  .hero-image-enter,
+  .hero-image-exit,
+  .hero-progress,
+  .hero-bubble {
+    animation: none;
+  }
+}

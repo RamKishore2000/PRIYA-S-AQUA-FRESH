@@ -1,0 +1,19 @@
+{
+  "name": "priyas-aqua-fresh-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Priya's Aqua Fresh Express and MySQL backend",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "init-db": "node src/database/initDatabase.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-validator": "^7.2.1",
+    "mysql2": "^3.14.3"
+  }
+}

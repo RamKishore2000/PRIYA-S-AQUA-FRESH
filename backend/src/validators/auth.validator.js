@@ -1,0 +1,37 @@
+const { body } = require("express-validator");
+
+const registerValidator = [
+  body("fullName")
+    .trim()
+    .notEmpty()
+    .withMessage("Full name is required.")
+    .isLength({ min: 2, max: 120 })
+    .withMessage("Full name must be between 2 and 120 characters."),
+  body("mobile")
+    .trim()
+    .notEmpty()
+    .withMessage("Mobile number is required.")
+    .matches(/^[6-9]\d{9}$/)
+    .withMessage("Enter a valid 10 digit Indian mobile number."),
+  body("email")
+    .trim()
+    .notEmpty()
+    .withMessage("Email is required.")
+    .isEmail()
+    .withMessage("Enter a valid email address.")
+    .normalizeEmail(),
+  body("password")
+    .notEmpty()
+    .withMessage("Password is required.")
+    .matches(/^\d{4}$/)
+    .withMessage("Password must be a 4 digit number."),
+  body("confirmPassword")
+    .notEmpty()
+    .withMessage("Confirm password is required.")
+    .custom((value, { req }) => value === req.body.password)
+    .withMessage("Passwords must match."),
+];
+
+module.exports = {
+  registerValidator,
+};
