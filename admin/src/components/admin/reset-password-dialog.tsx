@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AdminModalShell } from "@/components/admin/admin-modal-shell";
 
-export function ResetPasswordDialog({ dealerName, onClose, onSuccess }: { dealerName: string; onClose: () => void; onSuccess: () => void }) {
+export function ResetPasswordDialog({ dealerName, onClose, onSuccess }: { dealerName: string; onClose: () => void; onSuccess: (password: string, confirmPassword: string) => void }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -18,7 +18,7 @@ export function ResetPasswordDialog({ dealerName, onClose, onSuccess }: { dealer
       setError("Passwords must match.");
       return;
     }
-    onSuccess();
+    onSuccess(password, confirmPassword);
   }
 
   return (

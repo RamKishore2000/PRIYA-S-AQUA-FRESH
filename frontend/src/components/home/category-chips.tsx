@@ -1,18 +1,18 @@
 "use client";
 
-import { categoryChips } from "@/data/categories";
 import { cn } from "@/lib/utils";
 
 type CategoryChipsProps = {
+  categories: string[];
   activeCategory: string;
   onCategoryChange: (category: string) => void;
 };
 
-export function CategoryChips({ activeCategory, onCategoryChange }: CategoryChipsProps) {
+export function CategoryChips({ categories, activeCategory, onCategoryChange }: CategoryChipsProps) {
   return (
     <div className="overflow-x-auto pb-1">
       <div className="flex min-w-max gap-3">
-        {categoryChips.map((chip) => (
+        {categories.map((chip) => (
           <button
             key={chip}
             type="button"

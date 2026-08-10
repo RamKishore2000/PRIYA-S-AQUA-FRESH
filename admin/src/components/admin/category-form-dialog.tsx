@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { AdminModalShell } from "@/components/admin/admin-modal-shell";
+import { uploadImage } from "@/services/api";
 import type { Category, Status } from "@/types/admin";
 import { generateSlug } from "@/utils/slug";
 
@@ -45,13 +46,18 @@ export function CategoryFormDialog({ mode, open, initialCategory, onClose, onSav
     setErrors((current) => ({ ...current, [field]: undefined }));
   }
 
-  function selectImage(file?: File) {
+  async function selectImage(file?: File) {
     if (!file) return;
     if (!acceptedTypes.includes(file.type)) {
       setErrors((current) => ({ ...current, image: "Use JPG, PNG, or WEBP image." }));
       return;
     }
-    updateField("image", URL.createObjectURL(file));
+    try {
+      const imageUrl = await uploadImage(file, "categories");
+      updateField("image", imageUrl);
+    } catch (error) {
+      setErrors((current) => ({ ...current, image: error instanceof Error ? error.message : "Image upload failed." }));
+    }
   }
 
   function submitForm(event: React.FormEvent<HTMLFormElement>) {

@@ -3,8 +3,8 @@
 ## Scope
 - Project: Priya's Aqua Fresh Admin Panel.
 - Admin path: `D:\priyaAquaFresh\admin`.
-- Customer frontend path `D:\priyaAquaFresh\frontend` must not be touched during admin work.
-- Current phase is admin frontend design with mock interactions only.
+- Admin is now being bound to the backend API at `D:\priyaAquaFresh\backend`.
+- Customer frontend path `D:\priyaAquaFresh\frontend` is separate; only touch it when the task explicitly targets frontend behavior.
 
 ## Stack
 - Next.js App Router, TypeScript, Tailwind CSS.
@@ -21,10 +21,17 @@
 - Active sidebar route highlighting uses `usePathname()`.
 - Dashboard route `/dashboard` includes four primary stats in one desktop row, CSS-based chart cards, recent orders table, and recent service requests table.
 - Categories route `/categories` includes category table, image, description, product count, status, created date, working Add Category modal, Edit Category modal, Delete Category confirmation, and View Products row action. Category slug is generated internally from the category name.
+- Backend currently contains these active categories for admin: RO Water Purifiers, Alkaline Water Purifiers, Electronics, Commercial Water Purifiers, and Spare Parts.
+- Category image upload is handled by the backend upload API and stores WebP files on disk.
+- `next.config.ts` allows backend-uploaded images from `http://localhost:5000/uploads/**` and `http://127.0.0.1:5000/uploads/**` for `next/image`.
 - Products route `/products` includes product stats, category/status filters, table, main image, product code, separate customer/dealer original/selling prices, product status, and row actions inside the reusable dropdown.
 - Add product route `/products/new` includes a simplified full-page form with only Product Name, Category, optional Product Code, customer/dealer original and selling prices, max four product images, one Description field, and Active/Inactive status.
 - Product form no longer shows stock quantity, low stock, out-of-stock, stock status, inventory, specifications, dynamic specification rows, short/full description split, manual discount fields, brand/model fields, Draft status, or manual slug input.
 - Product slug is generated internally from Product Name through `src/utils/slug.ts`; the admin does not type or see a slug field.
+- Product Code/SKU is optional in the admin form; when blank, admin omits `sku` from the create request and backend auto-generates a unique SKU during product creation.
+- Add Product form now maps backend field validation errors onto visible fields, disables Save while submitting, and redirects to `/products` after successful creation.
+- Add/Edit Product forms include Product Rating and Review Count fields; rating is validated from 0 to 5 and review count must be 0 or more.
+- Product edit is implemented at `/products/[id]/edit`, preloads product data from the backend, reuses `ProductForm` in edit mode, and saves through `PUT /api/products/:id`.
 - Product images use four upload slots with Main Image first, preview, replace, remove, JPG/PNG/WEBP validation, and exact 800 x 800 px image-size validation.
 - Product pricing display uses `src/utils/format-currency.ts` with Indian currency formatting.
 - Dealers route `/dealers` includes top stats, success message, search field, dealer list table with mock dealer data, and row actions inside the reusable dropdown.
@@ -39,9 +46,13 @@
 - `RowActionsDropdown` provides one compact three-dot trigger, right-aligned dropdown menu, icon + label items, and compact delete confirmation integration.
 - `AdminToast` provides local toast-style success feedback for mock actions without adding the external Sonner dependency.
 - Admin header profile now uses a custom dropdown with avatar initials, admin role text, My Profile, Settings, and Logout actions with SVG icons.
+- Reusable `PageHeader` action buttons use client-side `router.push` for reliable admin navigation, including Products -> Add Product.
 - Admin dialogs now use `AdminModalShell`, which gives every modal a viewport-safe max height and internal scrolling so the top/bottom are not clipped on desktop, tablet, or mobile.
-- Placeholder pages remain for `/customers`, `/orders`, `/testimonials`, `/reports`, and `/settings` so sidebar navigation does not hit 404 while later modules are pending.
-- Mock data is separated in `src/data/admin.ts`.
+- Customers route `/customers` is backend-bound with stats cards, search, customer table, total orders/spend, created date, and Active/Inactive/Blocked account status actions.
+- Orders route `/orders` is backend-bound with stats, filters, product image thumbnail, order number, customer, item count, amount, payment status, order status, date, and View Order action.
+- Order details route `/orders/[id]` is backend-bound with full product list/images, customer info, delivery address, price details, payment status, and admin order status update control.
+- Placeholder pages remain for `/reports` and `/settings` so sidebar navigation does not hit 404 while later modules are pending.
+- Testimonials route `/testimonials` is implemented with backend-bound list, stats, Add/Edit modal, optional image upload, rating, role, message, sort order, Active/Inactive status, delete confirmation, and activate/deactivate row action.
 - Shared admin types are separated in `src/types/admin.ts`.
 
 ## Validation Notes
@@ -52,10 +63,15 @@
 - Admin modal clipping fix was applied to current confirmation and service-detail dialogs without running lint, build, or dev server.
 - Categories, Dealers, and Coupons admin updates were completed without running build or dev server.
 - Targeted ESLint passed for the changed Categories, Dealers, Coupons, shared admin component, type, and mock data files.
+- Admin lint passed after the Add Product navigation fix.
+- Admin lint passed after the Save Product submit fix; backend product service/validator modules loaded successfully with Node.
+- Admin lint passed after product edit wiring.
+- Admin lint passed after product rating/review-count fields were added.
+- Admin lint passed after Testimonials management was implemented and bound to backend APIs.
+- Backend customer APIs were added and targeted admin ESLint passed after Customers management was implemented.
+- Backend-bound Orders list/detail pages with product images and status update passed targeted admin ESLint.
+- Admin order detail route now reads the dynamic id with `useParams()` in the client component so View Order opens the correct `/orders/[id]` detail record.
 
 ## Explicit Non-Goals
-- No backend APIs.
-- No database integration.
-- No permanent authentication.
-- No customer frontend changes.
-- No admin module implementations beyond the first requested phase except route-safe placeholders.
+- Do not run build or dev server when the user explicitly says not to.
+- Do not overwrite uploaded runtime files; they live outside Git-tracked source files.

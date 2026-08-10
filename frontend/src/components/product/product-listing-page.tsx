@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { X } from "lucide-react";
 import { toast } from "sonner";
@@ -9,52 +9,61 @@ import { ProductCard } from "@/components/product/product-card";
 import { EmptyProductsState } from "@/components/product/empty-products-state";
 import { ProductFilters } from "@/components/product/filters/product-filters";
 import { ProductToolbar } from "@/components/product/product-toolbar";
-import { products } from "@/data/products";
+import { getProductDisplayPrice } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
+import { getStoredUser } from "@/services/auth-service";
 import type { Product } from "@/types/product";
 import type { ProductFiltersState, SortOption } from "@/types/filters";
 
-const priceBounds: [number, number] = [
-  Math.min(...products.map((product) => product.price)),
-  Math.max(...products.map((product) => product.price)),
-];
-
-const initialFilters: ProductFiltersState = {
-  categories: [],
-  priceRange: priceBounds,
-  availability: [],
-  rating: null,
-};
-
-const categoryLabels: Record<string, string> = {
-  "Alkaline Purifiers": "Alkaline Water Purifiers",
-  "RO Purifiers": "RO Water Purifiers",
-  Commercial: "Commercial Water Purifiers",
-  "Water Softeners": "Water Softeners",
-  "Smart TVs": "Smart TVs & Electronics",
-  "Spare Parts": "Spare Parts",
-};
-
-const categorySlugToValue: Record<string, string> = {
-  "alkaline-water-purifiers": "Alkaline Purifiers",
-  "ro-water-purifiers": "RO Purifiers",
-  "commercial-water-purifiers": "Commercial",
-  "water-softeners": "Water Softeners",
-  "smart-tvs-electronics": "Smart TVs",
-  "spare-parts": "Spare Parts",
-};
-
-export function ProductListingPage() {
+export function ProductListingPage({
+  products,
+  title = "Shop All Products",
+  description = "Explore water purifiers, commercial RO systems, water softeners, electronics and spare parts.",
+}: {
+  products: Product[];
+  title?: string;
+  description?: string;
+}) {
+  const [role, setRole] = useState<string | null>(() => (typeof window === "undefined" ? null : getStoredUser()?.role || null));
+  const priceBounds: [number, number] = products.length
+    ? [
+        Math.min(...products.map((product) => getProductDisplayPrice(product, role).price)),
+        Math.max(...products.map((product) => getProductDisplayPrice(product, role).price)),
+      ]
+    : [0, 100000];
+  const initialFilters: ProductFiltersState = {
+    categories: [],
+    priceRange: priceBounds,
+    availability: [],
+    rating: null,
+  };
   const [filters, setFilters] = useState<ProductFiltersState>(() => {
     if (typeof window === "undefined") return initialFilters;
     const params = new URLSearchParams(window.location.search);
     const category = params.get("category");
-    return category && categorySlugToValue[category]
-      ? { ...initialFilters, categories: [categorySlugToValue[category]] }
+    const matchedProduct = category ? products.find((product) => product.category.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") === category) : null;
+    return matchedProduct
+      ? { ...initialFilters, categories: [matchedProduct.category] }
       : initialFilters;
   });
   const [sort, setSort] = useState<SortOption>("featured");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
+  useEffect(() => {
+    function syncRole() {
+      const nextRole = getStoredUser()?.role || null;
+      const nextPriceBounds: [number, number] = products.length
+        ? [
+            Math.min(...products.map((product) => getProductDisplayPrice(product, nextRole).price)),
+            Math.max(...products.map((product) => getProductDisplayPrice(product, nextRole).price)),
+          ]
+        : [0, 100000];
+      setRole(nextRole);
+      setFilters((current) => ({ ...current, priceRange: nextPriceBounds }));
+    }
+    window.addEventListener("priyas-auth-changed", syncRole);
+    return () => window.removeEventListener("priyas-auth-changed", syncRole);
+  }, [products]);
 
   const filterCategories = useMemo(() => {
     const counts = products.reduce<Record<string, number>>((acc, product) => {
@@ -62,19 +71,19 @@ export function ProductListingPage() {
       return acc;
     }, {});
 
-    return Object.entries(categoryLabels).map(([value, label]) => ({
+    return Object.entries(counts).map(([value, count]) => ({
       value,
-      label,
-      count: counts[value] ?? 0,
+      label: value,
+      count,
     }));
-  }, []);
+  }, [products]);
 
   const filteredProducts = useMemo(() => {
     const filtered = products.filter((product) => {
       const categoryMatch =
         filters.categories.length === 0 || filters.categories.includes(product.category);
       const priceMatch =
-        product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1];
+        getProductDisplayPrice(product, role).price >= filters.priceRange[0] && getProductDisplayPrice(product, role).price <= filters.priceRange[1];
       const availabilityMatch =
         filters.availability.length === 0 ||
         (product.stock === "out-of-stock"
@@ -85,8 +94,8 @@ export function ProductListingPage() {
       return categoryMatch && priceMatch && availabilityMatch && ratingMatch;
     });
 
-    return sortProducts(filtered, sort);
-  }, [filters, sort]);
+    return sortProducts(filtered, sort, role);
+  }, [filters, products, role, sort]);
 
   const clearFilters = () => {
     setFilters(initialFilters);
@@ -107,10 +116,10 @@ export function ProductListingPage() {
           <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-slate-950 md:text-5xl">
-                Shop All Products
+                {title}
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
-                Explore water purifiers, commercial RO systems, water softeners, electronics and spare parts.
+                {description}
               </p>
             </div>
             <div className="rounded-md border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-950">
@@ -184,14 +193,14 @@ export function ProductListingPage() {
   );
 }
 
-function sortProducts(items: Product[], sort: SortOption) {
+function sortProducts(items: Product[], sort: SortOption, role?: string | null) {
   const sorted = [...items];
 
   if (sort === "price-asc") {
-    return sorted.sort((a, b) => a.price - b.price);
+    return sorted.sort((a, b) => getProductDisplayPrice(a, role).price - getProductDisplayPrice(b, role).price);
   }
   if (sort === "price-desc") {
-    return sorted.sort((a, b) => b.price - a.price);
+    return sorted.sort((a, b) => getProductDisplayPrice(b, role).price - getProductDisplayPrice(a, role).price);
   }
   if (sort === "top-rated") {
     return sorted.sort((a, b) => b.rating - a.rating);

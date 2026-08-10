@@ -5,25 +5,15 @@ import { useMemo, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { CategoryChips } from "@/components/home/category-chips";
 import { ProductCard } from "@/components/product/product-card";
-import { categoryChips } from "@/data/categories";
-import { products } from "@/data/products";
+import type { Product } from "@/types/product";
 
-const categoryAliases: Record<string, string[]> = {
-  Alkaline: ["Alkaline Purifiers"],
-  "RO Purifiers": ["RO Purifiers"],
-  Commercial: ["Commercial"],
-  "Water Softeners": ["Water Softeners"],
-  "Smart TVs": ["Smart TVs"],
-  "Spare Parts": ["Spare Parts"],
-};
-
-export function FeaturedProductsSection() {
+export function FeaturedProductsSection({ products }: { products: Product[] }) {
+  const categoryChips = ["All", ...Array.from(new Set(products.map((product) => product.category)))];
   const [activeCategory, setActiveCategory] = useState(categoryChips[0]);
 
   const filteredProducts = useMemo(() => {
-    const acceptedCategories = categoryAliases[activeCategory] ?? [];
-    return products.filter((product) => acceptedCategories.includes(product.category));
-  }, [activeCategory]);
+    return activeCategory === "All" ? products.slice(0, 8) : products.filter((product) => product.category === activeCategory).slice(0, 8);
+  }, [activeCategory, products]);
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
@@ -39,7 +29,7 @@ export function FeaturedProductsSection() {
             See All <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-        <CategoryChips activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
+        <CategoryChips categories={categoryChips} activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {filteredProducts.map((product) => (

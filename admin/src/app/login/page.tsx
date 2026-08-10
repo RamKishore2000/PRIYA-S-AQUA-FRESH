@@ -3,26 +3,32 @@
 import Image from "next/image";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { loginAdmin } from "@/services/auth";
 
 export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [toast, setToast] = useState("");
 
-  function submitLogin(event: FormEvent<HTMLFormElement>) {
+  async function submitLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") ?? "");
     const password = String(formData.get("password") ?? "");
+    const rememberMe = Boolean(formData.get("rememberMe"));
 
     if (!email.includes("@") || password.trim().length < 3) {
       setToast("Enter a valid email and password.");
       return;
     }
 
-    sessionStorage.setItem("priyas-admin-auth", "true");
-    setToast("Login successful.");
-    window.setTimeout(() => router.push("/dashboard"), 450);
+    try {
+      await loginAdmin(email, password, rememberMe);
+      setToast("Login successful.");
+      window.setTimeout(() => router.push("/dashboard"), 450);
+    } catch (error) {
+      setToast(error instanceof Error ? error.message : "Login failed.");
+    }
   }
 
   return (
@@ -60,7 +66,7 @@ export default function LoginPage() {
 
           <div className="flex items-center justify-between gap-3 text-sm">
             <label className="flex items-center gap-2 font-medium text-slate-600">
-              <input type="checkbox" className="h-4 w-4 accent-teal-600" />
+              <input name="rememberMe" type="checkbox" className="h-4 w-4 accent-teal-600" />
               Remember me
             </label>
             <button type="button" className="font-semibold text-teal-700 hover:text-teal-800">Forgot Password?</button>

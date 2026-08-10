@@ -6,7 +6,8 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "init-db": "node src/database/initDatabase.js"
+    "init-db": "node src/database/initDatabase.js",
+    "create-admin": "node src/database/createAdminUser.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -14,6 +15,9 @@
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
-    "mysql2": "^3.14.3"
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.2.0",
+    "mysql2": "^3.14.3",
+    "sharp": "^0.35.3"
   }
 }

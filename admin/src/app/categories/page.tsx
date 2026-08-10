@@ -2,22 +2,30 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { AdminToast } from "@/components/admin/admin-toast";
 import { CategoryFormDialog } from "@/components/admin/category-form-dialog";
 import { RowActionsDropdown } from "@/components/admin/row-actions-dropdown";
 import { StatusBadge } from "@/components/admin/status-badge";
-import { categories as initialCategories } from "@/data/admin";
+import { adminApi } from "@/services/api";
 import type { Category } from "@/types/admin";
 
 export default function CategoriesPage() {
   const router = useRouter();
-  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    adminApi.listCategories()
+      .then(setCategories)
+      .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to load categories."))
+      .finally(() => setLoading(false));
+  }, []);
 
   function openAddDialog() {
     setDialogMode("add");
@@ -30,14 +38,21 @@ export default function CategoriesPage() {
     setSelectedCategory(null);
   }
 
-  function saveCategory(category: Category) {
-    setCategories((current) =>
-      dialogMode === "edit"
-        ? current.map((item) => (item.id === category.id ? category : item))
-        : [category, ...current],
-    );
-    setMessage(dialogMode === "edit" ? "Category updated successfully." : "Category added successfully.");
-    closeDialog();
+  async function saveCategory(category: Category) {
+    try {
+      const savedCategory = dialogMode === "edit"
+        ? await adminApi.updateCategory(category)
+        : await adminApi.createCategory(category);
+      setCategories((current) =>
+        dialogMode === "edit"
+          ? current.map((item) => (item.id === savedCategory.id ? savedCategory : item))
+          : [savedCategory, ...current],
+      );
+      setMessage(dialogMode === "edit" ? "Category updated successfully." : "Category added successfully.");
+      closeDialog();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to save category.");
+    }
   }
 
   function editCategory(category: Category) {
@@ -76,7 +91,7 @@ export default function CategoriesPage() {
                 <tr key={category.id}>
                   <td className="px-5 py-4">
                     <div className="relative h-12 w-12 rounded-md border border-slate-200 bg-slate-50">
-                      <Image src={category.image} alt={category.name} fill className="object-contain p-2" unoptimized={category.image.startsWith("blob:")} />
+                      <Image src={category.image} alt={category.name} fill className="object-contain p-2" unoptimized />
                     </div>
                   </td>
                   <td className="px-5 py-4">
@@ -95,8 +110,12 @@ export default function CategoriesPage() {
                           label: "Delete Category",
                           confirmItemName: "Category",
                           onConfirm: () => {
-                            setCategories((current) => current.filter((item) => item.id !== category.id));
-                            setMessage("Category deleted successfully.");
+                            adminApi.deleteCategory(category.id)
+                              .then(() => {
+                                setCategories((current) => current.filter((item) => item.id !== category.id));
+                                setMessage("Category deleted successfully.");
+                              })
+                              .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to delete category."));
                           },
                         },
                       ]}
@@ -106,6 +125,7 @@ export default function CategoriesPage() {
               ))}
             </tbody>
           </table>
+          {!loading && categories.length === 0 ? <p className="p-5 text-sm font-semibold text-slate-500">No categories found. Add your first category.</p> : null}
         </div>
       </section>
 

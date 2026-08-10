@@ -20,7 +20,7 @@ export function ProductShareButton({ product, variant = "icon", className }: Pro
 
   if (variant === "button") {
     return (
-      <Button type="button" variant="secondary" onClick={shareToWhatsApp} className={cn("mt-8", className)}>
+      <Button type="button" variant="secondary" onClick={shareToWhatsApp} className={className}>
         <MessageCircle className="h-4 w-4" />
         Share on WhatsApp
       </Button>

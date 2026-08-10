@@ -5,7 +5,7 @@
 - Frontend path: `D:\priyaAquaFresh\frontend`.
 - Backend path: `D:\priyaAquaFresh\backend`.
 - Admin path: `D:\priyaAquaFresh\admin`.
-- Current backend phase is registration-only API setup; do not add login or other feature APIs until requested.
+- Frontend reads catalog and request data from the backend API where implemented.
 
 ## Stack
 - Next.js App Router, TypeScript, Tailwind CSS.
@@ -13,36 +13,71 @@
 - `lucide-react` for icons.
 - `sonner` for toast notifications.
 - `next/image` and `next/link` for images and navigation.
+- `next.config.ts` allows backend-uploaded images from `http://localhost:5000/uploads/**` and `http://127.0.0.1:5000/uploads/**`.
 - Backend uses Node.js, Express.js, JavaScript, MySQL, `mysql2/promise`, `dotenv`, `cors`, `bcryptjs`, and `express-validator`.
 
 ## Implemented In This Phase
 - Polished responsive ecommerce homepage.
 - Sticky header, announcement bar, desktop nav, category mega menu, mobile menu, search suggestions.
 - Header search is icon-triggered; clicking the search icon opens a full-width card below the sticky header.
-- Frontend-only cart context with drawer, quantities, subtotal, and remove support.
-- Frontend-only wishlist interactions with active heart state.
+- Cart context is API-backed through `/api/cart`; logged-out `Add to Cart` opens the login modal and does not store local cart items.
+- Wishlist interactions are API-backed through `/api/wishlist`; logged-out wishlist clicks open the login modal and do not store local wishlist items.
 - Frontend product sharing supports WhatsApp share links from product cards and product detail pages.
 - Full-width overlay hero banner, category chips, category grid, featured products, alkaline promo banner, best-selling product grid, commercial solutions, trust features, testimonials, newsletter, and footer.
 - Homepage hero uses the static full-width overlay banner with the purifier visual, headline text, and two CTA buttons.
+- Homepage hero uses the static full-width overlay banner with the purifier visual, headline text, and two CTA buttons.
 - Reusable navigation, quantity selector, discount badge, product card, skeleton, and UI primitive components.
-- Reusable mock data/types under `src/data` and `src/types`.
-- Local placeholder product/category visuals under `public/images`; no remote image dependency.
+- Reusable types live under `src/types`.
+- Local placeholder visuals under `public/images` are retained as fallbacks; backend-uploaded images are served from `/uploads`.
 - Header uses the cropped Priya's Aquafresh brand logo from `public/images/brand/priyas-aqua-fresh-logo-cropped.png`.
 - Footer also uses the cropped Priya's Aquafresh brand logo.
-- Category section uses a clean 2026-style "Shop By Category / Find what you need" layout with six horizontal category cards and a View All link.
+- Homepage Categories section uses a compact `Top Categories` horizontal carousel with backend/API category data, uploaded category images, small rounded image tiles, subtle hover scale/lift, left/right arrow controls, mobile swipe, and a `More Categories` pill link.
+- Category carousel structure is split into `TopCategoriesSection`, `CategoryCarousel`, and `CategoryItem`.
+- Homepage category links use `/categories/[slug]`; that route redirects to the existing `/products?category=<slug>` listing so links are valid without duplicating category pages.
+- The `/categories` page uses the same image-led category card direction at larger size for consistent browsing.
 - Category filter chips were moved above Featured Products, the `All` option was removed, and clicking a chip filters the displayed products.
 - Shop route `/products` exists with header/footer, live product filters, price range controls, mobile filter sheet, sorting, empty state, and reused ProductCard components.
 - Desktop Shop filter column itself uses sticky `top-24` behavior without a separate desktop scrollbar; the whole page scrolls naturally while filters remain visible.
 - Navbar uses pathname-based active states with teal underline on desktop and subtle active styling in mobile navigation.
+- Header uses a pharmacy/ecommerce-style layout: green top support strip, logo plus desktop search bar plus labeled account/favorites/cart actions, and a second desktop nav row with a green All Categories dropdown.
+- Homepage hero banner uses `public/images/banners/mixkit-water-surface-when-ice-falls-in-slow-motion-51945-hd-ready.mp4` as a full video background with dark/blue overlays, left-side hero copy/CTAs, and a permanent transparent water purifier image at `public/images/banners/hero-water-purifier.png` on the right side with no card/background.
+- Footer includes real brand SVG social icon links for WhatsApp, Facebook, YouTube, Instagram, LinkedIn, and X/Twitter.
+- Footer contact details use `+919951078699` and `priyasaquafreshsales@gmail.com`.
+- Testimonials are now managed from backend/admin instead of mock-only UI. Backend table `testimonials` has `customer_name`, `role`, `rating`, `message`, `image_url`, `sort_order`, and `ACTIVE/INACTIVE` status. Public frontend reads active testimonials from `/api/testimonials`; admin reads all testimonials with `/api/testimonials?includeInactive=true`.
+- About page preserves the source-requested headings and content points: "Delivering Pure Water with Innovation, Care & Trust", "Driven by Purpose, Powered by Innovation", "Vision That Flows Beyond Purity", "Our Mission: Safe Water for Every Home", "The Mind Behind the Mission", Mr. K Anand & Mrs. K Priya, and the Ali Garu excellence award line. It uses GSAP page-load word reveal, scroll-triggered reveals, image mask reveals, and a scrubbed vision line. The user-provided award image is saved at `public/images/about/award-excellence.jpg` and used in the award section.
+- About page trust highlights show `Review Customer`, `A+ Business Class`, and `No. 1 Purifiers Company In India`.
+- About page hero intro is text/trust highlights only; the old three mock product image strip was removed. The Who We Are visual uses the user-provided `/Untitled-design-10-2048x2048.png` purifier image with the India No. 1 badge overlay, and includes a `Why We Are` review block with `4.9+`, `A+`, star ratings, and the requested customer/dealer testimonial lines.
+- Homepage replaced the old alkaline promo banner with the `Why We Are` section placed after featured products. It uses the user-provided purifier image on the left, right-side content, and `4.9+ Review Customer` / `A+ Business Class` cards below the content. The section uses GSAP ScrollTrigger like the About page: the image slowly reveals from left to right with a mask/slide, while the text and review cards rise into view and reverse when scrolled away.
+- Homepage no longer renders the old Commercial Solutions section; `commercial-solutions.tsx` was removed and the old "Powerful Purification for Business" copy is gone from `src`. The `Why We Are` `4.9+` value counts automatically from `1.0` to `4.9` when the section scrolls into view.
 - Mock product data now contains 24 products for the Shop listing.
 - Added route-safe pages for `/categories`, `/services`, `/contact`, `/about`, `/privacy-policy`, `/terms`, `/shipping-policy`, `/refund-policy`, `/warranty`, `/faqs`, `/cart`, `/checkout`, `/wishlist`, and `/products/[slug]`.
 - Header account opens a shared login/register auth modal; mobile Account/Login opens the same modal.
+- Header top strip uses the original green background with Head Office address, `priyasaquafreshsales@gmail.com`, and `+919951078699`.
+- Desktop nav row includes a right-side `Need Help? +919951078699` call link and a mail icon link to `priyasaquafreshsales@gmail.com`.
+- Header search uses Flipkart-style suggestions with product image on the left and product title on the right, popular search chips, and a `View all results` action that opens `/search?q=<term>`.
 - Services page keeps all services in one route with one shared service request form.
 - Footer links now point to implemented routes or `/products?category=...`; homepage category CTAs also route to Shop with category query parameters.
 - Wishlist page now renders saved products using the existing ProductCard design and shows a polished empty state when empty.
+- Checkout page is bound to backend orders and Razorpay test checkout: creates an order from API cart, creates a Razorpay order, opens Razorpay checkout, verifies payment, clears cart after successful verification, and redirects to `/profile/orders`.
+- Checkout includes coupon code apply UI backed by `/api/coupons/validate`; applied coupon code is sent during order creation and discount is shown in the summary.
+- Checkout delivery now uses saved address selection backed by `/api/addresses`; users can add a new address inline, select a saved/default address, and checkout sends `addressId` so the backend copies the saved address into the order.
+- Customer order history is separated into `/profile/orders`, fetches real orders from `/api/orders/my`, and shows product thumbnail, payment status, order status, item count, amount, and date.
+- Customer order history hides pending/unpaid orders from `/profile/orders`; only completed payment/confirmed-flow orders are shown in the visible list.
+- Customer order detail page `/profile/orders/[id]` fetches `/api/orders/:id` and shows all product images, product names, SKUs, quantities, unit prices, line totals, delivery address, payment/order statuses, discount, shipping, and total.
+- Product detail page uses `ProductGallery` and displays all uploaded product images as thumbnails with a switchable main image.
+- Product detail page follows a compact ecommerce PDP layout with breadcrumb, vertical thumbnail gallery on desktop, large main image, right-side product info, rating row, price, category/SKU info, Add to Cart, Wishlist, Share, delivery/install notes, and product details.
+- Product cards and product detail pages use backend-provided `rating` and `reviewCount` values.
+- Product cards, product detail page, listing price filter/sort, cart drawer, cart subtotal, and checkout summary switch to dealer prices when the stored auth user role is `DEALER`; otherwise they use customer prices.
+- Product cards cycle through all uploaded product images on desktop hover; wishlist and share actions are icon-only overlays at the top-right of the product image.
+- Wishlist clicks use a short transparent CSS heart-burst animation instead of the previous GIF asset because the GIF has a visible colored background.
+- Add to Cart uses a frontend-only fly-to-cart animation after the cart API call succeeds: a product thumbnail moves from the product image area to the header cart icon, then the cart icon pulses.
+- Sonner toasts are globally restyled into a compact ecommerce confirmation style at bottom-center with a gentle bottom-up rise animation, white card, left status stripe, round tick marker, concise title-only message, and softened close button; cart/wishlist success toasts do not show product names.
 - Contact form uses labeled fields, full-width message textarea, inline validation, and Sonner success toast.
 - Services page has no top service cards; it now uses a minimal service list and one common service request form.
 - Testimonials use a 6-item smooth autoplay carousel with responsive 3/2/1 visible cards, dots, arrows, hover pause, and infinite looping.
+- Testimonials left summary rating is computed from active backend testimonials, including real average rating and testimonial count, instead of hardcoded `4.7 / 5`.
+- Shared `RatingStars` supports partial star filling, so decimal ratings like `4.7` fill four stars plus 70% of the fifth star, and `4.9` fills 90% of the fifth star.
+- `RatingStars` has an optional `showText` prop; the homepage `Why We Are` section hides the rating number and review count text while keeping star visuals.
 - Homepage includes one visible GSAP-powered logo showcase section above the newsletter: six real brand logo images are visible in one straight row without background cards, the seventh logo stays hidden until the row shifts, ScrollTrigger starts the sequence, and there is no page-level horizontal scrolling.
 - Logo showcase spacing is tightened so the six positions sit closer together, with larger logo image dimensions for clearer visibility.
 - Logo showcase heading font was reduced, and the lower logo name/details plus arrow controls were removed from the visible section.
@@ -50,13 +85,13 @@
 - Logo showcase data lives in `src/data/logo-showcase.ts`; downloaded site logos live under `public/images/brands` and `public/images/certifications`.
 - The `Trusted Standards & Recognitions` certification showcase is hidden from the homepage for later use; certification assets/data are retained.
 - Previous carousel assets and data remain in the project but are no longer used by the active homepage banner.
-- Backend registration phase created `backend/src` MVC/layered folders: config, controllers, services, repositories, models, routes, middleware, validators, utils, and database.
-- Backend schema is centralized at `backend/src/database/schema.sql` and currently creates only the `users` table.
-- Users table supports `CUSTOMER`, `DEALER`, and `ADMIN` roles, but public `POST /api/auth/register` always creates `CUSTOMER` users and ignores any frontend/manual role value.
+- Backend created `backend/src` MVC/layered folders: config, controllers, services, repositories, models, routes, middleware, validators, utils, and database.
+- Backend schema is centralized at `backend/src/database/schema.sql` and includes users plus ecommerce/admin tables.
+- Users table supports `CUSTOMER`, `DEALER`, and `ADMIN` roles, but public `POST /api/auth/register` creates `CUSTOMER` users and ignores any frontend/manual role value.
 - Registration stores `password_hash` only, uses duplicate email/mobile checks, returns safe user data, and includes `GET /api/health` for basic server verification.
 - Existing frontend registration modal is connected through `src/services/auth-service.ts` using `NEXT_PUBLIC_API_BASE_URL`; no role selector was added.
 - Registration password validation now accepts a simple 4-digit numeric password, and the registration password/confirm password fields include eye toggle controls.
-- MySQL database `priyas_aqua_fresh` has been created locally and currently contains only the `users` table from `backend/src/database/schema.sql`.
+- MySQL database `priyas_aqua_fresh` has been created locally and contains ecommerce/admin tables from `backend/src/database/schema.sql`.
 
 ## Validation Notes
 - `npm.cmd run build` passed before the latest refactor.
@@ -77,10 +112,40 @@
 - Registration password validation and password eye toggles were updated without running build, lint, or dev server.
 - WhatsApp product share UI was added without running build, lint, or dev server.
 - Best Selling Products was changed from horizontal carousel mode to a responsive grid to remove the section scrollbar.
+- The GSAP hero category showcase was reverted back to the static banner version per user request.
+- Top Categories carousel lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- Frontend cart/wishlist/checkout/order history lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- Login-required cart/wishlist, product gallery, and coupon checkout updates lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- Product rating mapping and PDP redesign lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- Product card hover image cycling and transparent wishlist heart-burst animation lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- Add-to-cart fly animation lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- Ecommerce toast redesign lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- Saved checkout address selection/add-address flow lint passed with `npm.cmd run lint`; backend app module-load check passed with `node -e "require('./src/app'); console.log('backend app loaded')"`.
+- Ecommerce header redesign lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- Video hero banner redesign lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- Hero right-side category showcase was replaced with a generated transparent purifier image (`hero-water-purifier.png`) permanently displayed over the video; transparency check found no opaque magenta samples, and lint passed with `npm.cmd run lint` while still reporting the same unrelated `animated-logo-showcase.tsx` warning.
+- No-banner About page redesign with product/certification images and new slide/rise animations lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- GSAP About page animation/content revision lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- About page trust cards and India No. 1 purifier badge lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- About page purifier image fix and `Why We Are` review cards lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- About page Who We Are image now uses `/Untitled-design-10-2048x2048.png`; the top three mock product strip and leadership placeholder/mock logo image were removed, and the India No. 1 badge overlay was restored on the new image. Lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- Homepage `Why We Are` section animation was switched from IntersectionObserver/CSS to GSAP ScrollTrigger to match the About page image mask/reveal behavior. Lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- Footer Follow Us icons were changed from generic lucide/text icons to real inline brand SVG icons with brand colors. Lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- Homepage Commercial Solutions section was removed, and the `Why We Are` customer rating now animates from `1.0` to `4.9` using GSAP ScrollTrigger. Lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- Header top strip background was reverted to the original green while keeping the real contact details bar. Lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- Desktop nav right-side free space now contains a compact `Need Help? +919951078699` link and mail icon link. Lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- Footer phone/email were updated to `+919951078699` and `priyasaquafreshsales@gmail.com`. Lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
+- Testimonials management implemented: backend CRUD/status endpoints, admin Testimonials page with add/edit/delete/activate/deactivate and optional WebP image upload to `/uploads/testimonials`, and frontend homepage testimonial mapping for the new API shape. Database initializer ran successfully for `priyas_aqua_fresh`, and `SHOW COLUMNS FROM testimonials` confirmed the expected columns. Five active testimonials were seeded directly into MySQL with sort orders 1-5. Validation passed: frontend lint passed with the same unrelated `animated-logo-showcase.tsx` warning, admin lint passed, and backend JS syntax checks passed.
+- Homepage testimonials left summary was fixed to compute the average rating and count from active backend testimonial data. Frontend lint passed with the same unrelated `animated-logo-showcase.tsx` warning.
+- `RatingStars` fill logic now renders fractional star overlays instead of rounding/flooring. Frontend lint passed with the same unrelated `animated-logo-showcase.tsx` warning.
+- Homepage `Why We Are` cards now call `RatingStars` with `showText={false}` so `4.7 (0 reviews)` is not displayed. Frontend lint passed with the same unrelated `animated-logo-showcase.tsx` warning.
+- Header search now filters suggestions live from product data and submits to the new `/search` results page. Backend product listing supports `search` query matching product name, SKU, description, or category. Frontend lint passed with the same unrelated `animated-logo-showcase.tsx` warning; backend product repository/controller/validator syntax checks passed.
+- Header search suggestion rows were simplified to show only image and product title, hiding category and price. Frontend lint passed with the same unrelated `animated-logo-showcase.tsx` warning.
+- Dealer price display fix: product API mapping now keeps both customer/dealer price fields, `PriceDisplay` chooses dealer price for `DEALER` users, and cart/listing/checkout calculations use shared role-aware pricing. Frontend lint passed with the same unrelated `animated-logo-showcase.tsx` warning; backend cart/order syntax checks passed.
+- Separate customer order list/detail pages with product images passed targeted frontend ESLint; backend order syntax checks passed.
+- Cart page `/cart` is now bound to the shared API-backed cart state with product images, quantity controls, remove action, subtotal, checkout, and login-required state.
+- Checkout summary displays product image, name, quantity, and line total for each cart item. Targeted frontend ESLint passed.
 
 ## Explicit Non-Goals
-- No backend APIs.
-- No database integration.
 - No Razorpay/payment integration.
-- No authentication backend.
 - No admin panel changes.

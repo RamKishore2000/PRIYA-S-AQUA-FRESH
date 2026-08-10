@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { uploadImage } from "@/services/api";
 
 type Preview = {
   label: string;
@@ -71,13 +72,20 @@ export function ImageUploader({
       return;
     }
 
-    const objectUrl = URL.createObjectURL(file);
+    let uploadedUrl = "";
+    try {
+      uploadedUrl = await uploadImage(file, "products", requiredWidth, requiredHeight);
+    } catch (error) {
+      setPreviews((current) => current.map((preview, previewIndex) => previewIndex === index ? { ...preview, error: error instanceof Error ? error.message : "Image upload failed." } : preview));
+      return;
+    }
+
     setPreviews((current) =>
       {
         const nextPreviews = current.map((preview, previewIndex) => {
         if (previewIndex !== index) return preview;
         if (preview.src?.startsWith("blob:")) URL.revokeObjectURL(preview.src);
-        return { ...preview, src: objectUrl, error: undefined };
+        return { ...preview, src: uploadedUrl, error: undefined };
       });
         emitChange(nextPreviews);
         return nextPreviews;

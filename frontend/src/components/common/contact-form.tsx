@@ -4,13 +4,15 @@ import { FormEvent, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { submitContactMessage } from "@/services/request-service";
 
 export function ContactForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const data = new FormData(form);
     const nextErrors: Record<string, string> = {};
     if (!data.get("name")) nextErrors.name = "Full name is required.";
     if (!data.get("phone")) nextErrors.phone = "Phone number is required.";
@@ -21,8 +23,19 @@ export function ContactForm() {
     if (!data.get("message")) nextErrors.message = "Message is required.";
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
-    toast.success("Your message has been sent successfully.");
-    event.currentTarget.reset();
+    try {
+      await submitContactMessage({
+        fullName: String(data.get("name") ?? ""),
+        mobile: String(data.get("phone") ?? ""),
+        email: String(data.get("email") ?? ""),
+        subject: String(data.get("subject") ?? ""),
+        message: String(data.get("message") ?? ""),
+      });
+      toast.success("Your message has been sent successfully.");
+      form.reset();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to send message.");
+    }
   };
 
   return (

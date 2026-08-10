@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { ImageUploader } from "@/components/admin/image-uploader";
-import { categories } from "@/data/admin";
-import type { Product } from "@/types/admin";
+import { AdminToast } from "@/components/admin/admin-toast";
+import { adminApi } from "@/services/api";
+import type { Category, Product } from "@/types/admin";
 import { generateSlug } from "@/utils/slug";
 
 type ProductFormMode = "add" | "edit";
@@ -17,11 +19,14 @@ type ProductFormProps = {
 type ProductFormState = {
   name: string;
   category: string;
+  categoryId: string;
   sku: string;
   customerOriginalPrice: string;
   customerSellingPrice: string;
   dealerOriginalPrice: string;
   dealerSellingPrice: string;
+  rating: string;
+  reviewCount: string;
   images: string[];
   description: string;
   status: "Active" | "Inactive";
@@ -65,11 +70,14 @@ function getInitialState(initialProduct?: Product): ProductFormState {
   return {
     name: initialProduct?.name ?? "",
     category: initialProduct?.category ?? "",
+    categoryId: initialProduct?.categoryId ?? "",
     sku: initialProduct?.sku ?? "",
     customerOriginalPrice: initialProduct ? String(initialProduct.customerOriginalPrice) : "",
     customerSellingPrice: initialProduct ? String(initialProduct.customerSellingPrice) : "",
     dealerOriginalPrice: initialProduct ? String(initialProduct.dealerOriginalPrice) : "",
     dealerSellingPrice: initialProduct ? String(initialProduct.dealerSellingPrice) : "",
+    rating: initialProduct ? String(initialProduct.rating) : "0",
+    reviewCount: initialProduct ? String(initialProduct.reviewCount) : "0",
     images: initialProduct?.images ?? [],
     description: initialProduct?.description ?? "",
     status: initialProduct?.status ?? "Active",
@@ -82,10 +90,19 @@ function isPositiveAmount(value: string) {
 }
 
 export function ProductForm({ mode = "add", initialProduct }: ProductFormProps) {
+  const router = useRouter();
   const [form, setForm] = useState<ProductFormState>(() => getInitialState(initialProduct));
   const [errors, setErrors] = useState<ProductFormErrors>({});
   const [message, setMessage] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [saving, setSaving] = useState(false);
   const generatedSlug = useMemo(() => generateSlug(form.name), [form.name]);
+
+  useEffect(() => {
+    adminApi.listCategories()
+      .then((items) => setCategories(items.filter((item) => item.status === "Active")))
+      .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to load categories."));
+  }, []);
 
   function updateField<K extends keyof ProductFormState>(field: K, value: ProductFormState[K]) {
     setForm((current) => ({ ...current, [field]: value }));
@@ -98,9 +115,11 @@ export function ProductForm({ mode = "add", initialProduct }: ProductFormProps) 
     const customerSelling = Number(form.customerSellingPrice);
     const dealerOriginal = Number(form.dealerOriginalPrice);
     const dealerSelling = Number(form.dealerSellingPrice);
+    const rating = Number(form.rating);
+    const reviewCount = Number(form.reviewCount);
 
     if (!form.name.trim()) nextErrors.name = "Product name is required.";
-    if (!form.category) nextErrors.category = "Category is required.";
+    if (!form.categoryId) nextErrors.category = "Category is required.";
     if (!isPositiveAmount(form.customerOriginalPrice)) nextErrors.customerOriginalPrice = "Enter a valid positive amount.";
     if (!isPositiveAmount(form.customerSellingPrice)) nextErrors.customerSellingPrice = "Enter a valid positive amount.";
     if (!isPositiveAmount(form.dealerOriginalPrice)) nextErrors.dealerOriginalPrice = "Enter a valid positive amount.";
@@ -112,6 +131,8 @@ export function ProductForm({ mode = "add", initialProduct }: ProductFormProps) 
       nextErrors.dealerSellingPrice = "Dealer selling price cannot be greater than original price.";
     }
     if (form.images.length < 1) nextErrors.images = "Upload at least one product image.";
+    if (!Number.isFinite(rating) || rating < 0 || rating > 5) nextErrors.rating = "Rating must be between 0 and 5.";
+    if (!Number.isInteger(reviewCount) || reviewCount < 0) nextErrors.reviewCount = "Review count must be 0 or more.";
     if (!form.description.trim()) nextErrors.description = "Description is required.";
     if (!form.status) nextErrors.status = "Status is required.";
 
@@ -119,7 +140,7 @@ export function ProductForm({ mode = "add", initialProduct }: ProductFormProps) 
     return Object.keys(nextErrors).length === 0;
   }
 
-  function submitForm(event: React.FormEvent<HTMLFormElement>) {
+  async function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("");
     if (!validateForm()) return;
@@ -131,13 +152,41 @@ export function ProductForm({ mode = "add", initialProduct }: ProductFormProps) 
       customerSellingPrice: Number(form.customerSellingPrice),
       dealerOriginalPrice: Number(form.dealerOriginalPrice),
       dealerSellingPrice: Number(form.dealerSellingPrice),
+      rating: Number(form.rating),
+      reviewCount: Number(form.reviewCount),
     };
 
-    sessionStorage.setItem("priyas-admin-last-product", JSON.stringify(payload));
-    setMessage(mode === "edit" ? "Product updated successfully." : "Product added successfully.");
+    setSaving(true);
+    try {
+      if (mode === "edit") {
+        await adminApi.updateProduct({ ...payload, id: initialProduct?.id ?? "" });
+        setMessage("Product updated successfully.");
+        router.push("/products");
+      } else {
+        await adminApi.createProduct(payload);
+        setMessage("Product added successfully.");
+        setForm(getInitialState());
+        router.push("/products");
+      }
+    } catch (error) {
+      const apiError = error as Error & { fieldErrors?: Record<string, string> };
+      if (apiError.fieldErrors) {
+        const fieldErrors: ProductFormErrors & { categoryId?: string } = { ...apiError.fieldErrors };
+        if ("categoryId" in fieldErrors) {
+          fieldErrors.category = fieldErrors.categoryId;
+          delete fieldErrors.categoryId;
+        }
+        setErrors((current) => ({ ...current, ...fieldErrors }));
+      }
+      setMessage(error instanceof Error ? error.message : "Unable to save product.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
+    <>
+    <AdminToast message={message} />
     <form onSubmit={submitForm} className="space-y-6">
       <FormSection title="Basic Information">
         <div className="grid gap-4 md:grid-cols-2">
@@ -145,9 +194,17 @@ export function ProductForm({ mode = "add", initialProduct }: ProductFormProps) 
             <input className={inputClass} value={form.name} onChange={(event) => updateField("name", event.target.value)} placeholder="PRIYAS AQUAFRESH ERA RO WATER PURIFIER" />
           </Field>
           <Field label="Category" error={errors.category}>
-            <select className={inputClass} value={form.category} onChange={(event) => updateField("category", event.target.value)}>
+            <select
+              className={inputClass}
+              value={form.categoryId}
+              onChange={(event) => {
+                const category = categories.find((item) => item.id === event.target.value);
+                updateField("categoryId", event.target.value);
+                updateField("category", category?.name ?? "");
+              }}
+            >
               <option value="" disabled>Select category</option>
-              {categories.map((category) => <option key={category.id}>{category.name}</option>)}
+              {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
             </select>
           </Field>
           <Field label="Product Code" helper="Optional unique code used to identify this product.">
@@ -194,12 +251,20 @@ export function ProductForm({ mode = "add", initialProduct }: ProductFormProps) 
           <Field label="Description" error={errors.description}>
             <textarea className={textareaClass} value={form.description} onChange={(event) => updateField("description", event.target.value)} placeholder="Enter product description..." />
           </Field>
-          <Field label="Status" error={errors.status}>
-            <select className={inputClass} value={form.status} onChange={(event) => updateField("status", event.target.value as ProductFormState["status"])}>
-              <option>Active</option>
-              <option>Inactive</option>
-            </select>
-          </Field>
+          <div className="grid gap-4">
+            <Field label="Product Rating" error={errors.rating} helper="Enter a value from 0 to 5, for example 4.5.">
+              <input className={inputClass} type="number" min="0" max="5" step="0.1" value={form.rating} onChange={(event) => updateField("rating", event.target.value)} />
+            </Field>
+            <Field label="Review Count" error={errors.reviewCount}>
+              <input className={inputClass} type="number" min="0" step="1" value={form.reviewCount} onChange={(event) => updateField("reviewCount", event.target.value)} />
+            </Field>
+            <Field label="Status" error={errors.status}>
+              <select className={inputClass} value={form.status} onChange={(event) => updateField("status", event.target.value as ProductFormState["status"])}>
+                <option>Active</option>
+                <option>Inactive</option>
+              </select>
+            </Field>
+          </div>
         </div>
       </FormSection>
 
@@ -208,10 +273,11 @@ export function ProductForm({ mode = "add", initialProduct }: ProductFormProps) 
         <Link href="/products" className="inline-flex h-10 items-center justify-center rounded-md border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
           Cancel
         </Link>
-        <button type="submit" className="inline-flex h-10 items-center justify-center rounded-md bg-teal-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700">
-          {mode === "edit" ? "Update Product" : "Save Product"}
+        <button type="submit" disabled={saving} className="inline-flex h-10 items-center justify-center rounded-md bg-teal-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 disabled:pointer-events-none disabled:opacity-60">
+          {saving ? "Saving..." : mode === "edit" ? "Update Product" : "Save Product"}
         </button>
       </div>
     </form>
+    </>
   );
 }

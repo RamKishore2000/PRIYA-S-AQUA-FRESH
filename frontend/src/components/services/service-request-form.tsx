@@ -5,14 +5,16 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { services } from "@/components/services/service-data";
+import { submitServiceRequest } from "@/services/request-service";
 
 export function ServiceRequestForm() {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [selectedService, setSelectedService] = useState("");
 
-    const submit = (event: FormEvent<HTMLFormElement>) => {
+    const submit = async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      const data = new FormData(event.currentTarget);
+      const form = event.currentTarget;
+      const data = new FormData(form);
       const nextErrors: Record<string, string> = {};
       if (!data.get("name")) nextErrors.name = "Full name is required.";
       if (!data.get("mobile")) nextErrors.mobile = "Mobile number is required.";
@@ -20,9 +22,23 @@ export function ServiceRequestForm() {
       if (!data.get("address")) nextErrors.address = "Address is required.";
       setErrors(nextErrors);
       if (Object.keys(nextErrors).length > 0) return;
-      toast.success("Service request submitted successfully.");
-      event.currentTarget.reset();
-      setSelectedService("");
+      try {
+        await submitServiceRequest({
+          customerName: String(data.get("name") ?? ""),
+          mobile: String(data.get("mobile") ?? ""),
+          email: String(data.get("email") ?? ""),
+          serviceType: selectedService,
+          city: String(data.get("city") ?? ""),
+          preferredDate: String(data.get("date") ?? ""),
+          address: String(data.get("address") ?? ""),
+          problem: String(data.get("message") ?? ""),
+        });
+        toast.success("Service request submitted successfully.");
+        form.reset();
+        setSelectedService("");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Unable to submit service request.");
+      }
     };
 
     return (

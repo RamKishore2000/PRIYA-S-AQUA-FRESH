@@ -6,32 +6,45 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { registerCustomer } from "@/services/auth-service";
+import { loginUser, registerCustomer, type AuthUser } from "@/services/auth-service";
 
 type AuthModalProps = {
   open: boolean;
   onClose: () => void;
+  onLogin?: (user: AuthUser) => void;
 };
 
 type AuthTab = "login" | "register";
 
-export function AuthModal({ open, onClose }: AuthModalProps) {
+export function AuthModal({ open, onClose, onLogin }: AuthModalProps) {
   const [tab, setTab] = useState<AuthTab>("login");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const submitLogin = (event: FormEvent<HTMLFormElement>) => {
+  const submitLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    const identifier = String(data.get("identifier") ?? "").trim();
+    const password = String(data.get("password") ?? "");
     const nextErrors: Record<string, string> = {};
-    if (!data.get("identifier")) nextErrors.identifier = "Email or mobile number is required.";
-    if (!data.get("password")) nextErrors.password = "Password is required.";
+    if (!identifier) nextErrors.identifier = "Email or mobile number is required.";
+    if (!password) nextErrors.password = "Password is required.";
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
-    toast.success("Login successful.");
-    onClose();
+    setIsLoggingIn(true);
+    try {
+      const result = await loginUser({ email: identifier, password, rememberMe: Boolean(data.get("rememberMe")) });
+      onLogin?.(result.data.user);
+      toast.success("Login successful.");
+      onClose();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Login failed.");
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   const submitRegister = async (event: FormEvent<HTMLFormElement>) => {
@@ -128,11 +141,11 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
             </FieldError>
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center gap-2 font-semibold text-slate-600">
-                <input type="checkbox" className="h-4 w-4 accent-teal-600" /> Remember Me
+                <input name="rememberMe" type="checkbox" className="h-4 w-4 accent-teal-600" /> Remember Me
               </label>
               <button type="button" className="font-semibold text-teal-700">Forgot Password?</button>
             </div>
-            <Button type="submit" className="w-full">Login</Button>
+            <Button type="submit" className="w-full" disabled={isLoggingIn}>{isLoggingIn ? "Logging in..." : "Login"}</Button>
             <p className="text-center text-sm text-slate-600">
               Don&apos;t have an account?{" "}
               <button type="button" className="font-bold text-teal-700" onClick={() => setTab("register")}>

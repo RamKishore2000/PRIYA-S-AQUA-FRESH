@@ -6,10 +6,13 @@ import { QuantitySelector } from "@/components/cart/quantity-selector";
 import { Button, LinkButton } from "@/components/ui/button";
 import { EmptyState } from "@/components/common/empty-state";
 import { useShop } from "@/context/shop-context";
+import { getProductDisplayPrice } from "@/lib/pricing";
 import { cn, formatPrice } from "@/lib/utils";
+import { getStoredUser } from "@/services/auth-service";
 
 export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { cartItems, subtotal, removeFromCart, increaseQuantity, decreaseQuantity } = useShop();
+  const role = getStoredUser()?.role || null;
 
   return (
     <div className={cn("fixed inset-0 z-[80]", open ? "pointer-events-auto" : "pointer-events-none")} aria-hidden={!open}>
@@ -41,7 +44,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
               {cartItems.map((item) => (
                 <div key={item.product.id} className="grid grid-cols-[72px_1fr] gap-4 rounded-lg border border-slate-200 p-3">
                   <div className="relative h-[72px] w-[72px] rounded-md bg-slate-50">
-                    <Image src={item.product.image} alt={item.product.name} fill sizes="72px" className="object-contain p-2" />
+                    <Image src={item.product.image} alt={item.product.name} fill sizes="72px" className="object-contain p-2" unoptimized />
                   </div>
                   <div className="min-w-0">
                     <div className="flex gap-2">
@@ -50,7 +53,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
-                    <p className="mt-1 text-sm font-semibold text-teal-700">{formatPrice(item.product.price)}</p>
+                    <p className="mt-1 text-sm font-semibold text-teal-700">{formatPrice(getProductDisplayPrice(item.product, role).price)}</p>
                     <div className="mt-3">
                       <QuantitySelector
                         quantity={item.quantity}

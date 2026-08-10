@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { AdminToast } from "@/components/admin/admin-toast";
 import { CouponFormDialog } from "@/components/admin/coupon-form-dialog";
@@ -8,7 +8,7 @@ import { CouponViewDialog } from "@/components/admin/coupon-view-dialog";
 import { RowActionsDropdown } from "@/components/admin/row-actions-dropdown";
 import { StatsCard } from "@/components/admin/stats-card";
 import { StatusBadge } from "@/components/admin/status-badge";
-import { coupons as initialCoupons } from "@/data/admin";
+import { adminApi } from "@/services/api";
 import type { Coupon, CouponComputedStatus } from "@/types/admin";
 import { formatCurrency } from "@/utils/format-currency";
 
@@ -40,12 +40,13 @@ function discountText(coupon: Coupon) {
 }
 
 export default function CouponsPage() {
-  const [coupons, setCoupons] = useState<Coupon[]>(initialCoupons);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [message, setMessage] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState<"add" | "edit">("add");
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
   const [viewCoupon, setViewCoupon] = useState<Coupon | null>(null);
+  const [loading, setLoading] = useState(true);
   const statusCounts = coupons.reduce<Record<CouponComputedStatus, number>>(
     (acc, coupon) => {
       acc[getCouponStatus(coupon)] += 1;
@@ -53,6 +54,13 @@ export default function CouponsPage() {
     },
     { Active: 0, Inactive: 0, Upcoming: 0, Expired: 0 },
   );
+
+  useEffect(() => {
+    adminApi.listCoupons()
+      .then(setCoupons)
+      .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to load coupons."))
+      .finally(() => setLoading(false));
+  }, []);
 
   function openAddCoupon() {
     setFormMode("add");
@@ -66,20 +74,29 @@ export default function CouponsPage() {
     setFormOpen(true);
   }
 
-  function saveCoupon(coupon: Coupon) {
-    setCoupons((current) =>
-      formMode === "edit"
-        ? current.map((item) => (item.id === coupon.id ? coupon : item))
-        : [coupon, ...current],
-    );
-    setMessage(formMode === "edit" ? "Coupon updated successfully." : "Coupon added successfully.");
-    setFormOpen(false);
+  async function saveCoupon(coupon: Coupon) {
+    try {
+      const savedCoupon = formMode === "edit" ? await adminApi.updateCoupon(coupon) : await adminApi.createCoupon(coupon);
+      setCoupons((current) =>
+        formMode === "edit"
+          ? current.map((item) => (item.id === savedCoupon.id ? savedCoupon : item))
+          : [savedCoupon, ...current],
+      );
+      setMessage(formMode === "edit" ? "Coupon updated successfully." : "Coupon added successfully.");
+      setFormOpen(false);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to save coupon.");
+    }
   }
 
   function toggleCoupon(coupon: Coupon) {
     const nextStatus = coupon.manualStatus === "Active" ? "Inactive" : "Active";
-    setCoupons((current) => current.map((item) => item.id === coupon.id ? { ...item, manualStatus: nextStatus } : item));
-    setMessage(nextStatus === "Active" ? "Coupon activated successfully." : "Coupon deactivated successfully.");
+    adminApi.setCouponStatus(coupon.id, nextStatus === "Active" ? "ACTIVE" : "INACTIVE")
+      .then((updatedCoupon) => {
+        setCoupons((current) => current.map((item) => item.id === coupon.id ? updatedCoupon : item));
+        setMessage(nextStatus === "Active" ? "Coupon activated successfully." : "Coupon deactivated successfully.");
+      })
+      .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to update coupon."));
   }
 
   return (
@@ -138,8 +155,12 @@ export default function CouponsPage() {
                             label: "Delete Coupon",
                             confirmItemName: "Coupon",
                             onConfirm: () => {
-                              setCoupons((current) => current.filter((item) => item.id !== coupon.id));
-                              setMessage("Coupon deleted successfully.");
+                              adminApi.deleteCoupon(coupon.id)
+                                .then(() => {
+                                  setCoupons((current) => current.filter((item) => item.id !== coupon.id));
+                                  setMessage("Coupon deleted successfully.");
+                                })
+                                .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to delete coupon."));
                             },
                           },
                         ]}
@@ -150,6 +171,7 @@ export default function CouponsPage() {
               })}
             </tbody>
           </table>
+          {!loading && coupons.length === 0 ? <p className="p-5 text-sm font-semibold text-slate-500">No coupons found. Add your first coupon.</p> : null}
         </div>
       </section>
 

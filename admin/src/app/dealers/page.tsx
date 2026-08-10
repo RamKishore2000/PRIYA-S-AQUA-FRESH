@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { AdminToast } from "@/components/admin/admin-toast";
 import { PageHeader } from "@/components/admin/page-header";
@@ -9,22 +9,34 @@ import { ResetPasswordDialog } from "@/components/admin/reset-password-dialog";
 import { RowActionsDropdown } from "@/components/admin/row-actions-dropdown";
 import { StatsCard } from "@/components/admin/stats-card";
 import { StatusBadge } from "@/components/admin/status-badge";
-import { dealers as initialDealers } from "@/data/admin";
+import { adminApi } from "@/services/api";
 import type { Dealer } from "@/types/admin";
 import { formatCurrency } from "@/utils/format-currency";
 
 export default function DealersPage() {
   const router = useRouter();
-  const [dealers, setDealers] = useState<Dealer[]>(initialDealers);
+  const [dealers, setDealers] = useState<Dealer[]>([]);
   const [resetDealer, setResetDealer] = useState<Dealer | null>(null);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
   const activeDealers = dealers.filter((dealer) => dealer.status === "Active").length;
   const inactiveDealers = dealers.filter((dealer) => dealer.status === "Inactive").length;
 
+  useEffect(() => {
+    adminApi.listDealers()
+      .then(setDealers)
+      .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to load dealers."))
+      .finally(() => setLoading(false));
+  }, []);
+
   function toggleDealerStatus(dealer: Dealer) {
     const nextStatus = dealer.status === "Active" ? "Inactive" : "Active";
-    setDealers((current) => current.map((item) => item.id === dealer.id ? { ...item, status: nextStatus } : item));
-    setMessage(nextStatus === "Active" ? "Dealer activated successfully." : "Dealer deactivated successfully.");
+    adminApi.setDealerStatus(dealer.id, nextStatus === "Active" ? "ACTIVE" : "INACTIVE")
+      .then((updatedDealer) => {
+        setDealers((current) => current.map((item) => item.id === dealer.id ? updatedDealer : item));
+        setMessage(nextStatus === "Active" ? "Dealer activated successfully." : "Dealer deactivated successfully.");
+      })
+      .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to update dealer."));
   }
 
   return (
@@ -82,6 +94,7 @@ export default function DealersPage() {
               ))}
             </tbody>
           </table>
+          {!loading && dealers.length === 0 ? <p className="p-5 text-sm font-semibold text-slate-500">No dealers found. Add your first dealer.</p> : null}
         </div>
       </section>
 
@@ -89,9 +102,13 @@ export default function DealersPage() {
         <ResetPasswordDialog
           dealerName={resetDealer.name}
           onClose={() => setResetDealer(null)}
-          onSuccess={() => {
-            setResetDealer(null);
-            setMessage("Dealer password updated successfully.");
+          onSuccess={(password, confirmPassword) => {
+            adminApi.resetDealerPassword(resetDealer.id, password, confirmPassword)
+              .then(() => {
+                setResetDealer(null);
+                setMessage("Dealer password updated successfully.");
+              })
+              .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to reset password."));
           }}
         />
       ) : null}

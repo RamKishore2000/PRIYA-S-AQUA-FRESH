@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { AdminToast } from "@/components/admin/admin-toast";
+import { adminApi } from "@/services/api";
 import type { Dealer, Status } from "@/types/admin";
 
 type DealerFormState = {
@@ -51,6 +52,7 @@ export function DealerForm({ mode = "add", initialDealer }: DealerFormProps) {
   const [form, setForm] = useState<DealerFormState>(() => initialState(initialDealer));
   const [errors, setErrors] = useState<Partial<Record<keyof DealerFormState, string>>>({});
   const [message, setMessage] = useState("");
+  const [saving, setSaving] = useState(false);
 
   function updateField<K extends keyof DealerFormState>(field: K, value: DealerFormState[K]) {
     setForm((current) => ({ ...current, [field]: value }));
@@ -77,8 +79,30 @@ export function DealerForm({ mode = "add", initialDealer }: DealerFormProps) {
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
-    sessionStorage.setItem("priyas-admin-last-dealer", JSON.stringify(form));
-    setMessage(mode === "edit" ? "Dealer updated successfully." : "Dealer added successfully.");
+    const payload: Record<string, string> = {
+      name: form.name,
+      businessName: form.businessName,
+      mobile: form.mobile,
+      email: form.email,
+      dealerCode: form.dealerCode,
+      gstNumber: form.gstNumber,
+      address: form.address,
+      city: form.city,
+      state: form.state,
+      pincode: form.pincode,
+      status: form.status === "Active" ? "ACTIVE" : "INACTIVE",
+    };
+    if (form.password) payload.password = form.password;
+
+    setSaving(true);
+    const request = mode === "edit" && initialDealer
+      ? adminApi.updateDealer(initialDealer.id, payload)
+      : adminApi.createDealer(payload);
+
+    request
+      .then(() => setMessage(mode === "edit" ? "Dealer updated successfully." : "Dealer added successfully."))
+      .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to save dealer."))
+      .finally(() => setSaving(false));
   }
 
   return (
@@ -134,7 +158,7 @@ export function DealerForm({ mode = "add", initialDealer }: DealerFormProps) {
         </section>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
           <Link href="/dealers" className="inline-flex h-10 items-center justify-center rounded-md border border-slate-200 px-5 text-sm font-semibold text-slate-700">Cancel</Link>
-          <button type="submit" className="inline-flex h-10 items-center justify-center rounded-md bg-teal-600 px-5 text-sm font-semibold text-white">{mode === "edit" ? "Update Dealer" : "Save Dealer"}</button>
+          <button type="submit" className="inline-flex h-10 items-center justify-center rounded-md bg-teal-600 px-5 text-sm font-semibold text-white">{saving ? "Saving..." : mode === "edit" ? "Update Dealer" : "Save Dealer"}</button>
         </div>
       </form>
     </>

@@ -16,7 +16,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       router.replace("/login");
       return;
     }
-    setReady(true);
+    const frame = window.requestAnimationFrame(() => setReady(true));
+    return () => window.cancelAnimationFrame(frame);
   }, [router]);
 
   if (!ready) {

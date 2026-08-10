@@ -40,3 +40,8 @@ Thumbs.db
 
 # nested git metadata backups kept while converting to one root repo
 **/.git-*-backup/
+
+# runtime uploads: keep folder placeholders, ignore uploaded files
+backend/public/uploads/**
+!backend/public/uploads/**/
+!backend/public/uploads/**/.gitkeep

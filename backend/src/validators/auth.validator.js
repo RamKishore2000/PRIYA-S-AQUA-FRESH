@@ -32,6 +32,28 @@ const registerValidator = [
     .withMessage("Passwords must match."),
 ];
 
+const loginValidator = [
+  body("email")
+    .trim()
+    .notEmpty()
+    .withMessage("Email or mobile number is required.")
+    .custom((value) => /^[6-9]\d{9}$/.test(value) || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+    .withMessage("Enter a valid email address or 10 digit mobile number."),
+  body("password").notEmpty().withMessage("Password is required."),
+  body("rememberMe").optional().isBoolean().withMessage("Remember me must be true or false."),
+];
+
+const refreshValidator = [
+  body("refreshToken").trim().notEmpty().withMessage("Refresh token is required."),
+];
+
+const logoutValidator = [
+  body("refreshToken").optional({ nullable: true, checkFalsy: true }).isString().withMessage("Refresh token is invalid."),
+];
+
 module.exports = {
   registerValidator,
+  loginValidator,
+  refreshValidator,
+  logoutValidator,
 };

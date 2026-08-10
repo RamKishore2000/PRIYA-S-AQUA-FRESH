@@ -1,18 +1,40 @@
+"use client";
+
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { AdminShell } from "@/components/admin/admin-shell";
+import { AdminToast } from "@/components/admin/admin-toast";
 import { PageHeader } from "@/components/admin/page-header";
 import { RowActionsDropdown } from "@/components/admin/row-actions-dropdown";
 import { StatsCard } from "@/components/admin/stats-card";
 import { StatusBadge } from "@/components/admin/status-badge";
-import { categories, products } from "@/data/admin";
+import { adminApi } from "@/services/api";
+import type { Category, Product } from "@/types/admin";
 import { formatCurrency } from "@/utils/format-currency";
 
 export default function ProductsPage() {
+  const router = useRouter();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
   const activeProducts = products.filter((product) => product.status === "Active").length;
   const inactiveProducts = products.filter((product) => product.status === "Inactive").length;
 
+  useEffect(() => {
+    Promise.all([adminApi.listProducts(), adminApi.listCategories()])
+      .then(([productRows, categoryRows]) => {
+        setProducts(productRows);
+        setCategories(categoryRows);
+      })
+      .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to load products."))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <AdminShell>
+      <AdminToast message={message} />
       <PageHeader title="Products" description="Manage products with separate customer and dealer pricing." actionHref="/products/new" actionLabel="Add Product" />
 
       <div className="grid gap-4 sm:grid-cols-3">
@@ -29,7 +51,7 @@ export default function ProductsPage() {
             {categories.map((category) => <option key={category.id}>{category.name}</option>)}
           </select>
           <select className="h-10 rounded-md border border-slate-200 px-3 text-sm outline-none"><option>All Status</option><option>Active</option><option>Inactive</option></select>
-          <button className="h-10 rounded-md border border-slate-200 px-4 text-sm font-semibold text-slate-700">Reset Filters</button>
+          <button type="button" className="h-10 rounded-md border border-slate-200 px-4 text-sm font-semibold text-slate-700">Reset Filters</button>
         </div>
       </section>
 
@@ -44,7 +66,7 @@ export default function ProductsPage() {
                 <tr key={product.id}>
                   <td className="px-5 py-4">
                     <div className="relative h-14 w-14 rounded-md border border-slate-200 bg-slate-50">
-                      <Image src={product.images[0]} alt={product.name} fill className="object-contain p-2" />
+                      {product.images[0] ? <Image src={product.images[0]} alt={product.name} fill className="object-contain p-2" unoptimized /> : null}
                     </div>
                   </td>
                   <td className="px-5 py-4">
@@ -66,9 +88,19 @@ export default function ProductsPage() {
                     <RowActionsDropdown
                       actions={[
                         { label: "View Product", icon: "view" },
-                        { label: "Edit Product", icon: "edit" },
-                        { label: "Duplicate Product", icon: "duplicate", tone: "accent" },
-                        { label: "Delete Product", confirmItemName: "Product" },
+                        { label: "Edit Product", icon: "edit", onClick: () => router.push(`/products/${product.id}/edit`) },
+                        {
+                          label: "Delete Product",
+                          confirmItemName: "Product",
+                          onConfirm: () => {
+                            adminApi.deleteProduct(product.id)
+                              .then(() => {
+                                setProducts((current) => current.filter((item) => item.id !== product.id));
+                                setMessage("Product deleted successfully.");
+                              })
+                              .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to delete product."));
+                          },
+                        },
                       ]}
                     />
                   </td>
@@ -76,6 +108,7 @@ export default function ProductsPage() {
               ))}
             </tbody>
           </table>
+          {!loading && products.length === 0 ? <p className="p-5 text-sm font-semibold text-slate-500">No products found. Add your first product.</p> : null}
         </div>
       </section>
     </AdminShell>

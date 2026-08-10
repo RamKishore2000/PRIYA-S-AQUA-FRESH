@@ -34,8 +34,35 @@ async function createCustomerUser({ fullName, mobile, email, passwordHash }) {
   };
 }
 
+async function createUser({ fullName, mobile, email, passwordHash, role, status = USER_STATUSES.ACTIVE }) {
+  const [result] = await pool.execute(
+    `INSERT INTO users (full_name, mobile, email, password_hash, role, status)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [fullName, mobile, email, passwordHash, role, status],
+  );
+
+  return {
+    id: result.insertId,
+    full_name: fullName,
+    mobile,
+    email,
+    role,
+    status,
+  };
+}
+
+async function findById(id) {
+  const [rows] = await pool.execute(
+    "SELECT id, full_name, mobile, email, password_hash, role, status FROM users WHERE id = ? LIMIT 1",
+    [id],
+  );
+  return rows[0] || null;
+}
+
 module.exports = {
   findByEmail,
   findByMobile,
   createCustomerUser,
+  createUser,
+  findById,
 };

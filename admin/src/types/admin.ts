@@ -1,4 +1,4 @@
-export type Status = "Active" | "Inactive";
+export type Status = "Active" | "Inactive" | "Blocked";
 export type BuyerRole = "Customer" | "Dealer";
 export type OrderStatus = "Pending" | "Confirmed" | "Packed" | "Shipped" | "Delivered" | "Cancelled";
 export type ServiceStatus = "New" | "Assigned" | "In Progress" | "Completed" | "Cancelled";
@@ -20,7 +20,18 @@ export type Dealer = {
   pincode: string;
   totalOrders: number;
   totalPurchaseValue: number;
-  status: Extract<Status, "Active" | "Inactive">;
+  status: Status;
+  createdDate: string;
+};
+
+export type Customer = {
+  id: string;
+  fullName: string;
+  mobile: string;
+  email: string;
+  totalOrders: number;
+  totalSpent: number;
+  status: Status;
   createdDate: string;
 };
 
@@ -57,11 +68,14 @@ export type Product = {
   slug: string;
   sku: string;
   category: string;
+  categoryId?: string;
   images: string[];
   customerSellingPrice: number;
   dealerSellingPrice: number;
   customerOriginalPrice: number;
   dealerOriginalPrice: number;
+  rating: number;
+  reviewCount: number;
   description: string;
   status: Status;
   createdDate: string;
@@ -70,13 +84,42 @@ export type Product = {
 
 export type Order = {
   id: string;
+  orderNumber: string;
   buyerName: string;
+  buyerMobile: string;
+  buyerEmail: string;
   role: BuyerRole;
   items: number;
+  firstProductName: string;
+  firstProductImage: string;
   amount: number;
   payment: "Paid" | "Pending" | "Failed";
   status: OrderStatus;
   date: string;
+  subtotalAmount: number;
+  discountAmount: number;
+  shippingAmount: number;
+  shippingAddress?: {
+    fullName: string;
+    mobile: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    state: string;
+    pincode: string;
+    landmark?: string;
+  };
+  products: {
+    id: string;
+    productId: string;
+    productName: string;
+    productSku: string;
+    productSlug?: string;
+    imageUrl: string;
+    unitPrice: number;
+    quantity: number;
+    lineTotal: number;
+  }[];
 };
 
 export type ServiceRequest = {
@@ -90,5 +133,17 @@ export type ServiceRequest = {
   preferredDate: string;
   problem: string;
   status: ServiceStatus;
+  createdDate: string;
+};
+
+export type Testimonial = {
+  id: string;
+  customerName: string;
+  role: string;
+  rating: number;
+  message: string;
+  imageUrl: string;
+  sortOrder: number;
+  status: Status;
   createdDate: string;
 };

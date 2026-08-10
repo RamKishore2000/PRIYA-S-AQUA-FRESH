@@ -1,11 +1,16 @@
 export type Product = {
   id: string;
   slug: string;
+  sku?: string;
   name: string;
   category: string;
   description: string;
   price: number;
   originalPrice?: number;
+  customerPrice: number;
+  customerOriginalPrice?: number;
+  dealerPrice: number;
+  dealerOriginalPrice?: number;
   discount?: number;
   rating: number;
   reviewCount: number;
@@ -27,8 +32,10 @@ export type Category = {
 export type Testimonial = {
   id: string;
   name: string;
+  role?: string;
   rating: number;
   review: string;
   product: string;
   avatar: string;
+  imageUrl?: string;
 };

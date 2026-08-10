@@ -1,14 +1,22 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { EmptyState } from "@/components/common/empty-state";
 import { ProductCard } from "@/components/product/product-card";
 import { LinkButton } from "@/components/ui/button";
 import { useShop } from "@/context/shop-context";
-import { products } from "@/data/products";
+import { getProducts } from "@/services/catalog-service";
+import type { Product } from "@/types/product";
 
 export function WishlistContent() {
   const { wishlistIds } = useShop();
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    getProducts().then(setProducts).catch(() => setProducts([]));
+  }, []);
+
   const wishlistProducts = products.filter((product) => wishlistIds.includes(product.id));
 
   if (wishlistProducts.length === 0) {

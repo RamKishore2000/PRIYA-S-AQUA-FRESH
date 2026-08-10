@@ -1,14 +1,36 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { Toaster } from "sonner";
+import { AuthModal } from "@/components/auth/auth-modal";
+import { CartFlyProvider } from "@/context/cart-fly-context";
 import { ShopProvider } from "@/context/shop-context";
 
 export function Providers({ children }: { children: ReactNode }) {
+  const [authOpen, setAuthOpen] = useState(false);
+
   return (
-    <ShopProvider>
-      {children}
-      <Toaster richColors position="top-right" closeButton />
+    <ShopProvider onRequireLogin={() => setAuthOpen(true)}>
+      <CartFlyProvider>
+        {children}
+        <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+        <Toaster
+          position="bottom-center"
+          closeButton={false}
+          icons={{ success: null, error: null, info: null, warning: null }}
+          duration={2600}
+          visibleToasts={3}
+          toastOptions={{
+            classNames: {
+              toast: "priyas-toast",
+              title: "priyas-toast-title",
+              description: "priyas-toast-description",
+              closeButton: "priyas-toast-close",
+            },
+          }}
+        />
+      </CartFlyProvider>
     </ShopProvider>
   );
 }

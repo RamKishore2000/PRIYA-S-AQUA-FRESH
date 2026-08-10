@@ -5,6 +5,7 @@ type BadgeValue = Status | CouponComputedStatus | OrderStatus | ServiceStatus | 
 const colorMap: Record<string, string> = {
   Active: "bg-emerald-50 text-emerald-700 ring-emerald-200",
   Inactive: "bg-slate-100 text-slate-600 ring-slate-200",
+  Blocked: "bg-red-50 text-red-700 ring-red-200",
   Upcoming: "bg-indigo-50 text-indigo-700 ring-indigo-200",
   Expired: "bg-red-50 text-red-700 ring-red-200",
   Pending: "bg-amber-50 text-amber-700 ring-amber-200",
@@ -25,7 +26,7 @@ const colorMap: Record<string, string> = {
 
 export function StatusBadge({ value }: { value: BadgeValue }) {
   return (
-    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${colorMap[value]}`}>
+    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${colorMap[value] || "bg-slate-100 text-slate-600 ring-slate-200"}`}>
       {value}
     </span>
   );

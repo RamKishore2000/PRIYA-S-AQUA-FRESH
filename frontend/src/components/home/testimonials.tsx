@@ -6,9 +6,9 @@ import { RatingStars } from "@/components/common/rating-stars";
 import { SectionHeader } from "@/components/common/section-header";
 import { TestimonialCard } from "@/components/home/testimonial-card";
 import { Button } from "@/components/ui/button";
-import { testimonials } from "@/data/testimonials";
+import type { Testimonial } from "@/types/product";
 
-export function Testimonials() {
+export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [visibleCount, setVisibleCount] = useState(1);
@@ -45,12 +45,16 @@ export function Testimonials() {
 
   const carouselItems = useMemo(
     () => [...testimonials, ...testimonials.slice(0, Math.max(3, visibleCount))],
-    [visibleCount],
+    [testimonials, visibleCount],
   );
+  const averageRating = testimonials.length
+    ? testimonials.reduce((sum, testimonial) => sum + testimonial.rating, 0) / testimonials.length
+    : 0;
 
   const slideWidth = visibleCount > 0 ? trackWidth / visibleCount : 0;
 
   const goToPrevious = () => {
+    if (testimonials.length === 0) return;
     setTransitionEnabled(true);
     setActiveIndex((index) => (index - 1 + testimonials.length) % testimonials.length);
   };
@@ -61,6 +65,7 @@ export function Testimonials() {
   };
 
   const handleTransitionEnd = () => {
+    if (testimonials.length === 0) return;
     if (activeIndex >= testimonials.length) {
       setTransitionEnabled(false);
       setActiveIndex(0);
@@ -77,9 +82,11 @@ export function Testimonials() {
           <div>
             <SectionHeader title="What Our Customers Say" subtitle="A premium buying experience backed by support and practical product guidance." />
             <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-              <p className="text-4xl font-bold text-slate-950">4.7 / 5</p>
-              <div className="mt-2"><RatingStars rating={5} /></div>
-              <p className="mt-2 text-sm text-slate-500">Overall customer rating</p>
+              <p className="text-4xl font-bold text-slate-950">{averageRating.toFixed(1)} / 5</p>
+              <div className="mt-2"><RatingStars rating={averageRating} reviewCount={testimonials.length} /></div>
+              <p className="mt-2 text-sm text-slate-500">
+                {testimonials.length > 0 ? `Based on ${testimonials.length} active testimonials` : "Testimonials will appear after approval"}
+              </p>
             </div>
           </div>
           <div
@@ -88,6 +95,12 @@ export function Testimonials() {
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
           >
+            {testimonials.length === 0 ? (
+              <div className="rounded-lg border border-slate-200 bg-white p-6 text-sm font-semibold text-slate-500 shadow-sm">
+                Customer testimonials will appear here after approval.
+              </div>
+            ) : (
+            <>
             <div
               className={`flex ${transitionEnabled ? "transition-transform duration-700 ease-in-out" : ""}`}
               style={{ transform: `translateX(-${activeIndex * slideWidth}px)` }}
@@ -103,6 +116,8 @@ export function Testimonials() {
                 </div>
               ))}
             </div>
+            </>
+            )}
             <div className="mt-5 flex items-center justify-between">
               <div className="flex gap-2">
                 {testimonials.map((testimonial, index) => (
