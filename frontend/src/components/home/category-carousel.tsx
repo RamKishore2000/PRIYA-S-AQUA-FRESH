@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 
 export function CategoryCarousel({ categories }: { categories: Category[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const showArrows = categories.length > 5;
 
   function scrollCategories(direction: "left" | "right") {
     const container = scrollRef.current;
@@ -26,14 +27,28 @@ export function CategoryCarousel({ categories }: { categories: Category[] }) {
         aria-label="Previous categories"
         onClick={() => scrollCategories("left")}
         className={cn(
-          "absolute left-0 top-[78px] z-10 hidden h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full bg-slate-950 text-white shadow-md transition hover:bg-slate-800 md:inline-flex",
+          "absolute left-0 top-[86px] z-10 hidden h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full border border-[#12a8e6]/35 bg-[#111418]/95 text-[#12a8e6] shadow-[0_18px_36px_rgba(0,0,0,0.28)] backdrop-blur transition hover:bg-[#12a8e6] hover:text-white md:inline-flex",
+          !showArrows && "md:hidden",
         )}
       >
         <ChevronLeft className="h-5 w-5" />
       </button>
 
-      <div ref={scrollRef} className="hide-scrollbar overflow-x-auto overflow-y-hidden scroll-smooth">
-        <div className="flex min-w-max items-start justify-center gap-3 px-1 py-1 sm:gap-4 md:min-w-0 md:gap-3 lg:gap-4">
+      <div
+        ref={scrollRef}
+        className={cn(
+          "hide-scrollbar overflow-y-hidden scroll-smooth",
+          showArrows ? "overflow-x-auto" : "overflow-x-visible",
+        )}
+      >
+        <div
+          className={cn(
+            "items-start px-1 py-2",
+            showArrows
+              ? "flex min-w-max justify-start gap-4 md:gap-5"
+              : "grid justify-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5",
+          )}
+        >
           {categories.map((category) => (
             <CategoryItem key={category.id} category={category} />
           ))}
@@ -44,7 +59,10 @@ export function CategoryCarousel({ categories }: { categories: Category[] }) {
         type="button"
         aria-label="Next categories"
         onClick={() => scrollCategories("right")}
-        className="absolute right-0 top-[78px] z-10 hidden h-9 w-9 translate-x-1/2 items-center justify-center rounded-full bg-teal-600 text-white shadow-md transition hover:bg-teal-700 md:inline-flex"
+        className={cn(
+          "absolute right-0 top-[86px] z-10 hidden h-10 w-10 translate-x-1/2 items-center justify-center rounded-full border border-[#12a8e6]/35 bg-[#12a8e6] text-white shadow-[0_18px_36px_rgba(8,113,207,0.24)] transition hover:bg-[#0871cf] md:inline-flex",
+          !showArrows && "md:hidden",
+        )}
       >
         <ChevronRight className="h-5 w-5" />
       </button>

@@ -103,26 +103,26 @@ export function ProductListingPage({
   };
 
   return (
-    <main className="bg-slate-50">
+    <main className="min-h-screen !bg-[#0d1114] text-slate-100" style={{ backgroundColor: "#0d1114" }}>
       <section className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-12">
         <div className="mb-8">
-          <nav className="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-500">
-            <Link href="/" className="hover:text-teal-700">
+          <nav className="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-400">
+            <Link href="/" className="hover:text-[#12a8e6]">
               Home
             </Link>
             <span>/</span>
-            <span className="text-slate-950">Shop</span>
+            <span className="text-white">Shop</span>
           </nav>
           <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-slate-950 md:text-5xl">
+              <h1 className="text-3xl font-bold tracking-tight text-white md:text-5xl">
                 {title}
               </h1>
-              <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
+              <p className="mt-3 max-w-2xl text-base leading-7 text-slate-300">
                 {description}
               </p>
             </div>
-            <div className="rounded-md border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-950">
+            <div className="rounded-md border border-white/10 !bg-[#111418] px-4 py-3 text-sm font-bold text-white">
               {products.length} Products
             </div>
           </div>
@@ -169,13 +169,13 @@ export function ProductListingPage({
         />
         <aside
           className={cn(
-            "absolute bottom-0 left-0 right-0 max-h-[88vh] overflow-y-auto rounded-t-lg bg-white p-4 shadow-2xl transition duration-300",
+            "absolute bottom-0 left-0 right-0 max-h-[88vh] overflow-y-auto rounded-t-lg bg-[#111418] p-4 text-slate-100 shadow-2xl transition duration-300",
             mobileFiltersOpen ? "translate-y-0" : "translate-y-full",
           )}
           aria-label="Mobile filters"
         >
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-slate-950">Filters</h2>
+            <h2 className="text-lg font-bold text-white">Filters</h2>
             <Button variant="ghost" size="icon" aria-label="Close filters" onClick={() => setMobileFiltersOpen(false)}>
               <X className="h-5 w-5" />
             </Button>

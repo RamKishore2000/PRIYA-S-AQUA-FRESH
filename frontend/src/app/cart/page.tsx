@@ -38,10 +38,10 @@ export default function CartPage() {
     <SitePage>
       <PageHeader title="Shopping Cart" description="Review your selected products before checkout." />
       <section className="mx-auto grid max-w-7xl gap-6 px-4 py-12 md:px-8 lg:grid-cols-[1fr_360px]">
-        <div className="rounded-lg border border-slate-200 bg-white shadow-sm">
-          <div className="border-b border-slate-200 p-5">
-            <h2 className="text-lg font-bold text-slate-950">Cart Items</h2>
-            <p className="mt-1 text-sm text-slate-500">{cartItems.length} product{cartItems.length === 1 ? "" : "s"} selected</p>
+        <div className="rounded-lg border border-white/10 bg-[#111418] shadow-sm">
+          <div className="border-b border-white/10 p-5">
+            <h2 className="text-lg font-bold text-white">Cart Items</h2>
+            <p className="mt-1 text-sm text-slate-300">{cartItems.length} product{cartItems.length === 1 ? "" : "s"} selected</p>
           </div>
 
           {cartItems.length === 0 ? (
@@ -54,20 +54,20 @@ export default function CartPage() {
               />
             </div>
           ) : (
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-white/10">
               {cartItems.map((item) => {
                 const displayPrice = getProductDisplayPrice(item.product, role).price;
                 return (
                   <article key={item.product.id} className="grid gap-4 p-5 sm:grid-cols-[112px_1fr_auto]">
-                    <Link href={`/products/${item.product.slug}`} className="relative h-28 w-28 overflow-hidden rounded-md bg-slate-50">
+                    <Link href={`/products/${item.product.slug}`} className="relative h-28 w-28 overflow-hidden rounded-md bg-white">
                       <Image src={item.product.image} alt={item.product.name} fill sizes="112px" className="object-contain p-2" unoptimized />
                     </Link>
                     <div className="min-w-0">
-                      <Link href={`/products/${item.product.slug}`} className="line-clamp-2 font-bold text-slate-950 hover:text-teal-700">
+                      <Link href={`/products/${item.product.slug}`} className="line-clamp-2 font-bold text-white hover:text-[#12a8e6]">
                         {item.product.name}
                       </Link>
-                      <p className="mt-1 text-sm font-semibold uppercase tracking-[0.14em] text-teal-700">{item.product.category}</p>
-                      <p className="mt-3 text-lg font-bold text-slate-950">{formatPrice(displayPrice)}</p>
+                      <p className="mt-1 text-sm font-semibold uppercase tracking-[0.14em] text-[#12a8e6]">{item.product.category}</p>
+                      <p className="mt-3 text-lg font-bold text-white">{formatPrice(displayPrice)}</p>
                       <div className="mt-4 flex flex-wrap items-center gap-3">
                         <QuantitySelector
                           quantity={item.quantity}
@@ -80,7 +80,7 @@ export default function CartPage() {
                         </button>
                       </div>
                     </div>
-                    <div className="font-bold text-slate-950 sm:text-right">
+                    <div className="font-bold text-white sm:text-right">
                       {formatPrice(displayPrice * item.quantity)}
                     </div>
                   </article>
@@ -90,19 +90,19 @@ export default function CartPage() {
           )}
         </div>
 
-        <aside className="h-fit rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-lg font-bold text-slate-950">Price Details</h2>
+        <aside className="h-fit rounded-lg border border-white/10 bg-[#111418] p-5 shadow-sm">
+          <h2 className="text-lg font-bold text-white">Price Details</h2>
           <div className="mt-5 space-y-3 text-sm">
-            <div className="flex justify-between text-slate-600">
+            <div className="flex justify-between text-slate-300">
               <span>Subtotal</span>
               <span>{formatPrice(subtotal)}</span>
             </div>
-            <div className="flex justify-between text-slate-600">
+            <div className="flex justify-between text-slate-300">
               <span>Shipping</span>
               <span>Free</span>
             </div>
-            <div className="border-t border-slate-200 pt-4">
-              <div className="flex justify-between text-lg font-bold text-slate-950">
+            <div className="border-t border-white/10 pt-4">
+              <div className="flex justify-between text-lg font-bold text-white">
                 <span>Total</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>

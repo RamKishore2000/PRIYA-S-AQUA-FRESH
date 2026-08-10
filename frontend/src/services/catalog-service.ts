@@ -1,4 +1,4 @@
-import type { Category, Product, Testimonial } from "@/types/product";
+import type { Banner, Category, Product, Testimonial } from "@/types/product";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
@@ -14,6 +14,19 @@ type ApiCategory = {
   slug: string;
   imageUrl: string | null;
   productsCount: number;
+};
+
+type ApiBanner = {
+  id: number;
+  title: string;
+  subtitle: string | null;
+  description: string | null;
+  imageUrl: string;
+  buttonText: string | null;
+  buttonLink: string | null;
+  themeColor: string | null;
+  glowColor: string | null;
+  sortOrder: number;
 };
 
 type ApiProduct = {
@@ -57,6 +70,11 @@ export async function getCategories() {
   return data.categories.map(mapCategory);
 }
 
+export async function getBanners() {
+  const data = await request<{ banners: ApiBanner[] }>("/api/banners");
+  return data.banners.map(mapBanner);
+}
+
 export async function getProducts(categorySlug?: string, searchTerm?: string) {
   const params = new URLSearchParams();
   if (categorySlug) params.set("category", categorySlug);
@@ -90,6 +108,21 @@ function mapCategory(category: ApiCategory): Category {
     productCount: category.productsCount,
     image: withApiUrl(category.imageUrl),
     accent: "bg-teal-50",
+  };
+}
+
+function mapBanner(banner: ApiBanner): Banner {
+  return {
+    id: String(banner.id),
+    title: banner.title,
+    subtitle: banner.subtitle || undefined,
+    description: banner.description || banner.subtitle || "Premium water purification solutions for homes and businesses.",
+    image: withApiUrl(banner.imageUrl),
+    buttonText: banner.buttonText || "Explore Range",
+    buttonLink: banner.buttonLink || "/products",
+    themeColor: banner.themeColor || "#2dd4bf",
+    glowColor: banner.glowColor || "rgba(45, 212, 191, 0.34)",
+    sortOrder: Number(banner.sortOrder || 0),
   };
 }
 

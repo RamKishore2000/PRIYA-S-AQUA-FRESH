@@ -10,6 +10,7 @@ const groups = [
   {
     title: "Catalog",
     items: [
+      { label: "Banners", href: "/banners", icon: "grid" },
       { label: "Categories", href: "/categories", icon: "categories" },
       { label: "Products", href: "/products", icon: "products" },
     ],

@@ -29,6 +29,19 @@ export type Category = {
   accent: string;
 };
 
+export type Banner = {
+  id: string;
+  title: string;
+  subtitle?: string;
+  description: string;
+  image: string;
+  buttonText: string;
+  buttonLink: string;
+  themeColor: string;
+  glowColor: string;
+  sortOrder: number;
+};
+
 export type Testimonial = {
   id: string;
   name: string;

@@ -13,7 +13,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const products = query ? await getProducts(undefined, query) : [];
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-[#0d1114] text-slate-100">
       <Header />
       <ProductListingPage
         products={products}

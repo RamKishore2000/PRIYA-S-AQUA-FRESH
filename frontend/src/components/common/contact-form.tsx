@@ -39,8 +39,8 @@ export function ContactForm() {
   };
 
   return (
-    <form onSubmit={submit} className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-6">
-      <h2 className="text-2xl font-bold text-slate-950">Send Message</h2>
+    <form onSubmit={submit} className="rounded-lg border border-white/10 bg-[#111418] p-5 shadow-sm md:p-6">
+      <h2 className="text-2xl font-bold text-white">Send Message</h2>
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         <Field label="Full Name" error={errors.name}><Input name="name" placeholder="Full Name" /></Field>
         <Field label="Phone Number" error={errors.phone}><Input name="phone" placeholder="Phone Number" /></Field>
@@ -50,7 +50,7 @@ export function ContactForm() {
           <textarea
             name="message"
             placeholder="Tell us how we can help you..."
-            className="min-h-[150px] w-full resize-y rounded-md border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+            className="min-h-[150px] w-full resize-y rounded-md border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#12a8e6] focus:ring-2 focus:ring-[#12a8e6]/20"
           />
         </Field>
       </div>
@@ -72,7 +72,7 @@ function Field({
 }) {
   return (
     <label className={`grid gap-1.5 ${className ?? ""}`}>
-      <span className="text-sm font-semibold text-slate-700">{label}</span>
+      <span className="text-sm font-semibold text-slate-200">{label}</span>
       {children}
       {error ? <span className="text-xs font-semibold text-rose-600">{error}</span> : null}
     </label>

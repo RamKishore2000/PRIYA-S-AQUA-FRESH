@@ -141,12 +141,12 @@ export function Footer() {
             Premium water purification solutions for homes, businesses, and everyday healthy living.
           </p>
           <div className="mt-5 space-y-2 text-sm text-slate-300">
-            <p className="flex items-center gap-2"><Phone className="h-4 w-4 text-teal-300" /> +919951078699</p>
-            <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-teal-300" /> priyasaquafreshsales@gmail.com</p>
-            <p className="flex items-center gap-2"><MapPin className="h-4 w-4 text-teal-300" /> India</p>
+            <p className="flex items-center gap-2"><Phone className="h-4 w-4 text-[#12a8e6]" /> +919951078699</p>
+            <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-[#12a8e6]" /> priyasaquafreshsales@gmail.com</p>
+            <p className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#12a8e6]" /> India</p>
           </div>
           <div className="mt-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-300">Follow Us</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#12a8e6]">Follow Us</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {socialLinks.map((social) => (
                 <Link
@@ -155,7 +155,7 @@ export function Footer() {
                   aria-label={social.label}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex h-10 w-10 items-center justify-center rounded-md border border-white/10 bg-white text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-300 hover:bg-white hover:shadow-md"
+                  className="flex h-10 w-10 items-center justify-center rounded-md border border-white/10 bg-white text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:border-[#12a8e6] hover:bg-white hover:shadow-md"
                 >
                   <social.icon className={`h-5 w-5 ${social.colorClass}`} />
                 </Link>
@@ -166,10 +166,10 @@ export function Footer() {
         <div className="grid gap-8 sm:grid-cols-3">
           {footerColumns.map((column) => (
             <div key={column.title}>
-              <h3 className="text-sm font-semibold tracking-[0.16em] text-teal-300">{column.title}</h3>
+              <h3 className="text-sm font-semibold tracking-[0.16em] text-[#12a8e6]">{column.title}</h3>
               <div className="mt-4 grid gap-3">
                 {column.links.map((link) => (
-                  <Link key={link.href} href={link.href} className="text-sm text-slate-300 hover:text-white">{link.label}</Link>
+                  <Link key={link.href} href={link.href} className="text-sm text-slate-300 hover:text-[#12a8e6]">{link.label}</Link>
                 ))}
               </div>
             </div>

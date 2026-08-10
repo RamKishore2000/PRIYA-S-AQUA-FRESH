@@ -15,10 +15,10 @@ export default function ServicesPage() {
       />
       <section className="mx-auto max-w-5xl px-4 py-12 md:px-8">
         <div className="mb-10">
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-teal-600">What we support</p>
+          <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#12a8e6]">What we support</p>
           <div className="mt-4 flex flex-wrap gap-3">
             {services.map((service) => (
-              <span key={service} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700">
+              <span key={service} className="rounded-md border border-white/10 bg-[#111418] px-3 py-2 text-sm font-semibold text-slate-200">
                 {service}
               </span>
             ))}

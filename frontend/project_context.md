@@ -112,6 +112,9 @@
 - Registration password validation and password eye toggles were updated without running build, lint, or dev server.
 - WhatsApp product share UI was added without running build, lint, or dev server.
 - Best Selling Products was changed from horizontal carousel mode to a responsive grid to remove the section scrollbar.
+- Homepage hero now reads active admin-managed banners from `/api/banners` first. If fewer than three active banners exist, the hero fills the remaining `<` animation slots from the existing API category image mapping so the banner stays stable while banners are added one by one.
+- Backend banner management is implemented with the existing disk/WebP upload flow: uploads use `/api/uploads/images` with folder `banners`, data is stored in the `banners` table, and public/admin endpoints live under `/api/banners`.
+- Admin includes a `Banners` section where banner title, subtitle, description, image, button text/link, theme color, glow color, sort order, and active/inactive status can be added, edited, deleted, and toggled.
 - The GSAP hero category showcase was reverted back to the static banner version per user request.
 - Top Categories carousel lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
 - Frontend cart/wishlist/checkout/order history lint passed with `npm.cmd run lint`; ESLint still reports one unrelated pre-existing warning in `src/components/common/animated-logo-showcase.tsx`.
@@ -145,7 +148,64 @@
 - Separate customer order list/detail pages with product images passed targeted frontend ESLint; backend order syntax checks passed.
 - Cart page `/cart` is now bound to the shared API-backed cart state with product images, quantity controls, remove action, subtotal, checkout, and login-required state.
 - Checkout summary displays product image, name, quantity, and line total for each cart item. Targeted frontend ESLint passed.
+- Homepage visual theme was changed to a near-black/deep-teal background system with dark section treatments for hero, categories, product sections, Why We Are, trust features, testimonials, logo showcase, and newsletter while leaving API flows unchanged. Targeted frontend ESLint passed with the existing `animated-logo-showcase.tsx` hook warning and CSS ignore warning.
+- Frontend normal pages now use the shared dark background system (`#0d1114`) through the root body, `SitePage`, and `PageHeader`. Product listing/search/category/contact/services/cart/checkout/order list panels were adjusted to dark surfaces while preserving white form/input fields where useful for readability. Admin is unchanged.
+- Shop product listing now uses the same dark background across the route wrapper, listing canvas, toolbar, product count chip, desktop/mobile filters, and price range inputs so the products area no longer renders as a white middle section.
+- Shop product listing ProductCard usage was restored to hover-only surface mode, so product cards stay transparent by default and only show the dark card color on mouse hover.
+- Product detail page text colors were corrected for the shared dark background: breadcrumb, title, category/SKU row, delivery notes, product details, price display, and accent icons now use readable white/slate/brand-blue colors.
+- About page text and section surfaces were corrected for the shared dark background: hero copy, trust cards, Who We Are, Why We Are rating cards, Vision, Mission, and Leadership now use readable dark-theme colors while retaining the existing animations and layout.
+- Homepage `Our Brands & Solutions` logo showcase was changed from a heavy black section to a lighter charcoal/blue-black surface with stronger logo opacity and subtle logo drop shadows while keeping the no-card logo layout and existing GSAP motion.
+- Homepage overlay header now becomes a fixed compact dark sticky header after scrolling, so the header remains visible while moving down the home page.
+- Product cards no longer use an outer rounded card radius, and product discount badges are circular using the Priya's/logo blue color.
+- Homepage now includes a `Frequently Asked Questions` section above the footer with project-specific support questions for purifier selection, installation, dealer pricing, spare parts, and contact support.
+- Homepage `Why We Are`, `What Our Customers Say`, and `Why Choose Priya's Aqua Fresh?` sections now use the Priya's/logo blue (`#12a8e6`) for section accents, rating values, icons, carousel dots/buttons, and trust-feature hover states.
+- Homepage category section no longer uses changing hero/banner accent colors; category labels, glows, hover lines, More Categories button, and carousel arrows now use the fixed Priya's/logo blue (`#12a8e6`).
+- Testimonial cards inside `What Our Customers Say` now use the logo blue for the top accent line, avatar fallback, verified icon, product label, and hover border.
+- Homepage FAQ section now uses a controlled accordion, so opening one FAQ closes the previously open FAQ.
+- Footer accents now use the fixed Priya's/logo blue (`#12a8e6`) for contact icons, Follow Us label, column headings, social hover borders, and footer link hover states.
+- Header logo now uses a cropped transparent wide asset at `public/logo-header.png` generated from `logo1-removebg-preview.png`, with stable wide sizing for both home overlay and compact sticky/normal header states.
+- Frontend header was updated to match the near-black/deep-teal visual theme, including main header, desktop nav row, category dropdown, account dropdown, mobile search panel, help/mail actions, and search button colors. Header/nav/search targeted ESLint passed.
+- Header logo now uses the transparent `priyas-aquafresh-logo.svg` asset; the white SVG background rectangle was removed so the logo sits plainly on the dark header.
+- Homepage/header color system was changed from aqua/teal accents to a black-neutral palette: `#08090b` base, `#0b0d10` header, `#111418` lifted sections/dropdowns, white/slate text, and neutral white/gray interactive accents. All homepage/header `teal`, `cyan`, and `emerald` utility classes were removed from the affected scope. Targeted frontend ESLint passed with the existing `animated-logo-showcase.tsx` hook warning.
+- Header was restored to the old single-row layout while keeping the black-neutral palette: announcement strip, logo left, desktop nav in the main row, icon-only search/account/wishlist/cart actions, and search card below the sticky header. The pharmacy-style second nav row, large desktop search bar, and All Categories header button were removed. Targeted header ESLint passed.
+- Header announcement strip was removed, leaving only the single sticky main header row with logo, nav, and icon actions. Targeted header ESLint passed.
+- Header search now replaces the desktop nav links in the single header row when opened; search suggestions are hidden until the user types a query. Targeted header/search ESLint passed.
+- Homepage hero was redesigned from the previous banner/video direction into a premium black product-showcase hero inspired by the user's reference: left-side copy/CTAs, right-side tilted product display using `/images/banners/hero-water-purifier.png`, grid floor, heavy realistic frame/platform shadows, and neutral black/white styling.
+- Desktop header navigation now uses a centered rounded pill nav style on the dark single-row header, while keeping logo, search, account, wishlist, and cart flows unchanged.
+- Homepage now uses the header in overlay mode so the header sits on top of the hero instead of as a separate block. The hero was simplified to short premium copy on the left and a single floating purifier image on the right with layered CSS shadow/glow and no card/frame. Desktop nav links are plain text with no active background, and the account/login control is a green rounded CTA button.
+- Homepage hero/background color was softened from heavy black to a lighter charcoal/blue-black gradient so the page remains dark but does not look flat black.
+- Desktop overlay nav uses one shared rounded border around the whole nav group, with plain text links inside and no filled active pill.
+- Header logo SVG background cover was restored with a white rounded rectangle so the logo is readable on the dark overlay header.
+- Homepage hero right-side product shadow/glow layers were removed, the product image was darkened with CSS filtering, and the account/login CTA stays green for both logged-in and logged-out states.
+- Header action order is search, wishlist, cart, then the green account/login CTA at the far right.
+- Homepage hero right side now uses the user-provided dark promo image copied from `public/images (1).jpg`, displayed as a clean square visual without an added copper/orange border.
+- To avoid browser/Next image cache showing the older banner asset, the homepage hero now points to the unique file `/images/banners/home-hero-pregnant-water-purifier.jpg`, copied from `public/images (1).jpg`.
+- Homepage hero right side was changed to the user-provided `public/images (2).jpg`; a real transparent-background PNG was generated at `/images/banners/home-hero-black-purifier-transparent.png` using edge-connected light background removal, and the hero uses that PNG without blend styling or wrapper background/border.
+- Homepage hero right side now uses a client-side 3-image rotating showcase with no arrow buttons: the active image is large in the center-left, the upcoming image is small at the top-right, and the previous image is small at the bottom-right, forming the requested angled `<` layout.
+- Hero showcase rotation now keeps all three image elements mounted and animates them between `center`, `top-right`, and `bottom-right` slots using transform/opacity/filter transitions, so images visibly travel along the requested `<` path instead of simply swapping.
+- Homepage hero was redesigned as a six-item premium banner only, with no header/API/other-section changes: Alkaline Water Purifiers, RO Water Purifiers, Commercial Water Purifiers, Electronics, Water Softners, and Spare Parts. The active center image is largest, upcoming image sits smaller at top-right, previous/finished image sits smallest at bottom-right, text/CTA/background glow change with the active item, and autoplay loops about every 4.6 seconds.
+- Full frontend lint was run after the six-item hero redesign. It passed with 0 errors and one unrelated pre-existing `react-hooks/exhaustive-deps` warning in `src/components/common/animated-logo-showcase.tsx`, which was left untouched because the requested scope was hero-only.
+- Homepage hero animation timing was refined hero-only: GSAP `delayedCall` controls a slower ~5.2s autoplay cycle, image slot transitions last ~1.65s, the bottom/finished image exits outward, the top/upcoming image grows into center, and the center image shrinks down to the smallest finished position. Full `npm run lint` passed with 0 errors and the same unrelated `animated-logo-showcase.tsx` warning.
+- Homepage hero right-side rotating visuals now use the six category image assets from `public/images/categories` instead of the previous mock/product hero images.
+- Homepage hero now receives backend/API categories from `src/app/page.tsx` via `getCategories()` and maps the six banner items to category API images (`category.image`) by slug/name, so the right-side hero visuals use admin/API category images instead of static category SVGs or mock hero images.
+- Homepage hero API category images render through `next/image` with `unoptimized` only for remote `http(s)` URLs, avoiding Next optimizer host/path errors while preserving local image optimization for fallback/local assets.
+- Banner API/admin/homepage binding validation passed without build/dev server: frontend `npm.cmd run lint` passed with the same unrelated pre-existing `animated-logo-showcase.tsx` hook warning, admin `npm.cmd run lint` passed, and backend banner route/controller/service/repository/validator plus `src/app.js` syntax checks passed.
+- Existing databases need `npm run init-db` from `backend` before using admin banners if the local `banners` table does not yet have `description`, `theme_color`, and `glow_color` columns.
+- Frontend dark-theme normal-page pass validation: full `npm.cmd run lint` passed with 0 errors and the same unrelated pre-existing `animated-logo-showcase.tsx` hook warning. No build/dev server was run.
+- Shop product listing dark-background correction passed targeted ESLint for the products route, product listing page, toolbar, filters, price range filter, and product card. No build or dev server was run.
+- Shop ProductCard hover-only surface correction passed targeted ESLint for `product-listing-page.tsx` and `product-card.tsx`. No build or dev server was run.
+- Product detail dark-theme text correction passed targeted ESLint for `src/app/products/[slug]/page.tsx`, `price-display.tsx`, and `product-gallery.tsx`. No build or dev server was run.
+- About page dark-theme text correction passed targeted ESLint for `src/app/about/page.tsx`; `globals.css` was checked by command but ignored by ESLint config. No build or dev server was run.
+- `Our Brands & Solutions` visual update passed targeted ESLint with 0 errors and the existing unrelated `react-hooks/exhaustive-deps` warning in `animated-logo-showcase.tsx`. No build or dev server was run.
+- Homepage sticky-header scroll behavior passed targeted ESLint for `src/components/layout/header.tsx`. No build or dev server was run.
+- Product card radius/discount badge update passed targeted ESLint for `src/components/product/product-card.tsx`. No build or dev server was run.
+- Homepage FAQ section addition passed targeted ESLint for `src/app/page.tsx` and `src/components/home/faqs-section.tsx`. No build or dev server was run.
+- Homepage brand-color accent pass for Why We Are, Testimonials, Trust Features, and shared dark SectionHeader passed targeted ESLint. No build or dev server was run.
+- Homepage category fixed logo-color accent pass passed targeted ESLint for top categories, category carousel, and category item components. No build or dev server was run.
+- Testimonial card logo-color accent update passed targeted ESLint for `src/components/home/testimonial-card.tsx`. No build or dev server was run.
+- Homepage FAQ accordion behavior passed targeted ESLint for `src/components/home/faqs-section.tsx`. No build or dev server was run.
+- Footer logo-color accent update passed targeted ESLint for `src/components/layout/footer.tsx`. No build or dev server was run.
+- Header cropped logo fit update passed targeted ESLint for `src/components/layout/header.tsx`; generated `public/logo-header.png` is 486x191. No build or dev server was run.
 
 ## Explicit Non-Goals
 - No Razorpay/payment integration.
-- No admin panel changes.

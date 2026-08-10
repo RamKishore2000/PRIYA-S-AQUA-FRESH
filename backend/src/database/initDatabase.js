@@ -19,6 +19,9 @@ async function initDatabase() {
     await addColumnIfMissing(connection, "testimonials", "role", "VARCHAR(80) NULL AFTER customer_name");
     await addColumnIfMissing(connection, "testimonials", "image_url", "VARCHAR(500) NULL AFTER message");
     await addColumnIfMissing(connection, "testimonials", "sort_order", "INT UNSIGNED NOT NULL DEFAULT 0 AFTER image_url");
+    await addColumnIfMissing(connection, "banners", "description", "TEXT NULL AFTER subtitle");
+    await addColumnIfMissing(connection, "banners", "theme_color", "VARCHAR(40) NULL AFTER button_url");
+    await addColumnIfMissing(connection, "banners", "glow_color", "VARCHAR(80) NULL AFTER theme_color");
     await normalizeTestimonialsTable(connection);
 
     console.log(`Database initialized: ${env.db.database}`);

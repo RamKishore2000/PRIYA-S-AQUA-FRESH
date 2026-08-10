@@ -27,13 +27,13 @@ export function PriceDisplay({ product, price, originalPrice }: PriceDisplayProp
 
   return (
     <div className="flex flex-wrap items-baseline gap-2">
-      <span className="text-lg font-bold text-slate-950">{formatPrice(display.price)}</span>
+      <span className="text-lg font-bold text-white">{formatPrice(display.price)}</span>
       {display.originalPrice ? (
         <span className="text-sm font-medium text-slate-400 line-through">
           {formatPrice(display.originalPrice)}
         </span>
       ) : null}
-      {product && role === "DEALER" ? <span className="text-xs font-bold text-teal-700">Dealer Price</span> : null}
+      {product && role === "DEALER" ? <span className="text-xs font-bold text-[#12a8e6]">Dealer Price</span> : null}
     </div>
   );
 }

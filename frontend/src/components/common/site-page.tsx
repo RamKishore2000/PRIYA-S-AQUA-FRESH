@@ -4,7 +4,7 @@ import { Header } from "@/components/layout/header";
 
 export function SitePage({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-[#0d1114] text-slate-100">
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />

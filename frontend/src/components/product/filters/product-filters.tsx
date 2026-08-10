@@ -53,9 +53,9 @@ export function ProductFilters({
   };
 
   return (
-    <aside className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+    <aside className="rounded-lg border border-white/10 bg-[#111418] p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-slate-950">Filters</h2>
+        <h2 className="text-lg font-bold text-white">Filters</h2>
         <Button type="button" variant="ghost" size="sm" onClick={onClear}>
           Reset
         </Button>
@@ -69,8 +69,8 @@ export function ProductFilters({
             className={cn(
               "flex items-center justify-between rounded-md px-3 py-2 text-left text-sm font-semibold transition",
               filters.categories.length === 0
-                ? "bg-teal-50 text-teal-700"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-950",
+                ? "bg-[#12a8e6]/15 text-[#12a8e6]"
+                : "text-slate-300 hover:bg-white/[0.06] hover:text-white",
             )}
           >
             All Products <span>{categories.reduce((total, item) => total + item.count, 0)}</span>
@@ -83,8 +83,8 @@ export function ProductFilters({
               className={cn(
                 "flex items-center justify-between rounded-md px-3 py-2 text-left text-sm font-semibold transition",
                 filters.categories.includes(category.value)
-                  ? "bg-teal-50 text-teal-700"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-950",
+                  ? "bg-[#12a8e6]/15 text-[#12a8e6]"
+                  : "text-slate-300 hover:bg-white/[0.06] hover:text-white",
               )}
             >
               {category.label} <span>{category.count}</span>
@@ -105,7 +105,7 @@ export function ProductFilters({
       <FilterSection title="Availability">
         <div className="grid gap-3">
           {availabilityOptions.map((option) => (
-            <label key={option.value} className="flex cursor-pointer items-center gap-3 text-sm font-semibold text-slate-700">
+            <label key={option.value} className="flex cursor-pointer items-center gap-3 text-sm font-semibold text-slate-300">
               <input
                 type="checkbox"
                 checked={filters.availability.includes(option.value)}
@@ -128,8 +128,8 @@ export function ProductFilters({
               className={cn(
                 "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold transition",
                 filters.rating === rating
-                  ? "bg-teal-50 text-teal-700"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-950",
+                  ? "bg-[#12a8e6]/15 text-[#12a8e6]"
+                  : "text-slate-300 hover:bg-white/[0.06] hover:text-white",
               )}
             >
               <span className="flex">
@@ -158,8 +158,8 @@ export function ProductFilters({
 
 function FilterSection({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="mt-5 border-t border-slate-200 pt-5">
-      <h3 className="mb-3 text-sm font-bold uppercase tracking-[0.14em] text-slate-500">{title}</h3>
+    <section className="mt-5 border-t border-white/10 pt-5">
+      <h3 className="mb-3 text-sm font-bold uppercase tracking-[0.14em] text-slate-400">{title}</h3>
       {children}
     </section>
   );

@@ -20,10 +20,10 @@ export function Newsletter() {
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
-      <div className="grid items-center gap-6 rounded-lg border border-teal-100 bg-teal-50 p-6 md:grid-cols-[1fr_auto] md:p-8">
+      <div className="grid items-center gap-6 rounded-lg border border-white/15 bg-white/[0.07] p-6 shadow-sm backdrop-blur md:grid-cols-[1fr_auto] md:p-8">
         <div>
-          <h2 className="text-2xl font-bold text-slate-950 md:text-3xl">Stay Updated</h2>
-          <p className="mt-2 text-slate-600">Get product updates, offers and water-care tips directly in your inbox.</p>
+          <h2 className="text-2xl font-bold text-white md:text-3xl">Stay Updated</h2>
+          <p className="mt-2 text-slate-300">Get product updates, offers and water-care tips directly in your inbox.</p>
         </div>
         <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3 sm:w-[420px] sm:flex-row">
           <Input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Enter your email" aria-label="Email address" />

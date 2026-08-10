@@ -168,11 +168,11 @@ export default function CheckoutPage() {
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
       <PageHeader title="Checkout" description="Enter delivery details and complete your payment securely." />
       <form onSubmit={submitOrder} className="mx-auto grid max-w-7xl gap-6 px-4 py-12 md:px-8 lg:grid-cols-[1fr_380px]">
-        <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="rounded-lg border border-white/10 bg-[#111418] p-5 shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg font-bold text-slate-950">Delivery Address</h2>
-              <p className="mt-1 text-sm text-slate-500">Select a saved address or add a new delivery address.</p>
+              <h2 className="text-lg font-bold text-white">Delivery Address</h2>
+              <p className="mt-1 text-sm text-slate-300">Select a saved address or add a new delivery address.</p>
             </div>
             <Button type="button" variant="secondary" onClick={() => setAddressFormOpen((open) => !open)}>
               {addressFormOpen ? "Close Form" : "Add Address"}
@@ -181,9 +181,9 @@ export default function CheckoutPage() {
 
           <div className="mt-5 space-y-3">
             {addressLoading ? (
-              <p className="rounded-md border border-dashed border-slate-200 p-4 text-sm text-slate-500">Loading saved addresses...</p>
+              <p className="rounded-md border border-dashed border-white/15 p-4 text-sm text-slate-300">Loading saved addresses...</p>
             ) : addresses.length === 0 ? (
-              <p className="rounded-md border border-dashed border-slate-200 p-4 text-sm text-slate-500">No saved address found. Add one address to continue checkout.</p>
+              <p className="rounded-md border border-dashed border-white/15 p-4 text-sm text-slate-300">No saved address found. Add one address to continue checkout.</p>
             ) : (
               addresses.map((address) => {
                 const active = selectedAddressId === address.id;
@@ -191,7 +191,7 @@ export default function CheckoutPage() {
                   <label
                     key={address.id}
                     className={`block cursor-pointer rounded-lg border p-4 transition ${
-                      active ? "border-teal-500 bg-teal-50/70 shadow-sm" : "border-slate-200 bg-white hover:border-teal-200"
+                      active ? "border-[#12a8e6] bg-[#12a8e6]/10 shadow-sm" : "border-white/10 bg-[#0d1114] hover:border-[#12a8e6]/40"
                     }`}
                   >
                     <div className="flex items-start gap-3">
@@ -204,12 +204,12 @@ export default function CheckoutPage() {
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-bold text-slate-950">{address.fullName}</span>
-                          <span className="text-sm font-semibold text-slate-600">{address.mobile}</span>
+                          <span className="font-bold text-white">{address.fullName}</span>
+                          <span className="text-sm font-semibold text-slate-300">{address.mobile}</span>
                           {address.isDefault ? <span className="rounded bg-teal-600 px-2 py-0.5 text-xs font-bold text-white">Default</span> : null}
                           {active ? <span className="rounded bg-slate-950 px-2 py-0.5 text-xs font-bold text-white">Selected</span> : null}
                         </div>
-                        <p className="mt-2 text-sm leading-6 text-slate-600">
+                        <p className="mt-2 text-sm leading-6 text-slate-300">
                           {address.addressLine1}
                           {address.addressLine2 ? `, ${address.addressLine2}` : ""}, {address.city}, {address.state} - {address.pincode}
                           {address.landmark ? `, Landmark: ${address.landmark}` : ""}
@@ -223,8 +223,8 @@ export default function CheckoutPage() {
           </div>
 
           {addressFormOpen ? (
-            <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
-              <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-slate-700">Add New Address</h3>
+            <div className="mt-6 rounded-lg border border-white/10 bg-[#0d1114] p-4">
+              <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-slate-200">Add New Address</h3>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 <input className={inputClass} placeholder="Full name" value={form.fullName} onChange={(event) => updateField("fullName", event.target.value)} />
                 <input className={inputClass} placeholder="Mobile number" value={form.mobile} onChange={(event) => updateField("mobile", event.target.value)} />
@@ -235,7 +235,7 @@ export default function CheckoutPage() {
                 <input className={inputClass} placeholder="Pincode" value={form.pincode} onChange={(event) => updateField("pincode", event.target.value)} />
                 <input className={inputClass} placeholder="Landmark optional" value={form.landmark} onChange={(event) => updateField("landmark", event.target.value)} />
               </div>
-              <label className="mt-4 flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <label className="mt-4 flex items-center gap-2 text-sm font-semibold text-slate-200">
                 <input type="checkbox" className="h-4 w-4 accent-teal-600" checked={form.isDefault} onChange={(event) => updateField("isDefault", event.target.checked)} />
                 Set as default address
               </label>
@@ -251,28 +251,28 @@ export default function CheckoutPage() {
           ) : null}
         </section>
 
-        <aside className="h-fit rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-lg font-bold text-slate-950">Order Summary</h2>
+        <aside className="h-fit rounded-lg border border-white/10 bg-[#111418] p-5 shadow-sm">
+          <h2 className="text-lg font-bold text-white">Order Summary</h2>
           <div className="mt-4 space-y-3">
             {cartItems.length === 0 ? (
-              <p className="text-sm text-slate-500">Your cart is empty.</p>
+              <p className="text-sm text-slate-300">Your cart is empty.</p>
             ) : (
               cartItems.map((item) => (
-                <div key={item.product.id} className="grid grid-cols-[56px_1fr_auto] gap-3 rounded-md border border-slate-100 p-2 text-sm">
-                  <div className="relative h-14 w-14 overflow-hidden rounded bg-slate-50">
+                <div key={item.product.id} className="grid grid-cols-[56px_1fr_auto] gap-3 rounded-md border border-white/10 p-2 text-sm">
+                  <div className="relative h-14 w-14 overflow-hidden rounded bg-white">
                     <Image src={item.product.image} alt={item.product.name} fill sizes="56px" className="object-contain p-1.5" unoptimized />
                   </div>
                   <div className="min-w-0">
-                    <p className="line-clamp-2 font-semibold leading-5 text-slate-800">{item.product.name}</p>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">Qty: {item.quantity}</p>
+                    <p className="line-clamp-2 font-semibold leading-5 text-white">{item.product.name}</p>
+                    <p className="mt-1 text-xs font-semibold text-slate-300">Qty: {item.quantity}</p>
                   </div>
-                  <span className="font-semibold text-slate-950">{formatPrice(getProductDisplayPrice(item.product, role).price * item.quantity)}</span>
+                  <span className="font-semibold text-white">{formatPrice(getProductDisplayPrice(item.product, role).price * item.quantity)}</span>
                 </div>
               ))
             )}
           </div>
-          <div className="mt-5 border-t border-slate-200 pt-4">
-            <div className="flex justify-between text-sm text-slate-600">
+          <div className="mt-5 border-t border-white/10 pt-4">
+            <div className="flex justify-between text-sm text-slate-300">
               <span>Subtotal</span>
               <span>{formatPrice(subtotal)}</span>
             </div>
@@ -291,7 +291,7 @@ export default function CheckoutPage() {
                 <span>-{formatPrice(appliedCoupon.discountAmount)}</span>
               </div>
             ) : null}
-            <div className="mt-4 flex justify-between border-t border-slate-200 pt-4 font-bold">
+            <div className="mt-4 flex justify-between border-t border-white/10 pt-4 font-bold text-white">
               <span>Total</span>
               <span>{formatPrice(payableTotal)}</span>
             </div>

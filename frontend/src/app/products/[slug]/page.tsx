@@ -19,13 +19,13 @@ export default async function ProductDetailPage({ params }: PageProps<"/products
     <SitePage>
       <section className="mx-auto max-w-7xl px-4 py-8 md:px-8">
         <nav className="mb-6 flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-400">
-          <Link href="/" className="hover:text-teal-700">Home</Link>
+          <Link href="/" className="hover:text-[#12a8e6]">Home</Link>
           <span>/</span>
-          <Link href="/products" className="hover:text-teal-700">Products</Link>
+          <Link href="/products" className="hover:text-[#12a8e6]">Products</Link>
           <span>/</span>
-          <span className="text-slate-600">{product.category}</span>
+          <span className="text-slate-300">{product.category}</span>
           <span>/</span>
-          <span className="max-w-[280px] truncate text-slate-900">{product.name}</span>
+          <span className="max-w-[280px] truncate text-white">{product.name}</span>
         </nav>
 
         <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
@@ -33,7 +33,7 @@ export default async function ProductDetailPage({ params }: PageProps<"/products
 
           <div className="lg:sticky lg:top-24">
             <div>
-              <h1 className="text-2xl font-semibold leading-tight text-slate-950 md:text-3xl">{product.name}</h1>
+              <h1 className="text-2xl font-semibold leading-tight text-white md:text-3xl">{product.name}</h1>
               <div className="mt-2">
                 <RatingStars rating={product.rating} reviewCount={product.reviewCount} />
               </div>
@@ -44,12 +44,12 @@ export default async function ProductDetailPage({ params }: PageProps<"/products
               <WishlistButton product={product} />
             </div>
 
-            <div className="mt-7 border-t border-slate-200 pt-5">
-              <button type="button" className="flex w-full items-center justify-between text-sm font-semibold text-slate-700">
+            <div className="mt-7 border-t border-white/10 pt-5">
+              <button type="button" className="flex w-full items-center justify-between text-sm font-semibold text-slate-200">
                 <span>Category: {product.category}</span>
                 <ChevronDown className="h-4 w-4" />
               </button>
-              {product.sku ? <p className="mt-3 text-sm font-semibold text-slate-500">Product Code: {product.sku}</p> : null}
+              {product.sku ? <p className="mt-3 text-sm font-semibold text-slate-400">Product Code: {product.sku}</p> : null}
             </div>
 
             <div className="mt-6 flex w-full items-center gap-4">
@@ -58,23 +58,23 @@ export default async function ProductDetailPage({ params }: PageProps<"/products
             </div>
 
             <div className="mt-4 grid gap-3 text-sm">
-              <div className="flex items-start gap-3 rounded-md bg-slate-50 p-3 text-slate-600">
-                <Truck className="mt-0.5 h-4 w-4 text-teal-700" />
+              <div className="flex items-start gap-3 rounded-md border border-white/10 bg-[#111418] p-3 text-slate-300">
+                <Truck className="mt-0.5 h-4 w-4 text-[#12a8e6]" />
                 <p>Enjoy free delivery and free returns on selected orders.</p>
               </div>
-              <div className="flex items-start gap-3 rounded-md bg-slate-50 p-3 text-slate-600">
-                <MapPin className="mt-0.5 h-4 w-4 text-teal-700" />
+              <div className="flex items-start gap-3 rounded-md border border-white/10 bg-[#111418] p-3 text-slate-300">
+                <MapPin className="mt-0.5 h-4 w-4 text-[#12a8e6]" />
                 <p>Installation support available for eligible purifier models.</p>
               </div>
-              <div className="flex items-start gap-3 rounded-md bg-slate-50 p-3 text-slate-600">
-                <Heart className="mt-0.5 h-4 w-4 text-teal-700" />
+              <div className="flex items-start gap-3 rounded-md border border-white/10 bg-[#111418] p-3 text-slate-300">
+                <Heart className="mt-0.5 h-4 w-4 text-[#12a8e6]" />
                 <p>Genuine Priya&apos;s Aqua Fresh products and spare parts.</p>
               </div>
             </div>
 
-            <div className="mt-5 border-t border-slate-200 pt-5">
-              <h2 className="text-sm font-bold text-slate-950">Product Details</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{product.description}</p>
+            <div className="mt-5 border-t border-white/10 pt-5">
+              <h2 className="text-sm font-bold text-white">Product Details</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-300">{product.description}</p>
             </div>
           </div>
         </div>

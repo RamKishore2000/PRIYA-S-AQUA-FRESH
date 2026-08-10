@@ -38,11 +38,11 @@ export default function OrdersPage() {
     return (
       <SitePage>
         <section className="mx-auto max-w-3xl px-4 py-16 text-center md:px-8">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-teal-50 text-teal-700">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#12a8e6]/15 text-[#12a8e6]">
             <User className="h-6 w-6" />
           </div>
-          <h1 className="mt-5 text-3xl font-bold text-slate-950">Login Required</h1>
-          <p className="mt-3 text-slate-600">Please login from the header account icon to view your orders.</p>
+          <h1 className="mt-5 text-3xl font-bold text-white">Login Required</h1>
+          <p className="mt-3 text-slate-300">Please login from the header account icon to view your orders.</p>
           <LinkButton href="/" className="mt-6">Back to Home</LinkButton>
         </section>
       </SitePage>
@@ -53,12 +53,12 @@ export default function OrdersPage() {
     <SitePage>
       <PageHeader eyebrow="Account" title="My Orders" description="Track confirmed orders, payment status, and product details." />
       <section className="mx-auto max-w-6xl px-4 py-12 md:px-8">
-        {loading ? <p className="rounded-lg border border-slate-200 bg-white p-5 font-semibold text-slate-600">Loading orders...</p> : null}
+        {loading ? <p className="rounded-lg border border-white/10 bg-[#111418] p-5 font-semibold text-slate-300">Loading orders...</p> : null}
         {!loading && visibleOrders.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+          <div className="rounded-lg border border-dashed border-white/15 bg-[#111418] p-8 text-center">
             <Package className="mx-auto h-10 w-10 text-slate-400" />
-            <p className="mt-4 font-semibold text-slate-700">No confirmed orders found yet.</p>
-            <p className="mt-1 text-sm text-slate-500">After payment confirmation, your orders will appear here.</p>
+            <p className="mt-4 font-semibold text-white">No confirmed orders found yet.</p>
+            <p className="mt-1 text-sm text-slate-300">After payment confirmation, your orders will appear here.</p>
             <LinkButton href="/products" className="mt-5">Shop Products</LinkButton>
           </div>
         ) : null}
@@ -66,22 +66,22 @@ export default function OrdersPage() {
           {visibleOrders.map((order) => {
             const firstItem = order.items[0];
             return (
-              <Link key={order.id} href={`/profile/orders/${order.id}`} className="grid gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition hover:border-teal-300 hover:shadow-md sm:grid-cols-[96px_1fr_auto]">
-                <div className="relative h-24 w-24 overflow-hidden rounded-md bg-slate-50">
+              <Link key={order.id} href={`/profile/orders/${order.id}`} className="grid gap-4 rounded-lg border border-white/10 bg-[#111418] p-4 shadow-sm transition hover:border-[#12a8e6]/50 hover:bg-[#151a1f] sm:grid-cols-[96px_1fr_auto]">
+                <div className="relative h-24 w-24 overflow-hidden rounded-md bg-white">
                   <Image src={orderImageUrl(firstItem?.imageUrl)} alt={firstItem?.productName || order.orderNumber} fill className="object-contain p-2" unoptimized />
                 </div>
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-bold text-slate-950">{order.orderNumber}</p>
+                    <p className="font-bold text-white">{order.orderNumber}</p>
                     <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${statusClass(order.paymentStatus)}`}>{order.paymentStatus}</span>
                     <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${statusClass(order.orderStatus)}`}>{order.orderStatus}</span>
                   </div>
-                  <p className="mt-2 line-clamp-1 font-semibold text-slate-700">{firstItem?.productName || "Order items"}</p>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-2 line-clamp-1 font-semibold text-slate-200">{firstItem?.productName || "Order items"}</p>
+                  <p className="mt-1 text-sm text-slate-400">
                     {order.items.length} item{order.items.length === 1 ? "" : "s"} - {new Date(order.createdAt).toLocaleDateString("en-IN")}
                   </p>
                 </div>
-                <div className="flex items-center font-bold text-slate-950 sm:justify-end">{formatPrice(order.totalAmount)}</div>
+                <div className="flex items-center font-bold text-white sm:justify-end">{formatPrice(order.totalAmount)}</div>
               </Link>
             );
           })}

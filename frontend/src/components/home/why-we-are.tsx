@@ -104,11 +104,11 @@ export function WhyWeAre() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="bg-slate-50 px-4 py-12 md:px-8 md:py-16">
+    <section ref={sectionRef} className="bg-[#111418] px-4 py-12 md:px-8 md:py-16">
       <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
         <div data-home-why-image className="home-why-image">
           <div className="about-no1-badge" aria-label="India number one purifier badge">
-            <span className="text-[10px] font-black uppercase tracking-[0.16em] text-teal-700">India</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-700">India</span>
             <span className="text-3xl font-black leading-none text-slate-950">No. 1</span>
             <span className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-600">Purifiers</span>
           </div>
@@ -123,11 +123,11 @@ export function WhyWeAre() {
 
         <div>
           <div data-home-why-reveal className="home-why-copy">
-            <p className="text-sm font-bold uppercase tracking-[0.22em] text-teal-700">Why We Are</p>
-            <h2 className="mt-3 max-w-2xl text-3xl font-bold leading-tight text-slate-950 md:text-4xl">
+            <p className="text-sm font-bold uppercase tracking-[0.22em] text-[#12a8e6]">Why We Are</p>
+            <h2 className="mt-3 max-w-2xl text-3xl font-bold leading-tight text-white md:text-4xl">
               Trusted by Customers, Built for Better Water
             </h2>
-            <p className="mt-4 max-w-2xl leading-8 text-slate-600">
+            <p className="mt-4 max-w-2xl leading-8 text-slate-300">
               Priya&apos;s Aqua Fresh focuses on dependable purification, practical support, and long-term customer trust across homes, dealers and commercial needs.
             </p>
           </div>
@@ -142,21 +142,21 @@ export function WhyWeAre() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <span className="text-5xl font-black leading-none text-slate-950">
+                    <span className="text-5xl font-black leading-none text-white">
                       {card.value === "4.9" ? <span data-home-why-rating>1.0</span> : card.value}
-                      <span className="text-teal-600">{card.suffix}</span>
+                      <span className="text-[#12a8e6]">{card.suffix}</span>
                     </span>
                     <div className="mt-3">
                       <RatingStars rating={4.7} showText={false} />
                     </div>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-teal-50 text-teal-700">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#12a8e6]/15 text-[#12a8e6]">
                     <card.icon className="h-6 w-6" />
                   </div>
                 </div>
-                <h3 className="mt-5 text-xl font-bold text-slate-950">{card.title}</h3>
-                <p className="mt-3 flex gap-2 text-sm font-medium leading-6 text-slate-600">
-                  <Quote className="mt-0.5 h-4 w-4 shrink-0 fill-teal-100 text-teal-600" />
+                <h3 className="mt-5 text-xl font-bold text-white">{card.title}</h3>
+                <p className="mt-3 flex gap-2 text-sm font-medium leading-6 text-slate-300">
+                  <Quote className="mt-0.5 h-4 w-4 shrink-0 fill-[#12a8e6]/20 text-[#12a8e6]" />
                   <span>&quot;{card.quote}&quot;</span>
                 </p>
               </article>

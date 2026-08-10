@@ -24,14 +24,14 @@ export function PriceRangeFilter({ min, max, value, onChange }: PriceRangeFilter
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between text-sm font-semibold text-slate-700">
+      <div className="mb-4 flex items-center justify-between text-sm font-semibold text-slate-300">
         <span>{formatPrice(currentMin)}</span>
         <span>{formatPrice(currentMax)}</span>
       </div>
       <div className="relative h-8">
-        <div className="absolute left-0 right-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-slate-200" />
+        <div className="absolute left-0 right-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-white/10" />
         <div
-          className="absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-teal-600"
+          className="absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-[#12a8e6]"
           style={{ left: `${minPercent}%`, right: `${100 - maxPercent}%` }}
         />
         <input
@@ -56,7 +56,7 @@ export function PriceRangeFilter({ min, max, value, onChange }: PriceRangeFilter
         />
       </div>
       <div className="mt-4 grid grid-cols-2 gap-3">
-        <label className="grid gap-1 text-xs font-semibold text-slate-500">
+        <label className="grid gap-1 text-xs font-semibold text-slate-400">
           Min Price
           <input
             type="number"
@@ -64,10 +64,10 @@ export function PriceRangeFilter({ min, max, value, onChange }: PriceRangeFilter
             max={currentMax}
             value={currentMin}
             onChange={(event) => updateMin(Number(event.target.value))}
-            className="h-10 rounded-md border border-slate-200 px-3 text-sm font-semibold text-slate-950 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+            className="h-10 rounded-md border border-white/10 bg-[#0d1114] px-3 text-sm font-semibold text-white outline-none focus:border-[#12a8e6] focus:ring-2 focus:ring-[#12a8e6]/20"
           />
         </label>
-        <label className="grid gap-1 text-xs font-semibold text-slate-500">
+        <label className="grid gap-1 text-xs font-semibold text-slate-400">
           Max Price
           <input
             type="number"
@@ -75,7 +75,7 @@ export function PriceRangeFilter({ min, max, value, onChange }: PriceRangeFilter
             max={max}
             value={currentMax}
             onChange={(event) => updateMax(Number(event.target.value))}
-            className="h-10 rounded-md border border-slate-200 px-3 text-sm font-semibold text-slate-950 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+            className="h-10 rounded-md border border-white/10 bg-[#0d1114] px-3 text-sm font-semibold text-white outline-none focus:border-[#12a8e6] focus:ring-2 focus:ring-[#12a8e6]/20"
           />
         </label>
       </div>

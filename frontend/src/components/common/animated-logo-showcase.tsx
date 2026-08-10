@@ -17,12 +17,12 @@ type AnimatedLogoShowcaseProps = {
 };
 
 const slotStates = [
-  { x: "-190%", scale: 0.9, opacity: 0.64, rotation: 0, zIndex: 1 },
-  { x: "-114%", scale: 0.96, opacity: 0.82, rotation: 0, zIndex: 2 },
+  { x: "-190%", scale: 0.9, opacity: 0.78, rotation: 0, zIndex: 1 },
+  { x: "-114%", scale: 0.96, opacity: 0.9, rotation: 0, zIndex: 2 },
   { x: "-38%", scale: 1, opacity: 1, rotation: 0, zIndex: 5 },
   { x: "38%", scale: 1, opacity: 1, rotation: 0, zIndex: 5 },
-  { x: "114%", scale: 0.96, opacity: 0.82, rotation: 0, zIndex: 2 },
-  { x: "190%", scale: 0.9, opacity: 0.64, rotation: 0, zIndex: 1 },
+  { x: "114%", scale: 0.96, opacity: 0.9, rotation: 0, zIndex: 2 },
+  { x: "190%", scale: 0.9, opacity: 0.78, rotation: 0, zIndex: 1 },
 ];
 
 function getVisibleSlot(index: number, activeIndex: number, total: number) {
@@ -139,9 +139,12 @@ export function AnimatedLogoShowcase({ title, logos, direction }: AnimatedLogoSh
   }, [activeIndex, reducedMotion, scheduleNext]);
 
   return (
-    <section ref={sectionRef} className="overflow-hidden bg-white px-4 py-8 text-slate-950 md:px-8 md:py-10">
+    <section
+      ref={sectionRef}
+      className="overflow-hidden border-y border-white/10 bg-[radial-gradient(circle_at_16%_10%,rgba(18,168,230,0.14),transparent_28%),linear-gradient(180deg,#151a1f,#101418)] px-4 py-8 text-white md:px-8 md:py-10"
+    >
       <div className="mx-auto max-w-7xl overflow-hidden">
-        <h2 data-showcase-reveal data-showcase-heading className="text-3xl font-bold leading-tight tracking-tight md:text-4xl">
+        <h2 data-showcase-reveal data-showcase-heading className="text-3xl font-bold leading-tight tracking-tight text-white md:text-4xl">
           {title}
         </h2>
 
@@ -149,7 +152,7 @@ export function AnimatedLogoShowcase({ title, logos, direction }: AnimatedLogoSh
           <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
             {showcaseLogos.map((logo) => (
               <div key={logo.id} className="flex h-32 items-center justify-center p-5">
-                <Image src={logo.image} alt={logo.name} width={150} height={150} className="h-20 w-auto object-contain" />
+                <Image src={logo.image} alt={logo.name} width={150} height={150} className="h-20 w-auto object-contain drop-shadow-[0_12px_22px_rgba(0,0,0,0.26)]" />
               </div>
             ))}
           </div>
@@ -172,7 +175,7 @@ export function AnimatedLogoShowcase({ title, logos, direction }: AnimatedLogoSh
                     ref={(node) => {
                       if (node) itemRefs.current[index] = node;
                     }}
-                    className="absolute left-1/2 top-1/2 flex h-40 w-56 -translate-x-1/2 -translate-y-1/2 items-center justify-center p-2 outline-none will-change-transform focus-visible:ring-2 focus-visible:ring-teal-300 md:h-48 md:w-72 lg:h-56 lg:w-80"
+                    className="absolute left-1/2 top-1/2 flex h-40 w-56 -translate-x-1/2 -translate-y-1/2 items-center justify-center p-2 outline-none will-change-transform focus-visible:ring-2 focus-visible:ring-[#12a8e6] md:h-48 md:w-72 lg:h-56 lg:w-80"
                   >
                     <Image
                       src={logo.image}
@@ -180,7 +183,7 @@ export function AnimatedLogoShowcase({ title, logos, direction }: AnimatedLogoSh
                       width={150}
                       height={150}
                       sizes="(max-width: 768px) 224px, (max-width: 1024px) 288px, 320px"
-                      className="h-28 w-auto object-contain md:h-36 lg:h-44"
+                      className="h-28 w-auto object-contain drop-shadow-[0_16px_28px_rgba(0,0,0,0.32)] md:h-36 lg:h-44"
                     />
                   </button>
                 ))}

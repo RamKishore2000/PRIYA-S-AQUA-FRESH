@@ -1,4 +1,4 @@
-import type { Category, Coupon, Customer, Dealer, Order, OrderStatus, Product, ServiceRequest, Status, Testimonial } from "@/types/admin";
+import type { Banner, Category, Coupon, Customer, Dealer, Order, OrderStatus, Product, ServiceRequest, Status, Testimonial } from "@/types/admin";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
@@ -17,6 +17,21 @@ type ApiCategory = {
   description: string | null;
   status: "ACTIVE" | "INACTIVE";
   productsCount: number;
+  createdAt: string;
+};
+
+type ApiBanner = {
+  id: number;
+  title: string;
+  subtitle: string | null;
+  description: string | null;
+  imageUrl: string;
+  buttonText: string | null;
+  buttonLink: string | null;
+  themeColor: string | null;
+  glowColor: string | null;
+  sortOrder: number;
+  status: "ACTIVE" | "INACTIVE";
   createdAt: string;
 };
 
@@ -202,6 +217,34 @@ export const adminApi = {
   async deleteCategory(id: string) {
     await apiRequest(`/api/categories/${id}`, { method: "DELETE" });
   },
+  async listBanners() {
+    const data = await apiRequest<{ banners: ApiBanner[] }>("/api/banners?includeInactive=true");
+    return data.banners.map(mapBanner);
+  },
+  async createBanner(banner: Banner) {
+    const data = await apiRequest<{ banner: ApiBanner }>("/api/banners", {
+      method: "POST",
+      body: JSON.stringify(toBannerPayload(banner)),
+    });
+    return mapBanner(data.banner);
+  },
+  async updateBanner(banner: Banner) {
+    const data = await apiRequest<{ banner: ApiBanner }>(`/api/banners/${banner.id}`, {
+      method: "PUT",
+      body: JSON.stringify(toBannerPayload(banner)),
+    });
+    return mapBanner(data.banner);
+  },
+  async setBannerStatus(id: string, status: "ACTIVE" | "INACTIVE") {
+    const data = await apiRequest<{ banner: ApiBanner }>(`/api/banners/${id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    });
+    return mapBanner(data.banner);
+  },
+  async deleteBanner(id: string) {
+    await apiRequest(`/api/banners/${id}`, { method: "DELETE" });
+  },
   async listProducts() {
     const data = await apiRequest<{ products: ApiProduct[] }>("/api/products?includeInactive=true");
     return data.products.map(mapProduct);
@@ -369,6 +412,38 @@ function mapCategory(category: ApiCategory): Category {
     productsCount: category.productsCount,
     status: mapStatus(category.status),
     createdDate: formatDate(category.createdAt),
+  };
+}
+
+function mapBanner(banner: ApiBanner): Banner {
+  return {
+    id: String(banner.id),
+    title: banner.title,
+    subtitle: banner.subtitle || "",
+    description: banner.description || "",
+    imageUrl: withApiUrl(banner.imageUrl),
+    buttonText: banner.buttonText || "Explore Range",
+    buttonLink: banner.buttonLink || "/products",
+    themeColor: banner.themeColor || "#2dd4bf",
+    glowColor: banner.glowColor || "rgba(45, 212, 191, 0.34)",
+    sortOrder: Number(banner.sortOrder || 0),
+    status: mapStatus(banner.status) as Banner["status"],
+    createdDate: formatDate(banner.createdAt),
+  };
+}
+
+function toBannerPayload(banner: Banner) {
+  return {
+    title: banner.title,
+    subtitle: banner.subtitle,
+    description: banner.description,
+    imageUrl: banner.imageUrl,
+    buttonText: banner.buttonText,
+    buttonLink: banner.buttonLink,
+    themeColor: banner.themeColor,
+    glowColor: banner.glowColor,
+    sortOrder: Number(banner.sortOrder || 0),
+    status: banner.status === "Active" ? "ACTIVE" : "INACTIVE",
   };
 }
 

@@ -46,6 +46,21 @@ export type Category = {
   createdDate: string;
 };
 
+export type Banner = {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  imageUrl: string;
+  buttonText: string;
+  buttonLink: string;
+  themeColor: string;
+  glowColor: string;
+  sortOrder: number;
+  status: Extract<Status, "Active" | "Inactive">;
+  createdDate: string;
+};
+
 export type Coupon = {
   id: string;
   code: string;

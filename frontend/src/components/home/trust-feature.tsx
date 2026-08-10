@@ -11,15 +11,15 @@ const features = [
 export function TrustFeatures() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
-      <SectionHeader title="Why Choose Priya's Aqua Fresh?" />
+      <SectionHeader title="Why Choose Priya's Aqua Fresh?" variant="dark" />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {features.map((feature) => (
-          <div key={feature.title} className="rounded-lg border border-slate-200 bg-white p-5">
-            <div className="flex h-11 w-11 items-center justify-center rounded-md bg-teal-50 text-teal-700">
+          <div key={feature.title} className="group rounded-lg border border-white/10 bg-white/[0.06] p-5 shadow-sm backdrop-blur transition hover:border-[#12a8e6]/55">
+            <div className="flex h-11 w-11 items-center justify-center rounded-md bg-[#12a8e6]/15 text-[#12a8e6]">
               <feature.icon className="h-5 w-5" />
             </div>
-            <h3 className="mt-5 font-semibold text-slate-950">{feature.title}</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600">{feature.description}</p>
+            <h3 className="mt-5 font-semibold text-white transition group-hover:text-[#12a8e6]">{feature.title}</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-300">{feature.description}</p>
           </div>
         ))}
       </div>

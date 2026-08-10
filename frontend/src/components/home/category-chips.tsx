@@ -18,10 +18,10 @@ export function CategoryChips({ categories, activeCategory, onCategoryChange }: 
             type="button"
             onClick={() => onCategoryChange(chip)}
             className={cn(
-              "h-10 rounded-md border px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500",
+              "h-10 rounded-md border px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300",
               activeCategory === chip
-                ? "border-teal-600 bg-teal-600 text-white"
-                : "border-slate-200 bg-white text-slate-700 hover:border-teal-300 hover:text-teal-700",
+                ? "border-white bg-white text-slate-950"
+                : "border-white/15 bg-white/5 text-slate-200 hover:border-white/30 hover:bg-white/10 hover:text-white",
             )}
           >
             {chip}

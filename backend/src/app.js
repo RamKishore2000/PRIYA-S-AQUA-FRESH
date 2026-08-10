@@ -4,6 +4,7 @@ const cors = require("cors");
 const env = require("./config/env");
 const addressRoutes = require("./routes/address.routes");
 const authRoutes = require("./routes/auth.routes");
+const bannerRoutes = require("./routes/banner.routes");
 const cartRoutes = require("./routes/cart.routes");
 const categoryRoutes = require("./routes/category.routes");
 const contactRoutes = require("./routes/contact.routes");
@@ -36,6 +37,7 @@ app.use("/uploads", express.static(path.resolve(__dirname, "../public/uploads"))
 app.use("/api", healthRoutes);
 app.use("/api/addresses", addressRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/banners", bannerRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/contact-messages", contactRoutes);

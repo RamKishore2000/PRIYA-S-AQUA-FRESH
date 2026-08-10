@@ -32,6 +32,7 @@
 **/.vercel/
 **/*.tsbuildinfo
 **/next-env.d.ts
+.tmp-video-frames/
 
 # OS and editor files
 .DS_Store
