@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -24,30 +25,36 @@ export function ProductListingPage({
   title?: string;
   description?: string;
 }) {
+  const searchParams = useSearchParams();
   const [role, setRole] = useState<string | null>(() => (typeof window === "undefined" ? null : getStoredUser()?.role || null));
-  const priceBounds: [number, number] = products.length
-    ? [
-        Math.min(...products.map((product) => getProductDisplayPrice(product, role).price)),
-        Math.max(...products.map((product) => getProductDisplayPrice(product, role).price)),
-      ]
-    : [0, 100000];
-  const initialFilters: ProductFiltersState = {
+  const priceBounds = useMemo<[number, number]>(() => (
+    products.length
+      ? [
+          Math.min(...products.map((product) => getProductDisplayPrice(product, role).price)),
+          Math.max(...products.map((product) => getProductDisplayPrice(product, role).price)),
+        ]
+      : [0, 100000]
+  ), [products, role]);
+  const initialFilters = useMemo<ProductFiltersState>(() => ({
     categories: [],
     priceRange: priceBounds,
     availability: [],
     rating: null,
-  };
-  const [filters, setFilters] = useState<ProductFiltersState>(() => {
-    if (typeof window === "undefined") return initialFilters;
-    const params = new URLSearchParams(window.location.search);
-    const category = params.get("category");
-    const matchedProduct = category ? products.find((product) => product.category.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") === category) : null;
-    return matchedProduct
-      ? { ...initialFilters, categories: [matchedProduct.category] }
-      : initialFilters;
-  });
+  }), [priceBounds]);
+  const [filters, setFilters] = useState<ProductFiltersState>(initialFilters);
   const [sort, setSort] = useState<SortOption>("featured");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
+  useEffect(() => {
+    const category = normalizeSlug(searchParams.get("category"));
+    const matchedProduct = category ? products.find((product) => normalizeSlug(product.category) === category) : null;
+
+    setFilters((current) => ({
+      ...current,
+      categories: matchedProduct ? [matchedProduct.category] : [],
+      priceRange: priceBounds,
+    }));
+  }, [priceBounds, products, searchParams]);
 
   useEffect(() => {
     function syncRole() {
@@ -191,6 +198,14 @@ export function ProductListingPage({
       </div>
     </main>
   );
+}
+
+function normalizeSlug(value?: string | null) {
+  return decodeURIComponent(value || "")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 function sortProducts(items: Product[], sort: SortOption, role?: string | null) {

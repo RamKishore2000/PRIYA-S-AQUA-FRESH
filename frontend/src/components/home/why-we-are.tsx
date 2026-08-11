@@ -104,8 +104,11 @@ export function WhyWeAre() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="bg-[#111418] px-4 py-12 md:px-8 md:py-16">
-      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+    <section ref={sectionRef} className="relative overflow-hidden bg-[#0d1114] px-4 py-12 md:px-8 md:py-16">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(45,212,191,0.12),transparent_30%),radial-gradient(circle_at_8%_18%,rgba(255,255,255,0.06),transparent_24%),linear-gradient(112deg,#10171b_0%,#14201f_48%,#07120f_100%)]" />
+      <div className="pointer-events-none absolute -left-20 top-16 h-72 w-72 rounded-full bg-[#12a8e6]/[0.045] blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-[#00BFA6]/[0.04] blur-3xl" />
+      <div className="relative mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
         <div data-home-why-image className="home-why-image">
           <div className="about-no1-badge" aria-label="India number one purifier badge">
             <span className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-700">India</span>
@@ -137,12 +140,13 @@ export function WhyWeAre() {
               <article
                 key={card.title}
                 data-home-why-reveal
-                className="home-why-card"
+                className="group relative overflow-hidden rounded-[1.35rem] border border-white/10 bg-white/[0.035] p-5 backdrop-blur-sm transition duration-500 hover:border-[#12a8e6]/45 hover:bg-white/[0.055]"
                 style={{ transitionDelay: `${index * 80}ms` }}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <span className="text-5xl font-black leading-none text-white">
+                <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-[#12a8e6]/15 blur-2xl transition duration-500 group-hover:bg-[#12a8e6]/25" />
+                <div className="relative flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <span className="text-4xl font-black leading-none text-white md:text-5xl">
                       {card.value === "4.9" ? <span data-home-why-rating>1.0</span> : card.value}
                       <span className="text-[#12a8e6]">{card.suffix}</span>
                     </span>
@@ -150,12 +154,12 @@ export function WhyWeAre() {
                       <RatingStars rating={4.7} showText={false} />
                     </div>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#12a8e6]/15 text-[#12a8e6]">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#12a8e6]/30 bg-[#12a8e6]/10 text-[#12a8e6]">
                     <card.icon className="h-6 w-6" />
                   </div>
                 </div>
-                <h3 className="mt-5 text-xl font-bold text-white">{card.title}</h3>
-                <p className="mt-3 flex gap-2 text-sm font-medium leading-6 text-slate-300">
+                <h3 className="relative mt-5 text-lg font-bold text-white">{card.title}</h3>
+                <p className="relative mt-3 flex gap-2 text-sm font-medium leading-6 text-slate-300">
                   <Quote className="mt-0.5 h-4 w-4 shrink-0 fill-[#12a8e6]/20 text-[#12a8e6]" />
                   <span>&quot;{card.quote}&quot;</span>
                 </p>

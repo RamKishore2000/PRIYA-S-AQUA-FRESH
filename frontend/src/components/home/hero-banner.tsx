@@ -58,7 +58,6 @@ const bannerItemConfig = [
   },
 ];
 
-type BannerSlot = "center" | "top" | "bottom" | "hidden";
 type BannerItem = {
   id: string;
   title: string;
@@ -68,6 +67,7 @@ type BannerItem = {
   glow: string;
   accent: string;
 };
+type BannerSlot = "active" | "upcoming" | "leaving" | "hidden";
 
 export function HeroBanner({ categories, banners }: { categories: Category[]; banners: Banner[] }) {
   const bannerItems = useMemo(() => buildBannerItems({ categories, banners }), [banners, categories]);
@@ -123,76 +123,87 @@ export function HeroBanner({ categories, banners }: { categories: Category[]; ba
   }, [activeIndex, itemCount]);
 
   return (
-    <section className="relative min-h-[680px] overflow-hidden bg-[#10181d] px-4 pb-16 pt-28 md:px-8 lg:min-h-[730px] lg:pt-32">
+    <section className="relative overflow-hidden bg-[#0d1114] pb-0 pt-0">
       <div
         className="pointer-events-none absolute inset-0 transition-[background] duration-1000"
         style={{
-          background: `radial-gradient(circle at 76% 42%, ${activeItem.glow}, transparent 30%), radial-gradient(circle at 18% 24%, rgba(255,255,255,0.11), transparent 24%), linear-gradient(112deg, #121a20 0%, #1d2930 45%, #102019 100%)`,
+          background: `radial-gradient(circle at 78% 28%, ${activeItem.glow}, transparent 28%), radial-gradient(circle at 8% 10%, rgba(255,255,255,0.08), transparent 24%), linear-gradient(112deg, #10171b 0%, #14201f 48%, #07120f 100%)`,
         }}
       />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-72 bg-[linear-gradient(90deg,rgba(255,255,255,0.12)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:46px_46px] opacity-20 [transform:perspective(780px)_rotateX(66deg)_translateY(84px)]" />
+      <div className="pointer-events-none absolute -left-20 top-0 h-72 w-72 rounded-full bg-white/[0.045] blur-3xl" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#0d1114] via-[#0d1114]/62 to-transparent" />
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-[0.82fr_1.18fr]">
-        <div ref={copyRef} className="relative z-20 max-w-xl lg:-translate-y-10">
-          <div key={activeItem.title}>
-            <div className="hero-copy-step mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-slate-200 opacity-0 backdrop-blur">
-              <Droplets className="h-4 w-4" style={{ color: activeItem.accent }} />
-              Priya&apos;s Aqua Fresh
+      <div className="relative w-full">
+        <div className="relative overflow-hidden border-b border-white/10 bg-[#061511]/72 px-5 pb-8 pt-24 shadow-[0_24px_70px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:px-8 md:pb-10 lg:min-h-[560px] lg:px-12 lg:pt-28">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.08),transparent_28%),linear-gradient(140deg,rgba(255,255,255,0.055),transparent_42%)]" />
+          <div className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full blur-3xl transition-colors duration-1000" style={{ backgroundColor: activeItem.glow }} />
+          <div className="pointer-events-none absolute -bottom-24 left-1/2 h-72 w-[720px] -translate-x-1/2 rounded-full bg-black/40 blur-3xl" />
+
+          <div className="relative grid items-center gap-8 lg:grid-cols-[0.86fr_1.14fr]">
+            <div ref={copyRef} className="relative z-20 max-w-xl lg:-translate-y-2">
+              <div key={activeItem.title}>
+                <div className="hero-copy-step mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-slate-200 opacity-0 backdrop-blur">
+                  <Droplets className="h-4 w-4" style={{ color: activeItem.accent }} />
+                  Priya&apos;s Aqua Fresh
+                </div>
+                <h1 className="hero-copy-step max-w-2xl font-serif text-4xl font-medium leading-[0.98] tracking-normal text-white opacity-0 sm:text-5xl md:text-[3.45rem]">
+                  {activeItem.title}
+                </h1>
+                <p className="hero-copy-step mt-4 max-w-xl text-base leading-7 text-slate-300 opacity-0 md:text-lg md:leading-8">
+                  {activeItem.description}
+                </p>
+                <div className="hero-copy-step mt-5 flex flex-col gap-3 opacity-0 sm:flex-row">
+                  <LinkButton
+                    href={activeItem.href}
+                    size="lg"
+                    className="rounded-full px-7 text-white shadow-[0_18px_38px_rgba(45,212,191,0.22)]"
+                    style={{ backgroundColor: activeItem.accent }}
+                  >
+                    Explore Range <ArrowRight className="h-5 w-5" />
+                  </LinkButton>
+                  <LinkButton
+                    href="/contact"
+                    size="lg"
+                    variant="secondary"
+                    className="rounded-full border-white/20 bg-white/5 px-7 text-white backdrop-blur hover:bg-white hover:text-slate-950"
+                  >
+                    Contact Expert
+                  </LinkButton>
+                </div>
+              </div>
             </div>
-            <h1 className="hero-copy-step max-w-2xl font-serif text-4xl font-medium leading-[0.98] tracking-normal text-white opacity-0 sm:text-5xl md:text-6xl">
-              {activeItem.title}
-            </h1>
-            <p className="hero-copy-step mt-5 max-w-2xl text-lg leading-8 text-slate-300 opacity-0 md:text-xl md:leading-9">
-              {activeItem.description}
-            </p>
-            <div className="hero-copy-step mt-6 flex flex-col gap-3 opacity-0 sm:flex-row">
-              <LinkButton
-                href={activeItem.href}
-                size="lg"
-                className="rounded-full px-7 text-white shadow-[0_18px_38px_rgba(45,212,191,0.22)]"
-                style={{ backgroundColor: activeItem.accent }}
-              >
-                Explore Range <ArrowRight className="h-5 w-5" />
-              </LinkButton>
-              <LinkButton
-                href="/contact"
-                size="lg"
-                variant="secondary"
-                className="rounded-full border-white/20 bg-white/5 px-7 text-white backdrop-blur hover:bg-white hover:text-slate-950"
-              >
-                Contact Expert
-              </LinkButton>
+
+            <div className="relative z-10 min-h-[330px] sm:min-h-[400px] lg:min-h-[430px]" aria-label="Priya's Aqua Fresh banner showcase">
+              {bannerItems.map((item, index) => (
+                <BannerCard
+                  key={item.id}
+                  item={item}
+                  slot={getBannerCardSlot(index, activeIndex, indexes.next, indexes.previous)}
+                  priority={index === 0}
+                />
+              ))}
+              <div className="absolute bottom-[13%] right-[18%] z-40 flex items-center gap-2 lg:right-[22%]">
+                {bannerItems.slice(0, Math.min(itemCount, 6)).map((item, index) => (
+                  <span
+                    key={`dot-${item.id}`}
+                    className={`h-2 rounded-full transition-all duration-500 ${
+                      index === activeIndex ? "w-7 bg-white" : "w-2 bg-white/45"
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-
-        <div className="relative z-10 min-h-[430px] sm:min-h-[520px] lg:min-h-[590px]" aria-label="Priya's Aqua Fresh banner showcase">
-          <div className="pointer-events-none absolute left-[8%] top-[19%] h-[62%] w-[64%] rounded-full blur-[90px]" style={{ backgroundColor: activeItem.glow }} />
-          {bannerItems.map((item, index) => (
-            <BannerProductSlot
-              key={item.id}
-              item={item}
-              slot={getBannerSlot(index, activeIndex, indexes.previous, indexes.next)}
-              priority={index === 0}
-            />
-          ))}
         </div>
       </div>
     </section>
   );
 }
 
-function getBannerSlot(index: number, activeIndex: number, previousIndex: number, nextIndex: number): BannerSlot {
-  if (index === activeIndex) {
-    return "center";
-  }
-  if (index === nextIndex) {
-    return "top";
-  }
-  if (index === previousIndex) {
-    return "bottom";
-  }
+function getBannerCardSlot(index: number, activeIndex: number, nextIndex: number, previousIndex: number): BannerSlot {
+  if (index === activeIndex) return "active";
+  if (index === nextIndex) return "upcoming";
+  if (index === previousIndex) return "leaving";
   return "hidden";
 }
 
@@ -243,33 +254,33 @@ function buildCategoryBannerItems(categories: Category[]): BannerItem[] {
   });
 }
 
-function BannerProductSlot({
-  item,
-  slot,
-  priority = false,
-}: {
-  item: BannerItem;
-  slot: BannerSlot;
-  priority?: boolean;
-}) {
+function BannerCard({ item, slot, priority }: { item: BannerItem; slot: BannerSlot; priority: boolean }) {
   return (
-    <div className={bannerSlotClass(slot)}>
-      <BannerImage item={item} slot={slot} priority={priority} />
+    <div className={bannerCardClass(slot)}>
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(145deg,rgba(255,255,255,0.12),transparent_42%)]" />
+      <div className="relative mx-auto mt-4 aspect-square w-[70%]">
+        <Image
+          src={item.image}
+          alt={item.title}
+          fill
+          sizes={slot === "active" ? "(min-width: 1024px) 360px, 72vw" : "(min-width: 1024px) 260px, 44vw"}
+          className="object-contain drop-shadow-[0_18px_24px_rgba(0,0,0,0.24)]"
+          priority={priority}
+          unoptimized={isRemoteImage(item.image)}
+        />
+      </div>
+      <div className="relative px-6 pb-5 pt-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-300">Featured range</p>
+        <h3 className="mt-2 line-clamp-2 text-xl font-semibold tracking-normal text-white md:text-2xl">{item.title}</h3>
+        <LinkButton
+          href={item.href}
+          size="sm"
+          className="mt-4 rounded-full border border-white/20 bg-white/10 px-6 text-white backdrop-blur hover:border-white/35 hover:bg-white/15 hover:text-white"
+        >
+          Explore <ArrowRight className="h-4 w-4" />
+        </LinkButton>
+      </div>
     </div>
-  );
-}
-
-function BannerImage({ item, slot, priority }: { item: BannerItem; slot: BannerSlot; priority: boolean }) {
-  return (
-    <Image
-      src={item.image}
-      alt={item.title}
-      fill
-      sizes={slot === "center" ? "(min-width: 1024px) 860px, 92vw" : "(min-width: 1024px) 260px, 34vw"}
-      className="object-contain drop-shadow-[0_28px_34px_rgba(0,0,0,0.34)]"
-      priority={priority}
-      unoptimized={isRemoteImage(item.image)}
-    />
   );
 }
 
@@ -277,21 +288,21 @@ function isRemoteImage(src: string) {
   return src.startsWith("http://") || src.startsWith("https://");
 }
 
-function bannerSlotClass(slot: BannerSlot) {
+function bannerCardClass(slot: BannerSlot) {
   const base =
-    "absolute aspect-square overflow-hidden rounded-sm transition-[left,top,width,transform,opacity,filter] duration-[1650ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform";
+    "absolute overflow-hidden rounded-[1.65rem] border border-white/12 bg-[#06120f]/88 shadow-[0_24px_58px_rgba(0,0,0,0.32)] backdrop-blur-xl transition-[left,top,width,transform,opacity,filter] duration-[1450ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform";
 
-  if (slot === "center") {
-    return `${base} left-[7%] top-1/2 z-30 w-[54%] -translate-y-1/2 scale-100 opacity-100 blur-0`;
+  if (slot === "active") {
+    return `${base} left-[32%] top-[56%] z-30 w-[52%] max-w-[360px] -translate-y-1/2 opacity-100 blur-0`;
   }
 
-  if (slot === "top") {
-    return `${base} left-[76%] top-[2%] z-20 w-[22%] scale-100 opacity-[0.78] blur-[0.15px]`;
+  if (slot === "upcoming") {
+    return `${base} left-[72%] top-[35%] z-20 w-[36%] max-w-[285px] -translate-y-1/2 scale-[0.86] opacity-55 blur-[0.25px]`;
   }
 
-  if (slot === "bottom") {
-    return `${base} left-[76%] top-[73%] z-10 w-[19%] scale-100 opacity-45 blur-[0.35px]`;
+  if (slot === "leaving") {
+    return `${base} left-[8%] top-[76%] z-10 w-[36%] max-w-[285px] -translate-y-1/2 scale-[0.82] opacity-0 blur-sm`;
   }
 
-  return `${base} left-[96%] top-[88%] z-0 w-[14%] scale-[0.68] opacity-0 blur-sm`;
+  return `${base} left-[94%] top-[38%] z-0 w-[34%] max-w-[270px] -translate-y-1/2 scale-[0.78] opacity-0 blur-sm`;
 }

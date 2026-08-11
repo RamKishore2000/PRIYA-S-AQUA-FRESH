@@ -28,7 +28,7 @@ export default async function ProductDetailPage({ params }: PageProps<"/products
           <span className="max-w-[280px] truncate text-white">{product.name}</span>
         </nav>
 
-        <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
           <ProductGallery images={product.images} name={product.name} />
 
           <div className="lg:sticky lg:top-24">

@@ -34,15 +34,15 @@ export function ProductCard({ product, surface = "hover" }: { product: Product; 
   }
 
   return (
-    <article className={`group relative flex h-full flex-col overflow-hidden transition duration-500 hover:-translate-y-1.5 hover:scale-[1.012] ${surface === "solid" ? "bg-[#050607] hover:bg-[#111418]" : "bg-transparent hover:bg-[#050607]"}`}>
+    <article className={`group relative flex h-full flex-col overflow-hidden transition duration-500 hover:-translate-y-1.5 hover:scale-[1.012] ${surface === "solid" ? "bg-[#050607] shadow-[0_12px_34px_rgba(0,0,0,0.22)] hover:bg-[#111418] hover:shadow-[0_18px_45px_rgba(0,188,212,0.08)]" : "bg-transparent hover:bg-[#050607] hover:shadow-[0_18px_45px_rgba(0,188,212,0.08)]"}`}>
       <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#0871cf]/40 to-transparent opacity-0 transition duration-500 group-hover:opacity-70" />
       <div
         data-product-image-area
-        className="relative m-3 aspect-[1.05/1] overflow-hidden rounded-[1.05rem] bg-transparent"
+        className="relative m-3 aspect-[1.05/1] overflow-hidden rounded-[1.05rem] bg-transparent shadow-[inset_0_-18px_34px_rgba(0,0,0,0.22)]"
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={resetSlider}
       >
-        <div className="pointer-events-none absolute inset-x-8 bottom-4 h-12 rounded-full bg-transparent blur-2xl transition duration-500 group-hover:scale-105" />
+        <div className="pointer-events-none absolute inset-x-8 bottom-4 h-12 rounded-full bg-[#12a8e6]/0 blur-2xl transition duration-500 group-hover:scale-105 group-hover:bg-[#12a8e6]/10" />
         {product.discount > 0 ? (
           <div className="absolute left-0 top-0 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-[#0871cf] text-center text-[10px] font-black uppercase leading-tight tracking-[0.04em] text-white shadow-[0_10px_22px_rgba(8,113,207,0.34)]">
             <span>{product.discount}%<br />Off</span>

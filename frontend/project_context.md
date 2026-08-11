@@ -206,6 +206,40 @@
 - Homepage FAQ accordion behavior passed targeted ESLint for `src/components/home/faqs-section.tsx`. No build or dev server was run.
 - Footer logo-color accent update passed targeted ESLint for `src/components/layout/footer.tsx`. No build or dev server was run.
 - Header cropped logo fit update passed targeted ESLint for `src/components/layout/header.tsx`; generated `public/logo-header.png` is 486x191. No build or dev server was run.
+- Homepage categories and product sections now use restrained Priya's/logo blue and green background glow shadows, and ProductCard uses subtle hover/image depth shadows without changing API/cart/wishlist behavior.
+- Category/product shadow update passed targeted ESLint for `top-categories-section.tsx`, `featured-products-section.tsx`, `product-grid.tsx`, and `product-card.tsx`. No build or dev server was run.
+- Homepage hero/banner was restyled into a dark green-black glass panel inspired by the user's reference, with the existing API-backed rotating banner items preserved, left-side copy unchanged in behavior, and the right-side `<` image animation placed inside one controlled showcase card with a single stable shadow.
+- Hero/banner glass-panel update passed targeted ESLint for `src/components/home/hero-banner.tsx`. No build or dev server was run.
+- Homepage hero/banner panel now starts behind the overlay header so the header and banner read as one full glass-banner surface. The previous right-side top/center/bottom category-image animation was replaced with a cleaner swiping card stage: one active card in front, the next card peeking from the right, the previous card exits, and active text/dots continue to follow the API-backed banner item.
+- Hero/header-integrated swipe-card banner update passed targeted ESLint for `src/components/home/hero-banner.tsx`. No build or dev server was run.
+- Homepage overlay header and hero/banner are now full-width instead of centered card-width: the header row no longer uses a `max-w-7xl` container, and the hero glass card rounding/container was removed while preserving the swipe-card banner animation.
+- Full-width header/banner update passed targeted ESLint for `src/components/home/hero-banner.tsx` and `src/components/layout/header.tsx`. No build or dev server was run.
+- Homepage hero right side was simplified from multiple visible swipe cards to one clean reference-style featured card only. The active API-backed banner item still rotates and updates the image/text/dots, but there are no nested/peeking cards on the right side.
+- Single-card hero banner update passed targeted ESLint for `src/components/home/hero-banner.tsx`. No build or dev server was run.
+- Homepage hero/banner height was reduced for small laptops by lowering vertical padding/min-height, compacting the right featured card, reducing image/card dimensions, and tightening copy spacing while preserving the same API-backed banner rotation.
+- Compact small-laptop hero banner update passed targeted ESLint for `src/components/home/hero-banner.tsx`. No build or dev server was run.
+- Homepage hero right-card CTA button now uses an explicit dark translucent style with visible white text/icons instead of the previous secondary white button treatment.
+- Right-card CTA visibility fix passed targeted ESLint for `src/components/home/hero-banner.tsx`. No build or dev server was run.
+- Homepage hero right-side featured card now animates as one unit on banner item changes: the card image, title, and CTA slide/fade/blur in together, while the full banner background, header, API data, and left-side copy behavior remain unchanged.
+- Right-card-only animation update passed targeted ESLint for `src/components/home/hero-banner.tsx`. No build or dev server was run.
+- Homepage hero right-side card is positioned slightly lower and now transitions as a whole card: the old card exits down-left, then the new card enters from the right/up while preserving stable banner/header/background and API-driven active content.
+- Right-card down-left/right-in transition update passed targeted ESLint for `src/components/home/hero-banner.tsx`. No build or dev server was run.
+- Homepage hero right-side animation now moves actual whole cards instead of animating content inside one fixed card. The active card sits lower/left, the upcoming card appears on the right/top, and the previous card exits down-left, removing the nested card-inside-card visual.
+- Whole-card right-side hero animation update passed targeted ESLint for `src/components/home/hero-banner.tsx`. No build or dev server was run.
+- Homepage category cards were redesigned into compact horizontal dark product-style tiles inspired by the user's reference: glowing category image on the left, title/product count/star row on the right, rounded dark surface, subtle border/shadow, and hover lift/glow. Carousel arrows remain hidden unless there are more than five categories.
+- Category reference-style tile update passed targeted ESLint for `category-item.tsx`, `category-carousel.tsx`, and `top-categories-section.tsx`. No build or dev server was run.
+- Homepage category carousel now shows four category tiles per desktop row; when there are more than four categories, horizontal swipe/arrows reveal the remaining items. The category section background was changed from flat black to a banner-matching dark green-black gradient with restrained glow layers.
+- Four-card category carousel/background update passed targeted ESLint for `category-carousel.tsx`, `category-item.tsx`, and `top-categories-section.tsx`. No build or dev server was run.
+- Removed the visible vertical gap between the homepage hero/banner and categories by eliminating hero bottom padding and category top padding so the sections connect directly.
+- Banner/category gap removal passed targeted ESLint for `hero-banner.tsx` and `top-categories-section.tsx`. No build or dev server was run.
+- Homepage `Why Choose Priya's Aqua Fresh?` section was changed from bordered card boxes to a cleaner centered layout with large circular icons above each title/description.
+- Homepage Featured Products, Best Selling Products, and Why We Are sections now use the same dark green-black gradient/glow background language as the banner/categories for a consistent home page flow.
+- Homepage Why We Are rating/review blocks were restyled from heavy cards into lighter glass panels with circular icon badges, subtle glow, smaller value hierarchy, and cleaner hover treatment.
+- Backend now includes an idempotent `npm run seed-products` script that creates/activates five catalog categories and adds five starter products using existing tracked storefront images from `frontend/public/images/hero`. The script skips products with existing matching SKU/slug to avoid duplicates.
+- Product detail gallery was adjusted for better visibility on the dark page: thumbnails now always render as image-only controls without card backgrounds, the main image uses a larger transparent stage with drop shadow, and the PDP grid gives more width to the gallery column.
+- Homepage Products section heading is now `Shop by Products`, with `Products` styled in the Priya's/logo blue accent.
+- Homepage category tiles now link directly to `/products?category=<slug>`, and product listing category-query matching normalizes slugs so clicking a category opens the products page with that category selected instead of showing all products.
+- Product listing page now reads `category` from `useSearchParams()` after hydration and applies the matching category filter, fixing direct URLs like `/products?category=ro-water-purifiers` that previously showed all products.
 
 ## Explicit Non-Goals
 - No Razorpay/payment integration.

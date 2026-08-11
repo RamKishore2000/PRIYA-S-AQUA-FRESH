@@ -68,18 +68,18 @@ export function Header({ overlay = false }: HeaderProps) {
           "z-50 text-white transition",
           overlayAtTop
             ? "absolute inset-x-0 top-0 border-transparent bg-transparent"
-            : "sticky top-0 border-b border-white/10 bg-[#0b0d10]/95 shadow-[0_18px_45px_rgba(0,0,0,0.34)] backdrop-blur",
+            : "sticky top-0 border-b border-white/10 bg-[rgba(12,27,42,0.88)] shadow-[0_18px_45px_rgba(0,0,0,0.26)] backdrop-blur-xl",
           overlay && scrolled ? "fixed inset-x-0" : null,
-          scrolled ? "shadow-[0_22px_55px_rgba(0,0,0,0.48)]" : null,
+          scrolled ? "shadow-[0_18px_48px_rgba(0,0,0,0.34)]" : null,
         )}
       >
-        <div className={cn("mx-auto grid max-w-7xl items-center gap-4 px-4 transition-all md:px-8", overlayAtTop ? "grid-cols-[minmax(170px,250px)_1fr_auto] py-3" : "grid-cols-[minmax(130px,190px)_1fr_auto] py-2")}>
+        <div className={cn("mx-auto grid max-w-7xl items-center gap-4 px-4 transition-all md:px-8", overlayAtTop ? "grid-cols-[minmax(140px,200px)_1fr_auto] py-2" : "grid-cols-[minmax(130px,190px)_1fr_auto] py-2")}>
           <Link
             href="/"
             className={cn(
               "relative flex min-w-0 items-center overflow-visible",
               overlayAtTop
-                ? "h-[62px] w-[180px] sm:h-[70px] sm:w-[205px] lg:h-[78px] lg:w-[230px]"
+                ? "h-[46px] w-[140px] sm:h-[52px] sm:w-[160px] lg:h-[58px] lg:w-[180px]"
                 : "h-[44px] w-[132px] sm:h-[50px] sm:w-[150px] lg:h-[56px] lg:w-[170px]",
             )}
             aria-label="Priya's Aqua Fresh home"

@@ -16,12 +16,15 @@ export function FeaturedProductsSection({ products }: { products: Product[] }) {
   }, [activeCategory, products]);
 
   return (
-    <section className="bg-[#0d1114] py-14 md:py-20">
-      <div className="mx-auto max-w-7xl px-4 md:px-8">
+    <section className="relative overflow-hidden bg-[#0d1114] py-14 md:py-20">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(45,212,191,0.12),transparent_30%),radial-gradient(circle_at_8%_18%,rgba(255,255,255,0.06),transparent_24%),linear-gradient(112deg,#10171b_0%,#14201f_48%,#07120f_100%)]" />
+      <div className="pointer-events-none absolute left-1/2 top-14 h-72 w-[760px] -translate-x-1/2 rounded-full bg-[#12a8e6]/[0.045] blur-3xl" />
+      <div className="pointer-events-none absolute -right-16 bottom-16 h-64 w-64 rounded-full bg-[#00BFA6]/[0.04] blur-3xl" />
+      <div className="relative mx-auto max-w-7xl px-4 md:px-8">
         <div className="mb-7">
           <div className="mb-6 flex items-center justify-between gap-4">
             <h2 className="text-2xl font-bold tracking-tight text-white md:text-4xl">
-              Products
+              Shop by <span className="text-[#12a8e6]">Products</span>
             </h2>
             <Link
               href="/products"

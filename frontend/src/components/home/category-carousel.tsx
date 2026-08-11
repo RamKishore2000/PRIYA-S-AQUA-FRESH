@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 export function CategoryCarousel({ categories }: { categories: Category[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const showArrows = categories.length > 5;
+  const showArrows = categories.length > 4;
 
   function scrollCategories(direction: "left" | "right") {
     const container = scrollRef.current;
@@ -27,7 +27,7 @@ export function CategoryCarousel({ categories }: { categories: Category[] }) {
         aria-label="Previous categories"
         onClick={() => scrollCategories("left")}
         className={cn(
-          "absolute left-0 top-[86px] z-10 hidden h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full border border-[#12a8e6]/35 bg-[#111418]/95 text-[#12a8e6] shadow-[0_18px_36px_rgba(0,0,0,0.28)] backdrop-blur transition hover:bg-[#12a8e6] hover:text-white md:inline-flex",
+          "absolute left-0 top-[64px] z-10 hidden h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full border border-[#12a8e6]/35 bg-[#111418]/95 text-[#12a8e6] shadow-[0_18px_36px_rgba(0,0,0,0.28)] backdrop-blur transition hover:bg-[#12a8e6] hover:text-white md:inline-flex",
           !showArrows && "md:hidden",
         )}
       >
@@ -46,7 +46,7 @@ export function CategoryCarousel({ categories }: { categories: Category[] }) {
             "items-start px-1 py-2",
             showArrows
               ? "flex min-w-max justify-start gap-4 md:gap-5"
-              : "grid justify-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5",
+              : "grid justify-center gap-4 sm:grid-cols-2 lg:grid-cols-4",
           )}
         >
           {categories.map((category) => (
@@ -60,7 +60,7 @@ export function CategoryCarousel({ categories }: { categories: Category[] }) {
         aria-label="Next categories"
         onClick={() => scrollCategories("right")}
         className={cn(
-          "absolute right-0 top-[86px] z-10 hidden h-10 w-10 translate-x-1/2 items-center justify-center rounded-full border border-[#12a8e6]/35 bg-[#12a8e6] text-white shadow-[0_18px_36px_rgba(8,113,207,0.24)] transition hover:bg-[#0871cf] md:inline-flex",
+          "absolute right-0 top-[64px] z-10 hidden h-10 w-10 translate-x-1/2 items-center justify-center rounded-full border border-[#12a8e6]/35 bg-[#12a8e6] text-white shadow-[0_18px_36px_rgba(8,113,207,0.24)] transition hover:bg-[#0871cf] md:inline-flex",
           !showArrows && "md:hidden",
         )}
       >

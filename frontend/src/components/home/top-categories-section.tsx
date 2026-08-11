@@ -7,8 +7,11 @@ export function TopCategoriesSection({ categories }: { categories: Category[] })
   if (categories.length === 0) return null;
 
   return (
-    <section className="relative overflow-hidden bg-[#08090b] py-8 md:py-12">
-      <div className="pointer-events-none absolute left-1/2 top-0 h-56 w-[760px] -translate-x-1/2 rounded-full bg-white/[0.045] blur-3xl" />
+    <section className="relative overflow-hidden bg-[#0d1114] pb-8 pt-0 md:pb-12">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(45,212,191,0.12),transparent_30%),radial-gradient(circle_at_8%_18%,rgba(255,255,255,0.06),transparent_24%),linear-gradient(112deg,#10171b_0%,#14201f_48%,#07120f_100%)]" />
+      <div className="pointer-events-none absolute left-1/2 top-0 h-56 w-[760px] -translate-x-1/2 rounded-full bg-white/[0.035] blur-3xl" />
+      <div className="pointer-events-none absolute -left-20 top-16 h-72 w-72 rounded-full bg-[#12a8e6]/[0.045] blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-[#00BFA6]/[0.04] blur-3xl" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       <div className="relative mx-auto max-w-7xl px-4 md:px-8">
         <div className="mb-6 flex items-center justify-between gap-4">
