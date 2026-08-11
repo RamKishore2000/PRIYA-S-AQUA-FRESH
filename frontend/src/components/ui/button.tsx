@@ -13,9 +13,9 @@ type ButtonProps = BaseProps & ButtonHTMLAttributes<HTMLButtonElement>;
 type LinkButtonProps = BaseProps & AnchorHTMLAttributes<HTMLAnchorElement> & { href: string };
 
 const variants = {
-  primary: "bg-teal-600 text-white hover:bg-teal-700 focus-visible:ring-teal-500",
+  primary: "bg-[#12a8e6] text-white hover:bg-[#0871cf] focus-visible:ring-[#12a8e6]",
   secondary:
-    "border border-slate-200 bg-white text-slate-900 hover:border-teal-300 hover:text-teal-700 focus-visible:ring-teal-500",
+    "border border-slate-200 bg-white text-slate-900 hover:border-[#12a8e6] hover:text-[#0871cf] focus-visible:ring-[#12a8e6]",
   ghost: "text-slate-700 hover:bg-slate-100 hover:text-slate-950 focus-visible:ring-slate-400",
   dark: "bg-slate-950 text-white hover:bg-slate-800 focus-visible:ring-slate-500",
 };

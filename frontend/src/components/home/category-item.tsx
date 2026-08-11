@@ -25,10 +25,10 @@ export function CategoryItem({ category }: { category: Category }) {
         </span>
 
         <span className="relative min-w-0 flex-1 text-left">
-          <span className="block text-sm font-bold leading-5 text-white transition duration-300 group-hover:text-[#12a8e6]">
+          <span className="block text-sm font-bold leading-5 text-[#12a8e6] transition duration-300 group-hover:text-[#49cfff]">
             {category.name}
           </span>
-          <span className="mt-2 block text-xs font-medium text-slate-300">
+          <span className="mt-2 block text-xs font-semibold text-slate-200">
             {category.productCount > 0 ? `${category.productCount} Products` : "Explore Range"}
           </span>
           <span className="mt-3 flex gap-1 text-[11px] text-white/85" aria-hidden="true">

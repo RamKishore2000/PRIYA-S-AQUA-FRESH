@@ -240,6 +240,28 @@
 - Homepage Products section heading is now `Shop by Products`, with `Products` styled in the Priya's/logo blue accent.
 - Homepage category tiles now link directly to `/products?category=<slug>`, and product listing category-query matching normalizes slugs so clicking a category opens the products page with that category selected instead of showing all products.
 - Product listing page now reads `category` from `useSearchParams()` after hydration and applies the matching category filter, fixing direct URLs like `/products?category=ro-water-purifiers` that previously showed all products.
+- Homepage now uses one shared dark green-black background layer from `src/app/page.tsx` across the full home content instead of separate repeated section background blocks.
+- Homepage hero/banner extra shadow layers were removed, and banner CTA buttons now stay on the fixed Priya's/logo blue color instead of changing with each active banner item.
+- Featured Products, Best Selling Products, Why We Are, Testimonials, FAQ, and logo showcase sections now sit on the shared homepage background with transparent or subtle glass surfaces. No API/cart/wishlist/banner data flow was changed.
+- Homepage background layers are isolated behind the content with z-index layering so lower homepage sections like `Why Choose Priya's Aqua Fresh?` remain readable. That section and the footer now use clearer dark-glass/dark-green surfaces.
+- Header active nav links, login/account button, hero Explore buttons, and shared primary/secondary button styling now use fixed Priya's/logo blue (`#12a8e6`) instead of dynamic banner/category accent colors.
+- Homepage hero CTA buttons use explicit important Priya's/logo blue and white text classes to avoid shared button variant conflicts causing white/blank-looking buttons.
+- Homepage category item names now use the fixed Priya's/logo blue by default, with a lighter blue hover state, so category titles visually match the brand color instead of staying plain white.
+- Frontend `/categories` page was redesigned from large flat image cards to a premium dark category gallery with a logo-blue title system, dark glass tiles, image glow, active category count summary, and direct links to filtered product pages.
+- ProductCard title spacing no longer reserves a fixed two-line height, so one-line product names do not leave the same blank space as wrapped two-line product names.
+- Frontend `/services` page was redesigned into a premium dark service layout with logo-blue hero accents, support highlight panels, supported-service chips, a simple three-step process block, and the existing API-backed service request form embedded in a polished glass panel.
+- Header account/login button now uses white text/icons on the fixed Priya's/logo blue button for clearer contrast.
+- Sticky/non-overlay header background now uses a translucent dark green-black gradient that better matches the homepage background color system.
+- Product detail pages now include a `You May Also Like This Product` section below the PDP content, showing up to four related products from the existing catalog while preferring products in the same category and excluding the current product.
+- Common frontend `SitePage` now uses the same shared dark green-black fixed background layers as the homepage, so non-home pages inherit the matching background color system while keeping content above it with z-index layering.
+- Frontend `/products` page no longer forces a flat black listing background; it now uses the same shared dark green-black background layers with glass filter/toolbar/count panels and green-black product-card hover surfaces.
+- Homepage testimonials carousel arrows now use explicit circular logo-blue button controls instead of shared secondary button variants, so the arrow icons render clearly on the dark background.
+- Homepage `Why We Are` section text animation now uses GSAP staggered reveal targets for the eyebrow, heading, paragraph, and cards with blur/slide timing, making the text animation visible while preserving the existing image animation.
+- Homepage `Why We Are` rating card values (`4.9+` and `A+`) were reduced from oversized display text to a smaller `text-3xl/md:text-4xl` scale.
+- Footer now includes a large Aceternity-style animated video-text company heading (`Priya's Aqua Fresh`) across the top of the footer, using moving gradient/text-mask styling with a reduced-motion fallback.
+- Footer video-text heading is constrained on desktop with `lg:whitespace-nowrap`, reduced desktop tracking, and a slightly smaller desktop clamp so `Priya's Aqua Fresh` fits on one line without affecting smaller responsive layouts.
+- Footer logo now uses the same `public/logo-header.png` asset as the header for consistent branding.
+- Footer logo wrapper no longer forces a white background/padding box, so the shared header logo asset sits directly on the dark footer surface.
 
 ## Explicit Non-Goals
 - No Razorpay/payment integration.

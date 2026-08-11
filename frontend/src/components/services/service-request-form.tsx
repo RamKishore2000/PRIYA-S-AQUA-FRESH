@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { services } from "@/components/services/service-data";
 import { submitServiceRequest } from "@/services/request-service";
 
-export function ServiceRequestForm() {
+export function ServiceRequestForm({ compact = false }: { compact?: boolean }) {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [selectedService, setSelectedService] = useState("");
 
@@ -42,9 +42,9 @@ export function ServiceRequestForm() {
     };
 
     return (
-      <form onSubmit={submit} className="rounded-lg border border-white/10 bg-[#111418] p-5 shadow-sm md:p-6">
-        <h2 className="text-2xl font-bold text-white">Service Request Form</h2>
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
+      <form onSubmit={submit} className={compact ? "rounded-[1.15rem] border border-white/10 bg-white/[0.035] p-4 backdrop-blur-sm md:p-5" : "rounded-lg border border-white/10 bg-[#111418] p-5 shadow-sm md:p-6"}>
+        {!compact ? <h2 className="text-2xl font-bold text-white">Service Request Form</h2> : null}
+        <div className={compact ? "grid gap-4 md:grid-cols-2" : "mt-6 grid gap-4 md:grid-cols-2"}>
           <Field label="Full Name" error={errors.name}><Input name="name" placeholder="Full Name" /></Field>
           <Field label="Mobile Number" error={errors.mobile}><Input name="mobile" placeholder="Mobile Number" /></Field>
           <Field label="Email"><Input name="email" type="email" placeholder="Email" /></Field>
@@ -72,7 +72,7 @@ export function ServiceRequestForm() {
             />
           </Field>
         </div>
-        <Button type="submit" className="mt-5">Submit Service Request</Button>
+        <Button type="submit" className="mt-5 w-full rounded-full md:w-auto">Submit Service Request</Button>
       </form>
     );
 }

@@ -68,7 +68,7 @@ export function Header({ overlay = false }: HeaderProps) {
           "z-50 text-white transition",
           overlayAtTop
             ? "absolute inset-x-0 top-0 border-transparent bg-transparent"
-            : "sticky top-0 border-b border-white/10 bg-[rgba(12,27,42,0.88)] shadow-[0_18px_45px_rgba(0,0,0,0.26)] backdrop-blur-xl",
+            : "sticky top-0 border-b border-white/10 bg-[linear-gradient(112deg,rgba(16,23,27,0.92),rgba(20,32,31,0.9),rgba(7,18,15,0.94))] shadow-[0_18px_45px_rgba(0,0,0,0.26)] backdrop-blur-xl",
           overlay && scrolled ? "fixed inset-x-0" : null,
           scrolled ? "shadow-[0_18px_48px_rgba(0,0,0,0.34)]" : null,
         )}
@@ -100,7 +100,7 @@ export function Header({ overlay = false }: HeaderProps) {
                 <SearchBar compact />
               </div>
             ) : (
-              <DesktopNavigation dynamicAccent={overlayAtTop} />
+              <DesktopNavigation />
             )}
           </div>
 
@@ -142,11 +142,8 @@ export function Header({ overlay = false }: HeaderProps) {
                 aria-label="Account"
                 onClick={openAccount}
                 className={cn(
-                  "h-10 rounded-full px-3 text-sm font-bold text-[#06110d] brightness-100 transition hover:brightness-110 sm:px-5",
-                  overlayAtTop
-                    ? "bg-[var(--home-hero-accent,#34d399)] shadow-[0_14px_30px_rgba(52,211,153,0.28)]"
-                    : "bg-[#12a8e6] shadow-[0_14px_30px_rgba(18,168,230,0.24)]",
-                  user && (overlayAtTop ? "bg-[var(--home-hero-accent,#34d399)]" : "bg-[#12a8e6]"),
+                  "h-10 rounded-full bg-[#12a8e6] px-3 text-sm font-bold text-white shadow-[0_14px_30px_rgba(18,168,230,0.24)] brightness-100 transition hover:bg-[#0871cf] hover:text-white sm:px-5",
+                  user && "bg-[#12a8e6]",
                 )}
               >
                 <User className="h-4 w-4" />

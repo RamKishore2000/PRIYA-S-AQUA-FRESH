@@ -34,7 +34,7 @@ export function ProductCard({ product, surface = "hover" }: { product: Product; 
   }
 
   return (
-    <article className={`group relative flex h-full flex-col overflow-hidden transition duration-500 hover:-translate-y-1.5 hover:scale-[1.012] ${surface === "solid" ? "bg-[#050607] shadow-[0_12px_34px_rgba(0,0,0,0.22)] hover:bg-[#111418] hover:shadow-[0_18px_45px_rgba(0,188,212,0.08)]" : "bg-transparent hover:bg-[#050607] hover:shadow-[0_18px_45px_rgba(0,188,212,0.08)]"}`}>
+    <article className={`group relative flex h-full flex-col overflow-hidden transition duration-500 hover:-translate-y-1.5 hover:scale-[1.012] ${surface === "solid" ? "bg-[#111a18]/90 shadow-[0_12px_34px_rgba(0,0,0,0.22)] hover:bg-[#15231f] hover:shadow-[0_18px_45px_rgba(18,168,230,0.08)]" : "bg-transparent hover:bg-[#111a18]/88 hover:shadow-[0_18px_45px_rgba(18,168,230,0.08)]"}`}>
       <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#0871cf]/40 to-transparent opacity-0 transition duration-500 group-hover:opacity-70" />
       <div
         data-product-image-area
@@ -87,7 +87,7 @@ export function ProductCard({ product, surface = "hover" }: { product: Product; 
         </p>
         <Link
           href={`/products/${product.slug}`}
-          className="mt-2 line-clamp-2 min-h-10 text-center text-[15px] font-extrabold leading-5 text-white transition hover:text-[#12a8e6]"
+          className="mt-2 line-clamp-2 text-center text-[15px] font-extrabold leading-5 text-white transition hover:text-[#12a8e6]"
         >
           {product.name}
         </Link>

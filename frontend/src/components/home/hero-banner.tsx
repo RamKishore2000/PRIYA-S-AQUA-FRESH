@@ -90,10 +90,6 @@ export function HeroBanner({ categories, banners }: { categories: Category[]; ba
   }, [itemCount]);
 
   useEffect(() => {
-    document.documentElement.style.setProperty("--home-hero-accent", activeItem.accent);
-  }, [activeItem.accent]);
-
-  useEffect(() => {
     if (!copyRef.current) return;
 
     const copySteps = gsap.utils.toArray<HTMLElement>(copyRef.current.querySelectorAll(".hero-copy-step"));
@@ -123,21 +119,17 @@ export function HeroBanner({ categories, banners }: { categories: Category[]; ba
   }, [activeIndex, itemCount]);
 
   return (
-    <section className="relative overflow-hidden bg-[#0d1114] pb-0 pt-0">
+    <section className="relative overflow-hidden bg-transparent pb-0 pt-0">
       <div
         className="pointer-events-none absolute inset-0 transition-[background] duration-1000"
         style={{
-          background: `radial-gradient(circle at 78% 28%, ${activeItem.glow}, transparent 28%), radial-gradient(circle at 8% 10%, rgba(255,255,255,0.08), transparent 24%), linear-gradient(112deg, #10171b 0%, #14201f 48%, #07120f 100%)`,
+          background: `radial-gradient(circle at 78% 28%, ${activeItem.glow}, transparent 25%)`,
         }}
       />
-      <div className="pointer-events-none absolute -left-20 top-0 h-72 w-72 rounded-full bg-white/[0.045] blur-3xl" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#0d1114] via-[#0d1114]/62 to-transparent" />
 
       <div className="relative w-full">
-        <div className="relative overflow-hidden border-b border-white/10 bg-[#061511]/72 px-5 pb-8 pt-24 shadow-[0_24px_70px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:px-8 md:pb-10 lg:min-h-[560px] lg:px-12 lg:pt-28">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.08),transparent_28%),linear-gradient(140deg,rgba(255,255,255,0.055),transparent_42%)]" />
-          <div className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full blur-3xl transition-colors duration-1000" style={{ backgroundColor: activeItem.glow }} />
-          <div className="pointer-events-none absolute -bottom-24 left-1/2 h-72 w-[720px] -translate-x-1/2 rounded-full bg-black/40 blur-3xl" />
+        <div className="relative overflow-hidden border-b border-white/10 bg-[#061511]/42 px-5 pb-8 pt-24 backdrop-blur-xl sm:px-8 md:pb-10 lg:min-h-[560px] lg:px-12 lg:pt-28">
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(140deg,rgba(255,255,255,0.045),transparent_42%)]" />
 
           <div className="relative grid items-center gap-8 lg:grid-cols-[0.86fr_1.14fr]">
             <div ref={copyRef} className="relative z-20 max-w-xl lg:-translate-y-2">
@@ -156,8 +148,7 @@ export function HeroBanner({ categories, banners }: { categories: Category[]; ba
                   <LinkButton
                     href={activeItem.href}
                     size="lg"
-                    className="rounded-full px-7 text-white shadow-[0_18px_38px_rgba(45,212,191,0.22)]"
-                    style={{ backgroundColor: activeItem.accent }}
+                    className="rounded-full !bg-[#12a8e6] px-7 !text-white shadow-none hover:!bg-[#0871cf]"
                   >
                     Explore Range <ArrowRight className="h-5 w-5" />
                   </LinkButton>
@@ -165,7 +156,7 @@ export function HeroBanner({ categories, banners }: { categories: Category[]; ba
                     href="/contact"
                     size="lg"
                     variant="secondary"
-                    className="rounded-full border-white/20 bg-white/5 px-7 text-white backdrop-blur hover:bg-white hover:text-slate-950"
+                    className="rounded-full !border-[#12a8e6]/35 !bg-[#12a8e6]/10 px-7 !text-white backdrop-blur hover:!border-[#12a8e6] hover:!bg-[#12a8e6] hover:!text-white"
                   >
                     Contact Expert
                   </LinkButton>
@@ -264,7 +255,7 @@ function BannerCard({ item, slot, priority }: { item: BannerItem; slot: BannerSl
           alt={item.title}
           fill
           sizes={slot === "active" ? "(min-width: 1024px) 360px, 72vw" : "(min-width: 1024px) 260px, 44vw"}
-          className="object-contain drop-shadow-[0_18px_24px_rgba(0,0,0,0.24)]"
+          className="object-contain"
           priority={priority}
           unoptimized={isRemoteImage(item.image)}
         />
@@ -275,7 +266,7 @@ function BannerCard({ item, slot, priority }: { item: BannerItem; slot: BannerSl
         <LinkButton
           href={item.href}
           size="sm"
-          className="mt-4 rounded-full border border-white/20 bg-white/10 px-6 text-white backdrop-blur hover:border-white/35 hover:bg-white/15 hover:text-white"
+          className="mt-4 rounded-full !border !border-[#12a8e6]/35 !bg-[#12a8e6]/10 px-6 !text-white backdrop-blur hover:!border-[#12a8e6] hover:!bg-[#12a8e6] hover:!text-white"
         >
           Explore <ArrowRight className="h-4 w-4" />
         </LinkButton>
@@ -290,7 +281,7 @@ function isRemoteImage(src: string) {
 
 function bannerCardClass(slot: BannerSlot) {
   const base =
-    "absolute overflow-hidden rounded-[1.65rem] border border-white/12 bg-[#06120f]/88 shadow-[0_24px_58px_rgba(0,0,0,0.32)] backdrop-blur-xl transition-[left,top,width,transform,opacity,filter] duration-[1450ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform";
+    "absolute overflow-hidden rounded-[1.65rem] border border-white/12 bg-[#06120f]/88 shadow-none backdrop-blur-xl transition-[left,top,width,transform,opacity,filter] duration-[1450ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform";
 
   if (slot === "active") {
     return `${base} left-[32%] top-[56%] z-30 w-[52%] max-w-[360px] -translate-y-1/2 opacity-100 blur-0`;

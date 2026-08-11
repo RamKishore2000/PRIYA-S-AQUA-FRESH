@@ -141,7 +141,7 @@ export function AnimatedLogoShowcase({ title, logos, direction }: AnimatedLogoSh
   return (
     <section
       ref={sectionRef}
-      className="overflow-hidden border-y border-white/10 bg-[radial-gradient(circle_at_16%_10%,rgba(18,168,230,0.14),transparent_28%),linear-gradient(180deg,#151a1f,#101418)] px-4 py-8 text-white md:px-8 md:py-10"
+      className="overflow-hidden border-y border-white/10 bg-white/[0.025] px-4 py-8 text-white backdrop-blur-sm md:px-8 md:py-10"
     >
       <div className="mx-auto max-w-7xl overflow-hidden">
         <h2 data-showcase-reveal data-showcase-heading className="text-3xl font-bold leading-tight tracking-tight text-white md:text-4xl">

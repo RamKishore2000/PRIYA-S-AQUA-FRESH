@@ -125,15 +125,21 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="bg-slate-950 text-white">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 md:grid-cols-[1.2fr_2fr] md:px-8">
+    <footer className="relative z-20 border-t border-[#12a8e6]/20 bg-[#06120f] text-white shadow-[0_-18px_60px_rgba(0,0,0,0.28)]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_50%_0%,rgba(18,168,230,0.18),transparent_42%)]" />
+      <div className="relative mx-auto max-w-7xl px-4 pt-10 md:px-8">
+        <p className="footer-video-text text-center font-serif text-[clamp(3rem,10vw,9.5rem)] font-black uppercase leading-none tracking-[0.04em] lg:whitespace-nowrap lg:text-[clamp(4.6rem,7.4vw,8.6rem)] lg:tracking-[0.015em]">
+          Priya&apos;s Aqua Fresh
+        </p>
+      </div>
+      <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-14 md:grid-cols-[1.2fr_2fr] md:px-8">
         <div>
-          <Link href="/" className="inline-flex rounded-md bg-white p-3" aria-label="Priya's Aqua Fresh home">
+          <Link href="/" className="inline-flex" aria-label="Priya's Aqua Fresh home">
             <Image
-              src="/images/brand/priyas-aqua-fresh-logo-cropped.png"
+              src="/logo-header.png"
               alt="Priya's Aquafresh"
-              width={1180}
-              height={445}
+              width={486}
+              height={191}
               className="h-auto w-[180px] object-contain"
             />
           </Link>

@@ -110,7 +110,7 @@ export function ProductListingPage({
   };
 
   return (
-    <main className="min-h-screen !bg-[#0d1114] text-slate-100" style={{ backgroundColor: "#0d1114" }}>
+    <div className="min-h-screen bg-transparent text-slate-100">
       <section className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-12">
         <div className="mb-8">
           <nav className="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-400">
@@ -129,7 +129,7 @@ export function ProductListingPage({
                 {description}
               </p>
             </div>
-            <div className="rounded-md border border-white/10 !bg-[#111418] px-4 py-3 text-sm font-bold text-white">
+            <div className="rounded-md border border-white/10 bg-white/[0.045] px-4 py-3 text-sm font-bold text-white backdrop-blur-sm">
               {products.length} Products
             </div>
           </div>
@@ -176,7 +176,7 @@ export function ProductListingPage({
         />
         <aside
           className={cn(
-            "absolute bottom-0 left-0 right-0 max-h-[88vh] overflow-y-auto rounded-t-lg bg-[#111418] p-4 text-slate-100 shadow-2xl transition duration-300",
+            "absolute bottom-0 left-0 right-0 max-h-[88vh] overflow-y-auto rounded-t-lg bg-[#111a18]/95 p-4 text-slate-100 shadow-2xl backdrop-blur-xl transition duration-300",
             mobileFiltersOpen ? "translate-y-0" : "translate-y-full",
           )}
           aria-label="Mobile filters"
@@ -196,7 +196,7 @@ export function ProductListingPage({
           />
         </aside>
       </div>
-    </main>
+    </div>
   );
 }
 

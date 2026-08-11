@@ -66,17 +66,18 @@ export function WhyWeAre() {
 
       gsap.fromTo(
         revealItems,
-        { autoAlpha: 0, y: 34 },
+        { autoAlpha: 0, y: 44, filter: "blur(8px)" },
         {
           autoAlpha: 1,
           y: 0,
-          duration: 0.74,
+          filter: "blur(0px)",
+          duration: 0.9,
           ease: "power3.out",
-          stagger: 0.12,
+          stagger: 0.16,
           scrollTrigger: {
             trigger: section,
-            start: "top 76%",
-            toggleActions: "play none none reverse",
+            start: "top 72%",
+            toggleActions: "restart none none reverse",
           },
         },
       );
@@ -104,10 +105,7 @@ export function WhyWeAre() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden bg-[#0d1114] px-4 py-12 md:px-8 md:py-16">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(45,212,191,0.12),transparent_30%),radial-gradient(circle_at_8%_18%,rgba(255,255,255,0.06),transparent_24%),linear-gradient(112deg,#10171b_0%,#14201f_48%,#07120f_100%)]" />
-      <div className="pointer-events-none absolute -left-20 top-16 h-72 w-72 rounded-full bg-[#12a8e6]/[0.045] blur-3xl" />
-      <div className="pointer-events-none absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-[#00BFA6]/[0.04] blur-3xl" />
+    <section ref={sectionRef} className="relative overflow-hidden bg-transparent px-4 py-12 md:px-8 md:py-16">
       <div className="relative mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
         <div data-home-why-image className="home-why-image">
           <div className="about-no1-badge" aria-label="India number one purifier badge">
@@ -125,12 +123,12 @@ export function WhyWeAre() {
         </div>
 
         <div>
-          <div data-home-why-reveal className="home-why-copy">
-            <p className="text-sm font-bold uppercase tracking-[0.22em] text-[#12a8e6]">Why We Are</p>
-            <h2 className="mt-3 max-w-2xl text-3xl font-bold leading-tight text-white md:text-4xl">
+          <div className="home-why-copy">
+            <p data-home-why-reveal className="text-sm font-bold uppercase tracking-[0.22em] text-[#12a8e6]">Why We Are</p>
+            <h2 data-home-why-reveal className="mt-3 max-w-2xl text-3xl font-bold leading-tight text-white md:text-4xl">
               Trusted by Customers, Built for Better Water
             </h2>
-            <p className="mt-4 max-w-2xl leading-8 text-slate-300">
+            <p data-home-why-reveal className="mt-4 max-w-2xl leading-8 text-slate-300">
               Priya&apos;s Aqua Fresh focuses on dependable purification, practical support, and long-term customer trust across homes, dealers and commercial needs.
             </p>
           </div>
@@ -146,7 +144,7 @@ export function WhyWeAre() {
                 <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-[#12a8e6]/15 blur-2xl transition duration-500 group-hover:bg-[#12a8e6]/25" />
                 <div className="relative flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <span className="text-4xl font-black leading-none text-white md:text-5xl">
+                    <span className="text-3xl font-black leading-none text-white md:text-4xl">
                       {card.value === "4.9" ? <span data-home-why-rating>1.0</span> : card.value}
                       <span className="text-[#12a8e6]">{card.suffix}</span>
                     </span>

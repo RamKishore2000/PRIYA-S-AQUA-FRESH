@@ -21,7 +21,7 @@ const sortOptions: Array<{ label: string; value: SortOption }> = [
 
 export function ProductToolbar({ count, sort, onSortChange, onOpenFilters }: ProductToolbarProps) {
   return (
-    <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/10 bg-[#111418] p-3">
+    <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.045] p-3 backdrop-blur-sm">
       <div className="flex items-center gap-3">
         <Button type="button" variant="secondary" className="lg:hidden" onClick={onOpenFilters}>
           <SlidersHorizontal className="h-4 w-4" />
@@ -34,7 +34,7 @@ export function ProductToolbar({ count, sort, onSortChange, onOpenFilters }: Pro
         <select
           value={sort}
           onChange={(event) => onSortChange(event.target.value as SortOption)}
-          className="h-10 rounded-md border border-white/10 bg-[#0d1114] px-3 text-sm font-semibold text-white outline-none focus:border-[#12a8e6] focus:ring-2 focus:ring-[#12a8e6]/20"
+          className="h-10 rounded-md border border-white/10 bg-[#111a18]/85 px-3 text-sm font-semibold text-white outline-none focus:border-[#12a8e6] focus:ring-2 focus:ring-[#12a8e6]/20"
         >
           {sortOptions.map((option) => (
             <option key={option.value} value={option.value}>

@@ -838,6 +838,33 @@ input {
   }
 }
 
+@keyframes footerVideoTextFlow {
+  0% {
+    background-position: 0% 48%;
+  }
+  50% {
+    background-position: 100% 52%;
+  }
+  100% {
+    background-position: 0% 48%;
+  }
+}
+
+.footer-video-text {
+  color: transparent;
+  background-image:
+    radial-gradient(circle at 18% 38%, rgba(255, 255, 255, 0.95), transparent 13%),
+    radial-gradient(circle at 72% 42%, rgba(18, 168, 230, 0.88), transparent 18%),
+    linear-gradient(115deg, #6b6045 0%, #f4f0df 18%, #9f8a59 36%, #d8f6ff 52%, #12a8e6 68%, #eee5c8 82%, #6f6244 100%);
+  background-size: 220% 220%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 18px 38px rgba(0, 0, 0, 0.34));
+  opacity: 0.82;
+  animation: footerVideoTextFlow 8s ease-in-out infinite;
+}
+
 @media (max-width: 767px) {
   .about-image-collage {
     grid-template-columns: 1fr;
@@ -890,6 +917,7 @@ input {
   .home-why-card,
   .wishlist-burst-ring,
   .wishlist-burst-heart,
+  .footer-video-text,
   .cart-target-pop,
   [data-sonner-toast].priyas-toast {
     animation: none;
@@ -898,5 +926,11 @@ input {
 
   .cart-fly-item {
     transition: none;
+  }
+
+  .footer-video-text {
+    color: #12a8e6;
+    background: none;
+    -webkit-text-fill-color: currentColor;
   }
 }

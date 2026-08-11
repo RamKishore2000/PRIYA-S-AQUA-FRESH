@@ -36,8 +36,8 @@ export function FaqsSection() {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <section className="bg-[#12161a] px-4 py-14 md:px-8">
-      <div className="mx-auto grid max-w-7xl gap-8 rounded-none border-y border-white/10 bg-[#151a1f] px-0 py-10 md:grid-cols-[0.75fr_1.25fr] md:px-8">
+    <section className="bg-transparent px-4 py-14 md:px-8">
+      <div className="mx-auto grid max-w-7xl gap-8 rounded-none border-y border-white/10 bg-white/[0.035] px-0 py-10 backdrop-blur-sm md:grid-cols-[0.75fr_1.25fr] md:px-8">
         <div className="px-4 md:px-0">
           <div className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#12a8e6]/15 text-[#12a8e6]">
             <HelpCircle className="h-5 w-5" />

@@ -64,7 +64,7 @@ export function PriceRangeFilter({ min, max, value, onChange }: PriceRangeFilter
             max={currentMax}
             value={currentMin}
             onChange={(event) => updateMin(Number(event.target.value))}
-            className="h-10 rounded-md border border-white/10 bg-[#0d1114] px-3 text-sm font-semibold text-white outline-none focus:border-[#12a8e6] focus:ring-2 focus:ring-[#12a8e6]/20"
+            className="h-10 rounded-md border border-white/10 bg-[#111a18]/85 px-3 text-sm font-semibold text-white outline-none focus:border-[#12a8e6] focus:ring-2 focus:ring-[#12a8e6]/20"
           />
         </label>
         <label className="grid gap-1 text-xs font-semibold text-slate-400">
@@ -75,7 +75,7 @@ export function PriceRangeFilter({ min, max, value, onChange }: PriceRangeFilter
             max={max}
             value={currentMax}
             onChange={(event) => updateMax(Number(event.target.value))}
-            className="h-10 rounded-md border border-white/10 bg-[#0d1114] px-3 text-sm font-semibold text-white outline-none focus:border-[#12a8e6] focus:ring-2 focus:ring-[#12a8e6]/20"
+            className="h-10 rounded-md border border-white/10 bg-[#111a18]/85 px-3 text-sm font-semibold text-white outline-none focus:border-[#12a8e6] focus:ring-2 focus:ring-[#12a8e6]/20"
           />
         </label>
       </div>

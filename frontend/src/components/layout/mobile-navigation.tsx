@@ -54,7 +54,7 @@ export function MobileNavigation({ open, onClose, onOpenAuth }: MobileNavigation
               className={cn(
                 "rounded-md border-l-2 px-3 py-3 font-semibold hover:bg-slate-100",
                 isActive(pathname, item.href)
-                  ? "border-teal-600 bg-teal-50 text-teal-700"
+                  ? "border-[#12a8e6] bg-[#12a8e6]/10 text-[#0871cf]"
                   : "border-transparent text-slate-800",
               )}
             >

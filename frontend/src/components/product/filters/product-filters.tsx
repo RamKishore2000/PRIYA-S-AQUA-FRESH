@@ -53,7 +53,7 @@ export function ProductFilters({
   };
 
   return (
-    <aside className="rounded-lg border border-white/10 bg-[#111418] p-5 shadow-sm">
+    <aside className="rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-sm backdrop-blur-sm">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-white">Filters</h2>
         <Button type="button" variant="ghost" size="sm" onClick={onClear}>
@@ -110,7 +110,7 @@ export function ProductFilters({
                 type="checkbox"
                 checked={filters.availability.includes(option.value)}
                 onChange={() => toggleAvailability(option.value)}
-                className="h-4 w-4 accent-teal-600"
+                className="h-4 w-4 accent-[#12a8e6]"
               />
               {option.label}
             </label>

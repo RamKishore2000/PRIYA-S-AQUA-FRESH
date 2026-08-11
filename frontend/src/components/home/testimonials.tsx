@@ -5,7 +5,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { RatingStars } from "@/components/common/rating-stars";
 import { SectionHeader } from "@/components/common/section-header";
 import { TestimonialCard } from "@/components/home/testimonial-card";
-import { Button } from "@/components/ui/button";
 import type { Testimonial } from "@/types/product";
 
 export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) {
@@ -76,7 +75,7 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
   };
 
   return (
-    <section className="bg-[#111418] py-14 md:py-20">
+    <section className="bg-transparent py-14 md:py-20">
       <div className="mx-auto max-w-7xl px-4 md:px-8">
         <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
@@ -136,12 +135,22 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
                 ))}
               </div>
               <div className="flex gap-2">
-                <Button variant="secondary" size="icon" aria-label="Previous testimonial" className="border-white/10 bg-[#12a8e6] text-white hover:border-[#12a8e6] hover:bg-[#0871cf] hover:text-white" onClick={goToPrevious}>
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button variant="secondary" size="icon" aria-label="Next testimonial" className="border-white/10 bg-[#12a8e6] text-white hover:border-[#12a8e6] hover:bg-[#0871cf] hover:text-white" onClick={goToNext}>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
+                <button
+                  type="button"
+                  aria-label="Previous testimonial"
+                  className="grid h-10 w-10 place-items-center rounded-full border border-[#12a8e6]/35 bg-[#12a8e6] text-white shadow-[0_12px_28px_rgba(18,168,230,0.22)] transition hover:border-[#12a8e6] hover:bg-[#0871cf]"
+                  onClick={goToPrevious}
+                >
+                  <ChevronLeft className="h-5 w-5 stroke-[2.4]" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Next testimonial"
+                  className="grid h-10 w-10 place-items-center rounded-full border border-[#12a8e6]/35 bg-[#12a8e6] text-white shadow-[0_12px_28px_rgba(18,168,230,0.22)] transition hover:border-[#12a8e6] hover:bg-[#0871cf]"
+                  onClick={goToNext}
+                >
+                  <ChevronRight className="h-5 w-5 stroke-[2.4]" />
+                </button>
               </div>
             </div>
           </div>
