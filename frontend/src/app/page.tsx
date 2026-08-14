@@ -1,7 +1,10 @@
 import { CategoryGrid } from "@/components/home/category-grid";
+import { CouponOffersSection } from "@/components/home/coupon-offers-section";
+import { CustomerTrustGallery } from "@/components/home/customer-trust-gallery";
 import { FeaturedProductsSection } from "@/components/home/featured-products-section";
 import { FaqsSection } from "@/components/home/faqs-section";
 import { HeroBanner } from "@/components/home/hero-banner";
+import { HeroBrandStrip } from "@/components/home/hero-brand-strip";
 import { Newsletter } from "@/components/home/newsletter";
 import { ProductGrid } from "@/components/home/product-grid";
 import { Testimonials } from "@/components/home/testimonials";
@@ -11,13 +14,17 @@ import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { AnimatedLogoShowcase } from "@/components/common/animated-logo-showcase";
 import { brandLogos } from "@/data/logo-showcase";
-import { getBanners, getCategories, getProducts, getTestimonials } from "@/services/catalog-service";
+import { getBanners, getCategories, getCouponOffers, getProducts, getReviews, getTestimonials } from "@/services/catalog-service";
+import type { Review, Testimonial } from "@/types/product";
 
 export default async function Home() {
   const products = await getProducts();
   const categories = await getCategories();
   const banners = await getBanners();
+  const couponOffers = await getCouponOffers();
   const testimonials = await getTestimonials();
+  const reviews = await getReviews().catch(() => []);
+  const customerFeedback = [...reviews.map(reviewToTestimonial), ...testimonials];
   const bestSellingProducts = products.slice(0, 4);
 
   return (
@@ -29,12 +36,14 @@ export default async function Home() {
         <div className="pointer-events-none fixed -right-28 top-[42vh] z-0 h-96 w-96 rounded-full bg-[#00BFA6]/[0.04] blur-3xl" />
         <div className="relative z-10">
           <HeroBanner categories={categories} banners={banners} />
+          <HeroBrandStrip />
           <CategoryGrid />
+          <CouponOffersSection offers={couponOffers} />
           <FeaturedProductsSection products={products} />
           <WhyWeAre />
           <ProductGrid title="Best Selling Products" products={bestSellingProducts} />
           <TrustFeatures />
-          <Testimonials testimonials={testimonials} />
+          <Testimonials testimonials={customerFeedback.length ? customerFeedback : testimonials} />
           <AnimatedLogoShowcase
             title="Our Brands & Solutions"
             logos={brandLogos}
@@ -42,6 +51,7 @@ export default async function Home() {
             duration={28}
             enableCenterFocus
           />
+          <CustomerTrustGallery />
           <Newsletter />
           <FaqsSection />
         </div>
@@ -49,4 +59,16 @@ export default async function Home() {
       <Footer />
     </div>
   );
+}
+
+function reviewToTestimonial(review: Review): Testimonial {
+  return {
+    id: `review-${review.id}`,
+    name: review.name,
+    role: review.role,
+    rating: review.rating,
+    review: review.message,
+    product: "Customer Review",
+    avatar: review.name.slice(0, 1).toUpperCase(),
+  };
 }

@@ -33,6 +33,7 @@ const groups = [
     title: "Support",
     items: [
       { label: "Services", href: "/services", icon: "service" },
+      { label: "Reviews", href: "/reviews", icon: "star" },
       { label: "Testimonials", href: "/testimonials", icon: "customer" },
     ],
   },

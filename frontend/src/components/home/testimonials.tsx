@@ -84,7 +84,7 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
               <p className="text-4xl font-bold text-[#12a8e6]">{averageRating.toFixed(1)} / 5</p>
               <div className="mt-2"><RatingStars rating={averageRating} reviewCount={testimonials.length} /></div>
               <p className="mt-2 text-sm text-slate-300">
-                {testimonials.length > 0 ? `Based on ${testimonials.length} active testimonials` : "Testimonials will appear after approval"}
+                {testimonials.length > 0 ? `Based on ${testimonials.length} customer reviews` : "Customer reviews will appear here"}
               </p>
             </div>
           </div>
@@ -96,7 +96,7 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
           >
             {testimonials.length === 0 ? (
               <div className="rounded-lg border border-white/10 bg-white/[0.06] p-6 text-sm font-semibold text-slate-300 shadow-sm">
-                Customer testimonials will appear here after approval.
+                Customer reviews will appear here.
               </div>
             ) : (
             <>

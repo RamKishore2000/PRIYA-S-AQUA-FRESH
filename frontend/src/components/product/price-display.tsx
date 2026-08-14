@@ -33,7 +33,7 @@ export function PriceDisplay({ product, price, originalPrice }: PriceDisplayProp
           {formatPrice(display.originalPrice)}
         </span>
       ) : null}
-      {product && role === "DEALER" ? <span className="text-xs font-bold text-[#12a8e6]">Dealer Price</span> : null}
+      {product && role === "DEALER" ? <span className="text-xs font-bold text-[#12a8e6]">Special Price</span> : null}
     </div>
   );
 }

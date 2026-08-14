@@ -1,22 +1,26 @@
 import Image from "next/image";
-import { Award } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Award, Droplets, ShieldCheck, Sparkles } from "lucide-react";
 import { AboutGsapAnimations } from "@/components/about/about-gsap-animations";
 import { SitePage } from "@/components/common/site-page";
 
-const headingWords = ["Delivering", "Pure", "Water", "with", "Innovation,", "Care", "&", "Trust"];
+const headingLines = ["Pure Water.", "Trusted Care.", "Built on Innovation."];
 
 const trustHighlights = [
   {
     value: "Review",
     label: "Customer",
+    detail: "4.9+ trust score",
   },
   {
     value: "A+",
     label: "Business Class",
+    detail: "Quality support",
   },
   {
     value: "No. 1",
     label: "Purifiers Company In India",
+    detail: "Brand positioning",
   },
 ];
 
@@ -42,16 +46,17 @@ export default function AboutPage() {
 
       <section className="relative overflow-hidden px-4 py-12 md:px-8 md:py-16">
         <div className="about-water-soft-bg" />
-        <div className="relative mx-auto max-w-7xl">
-          <div className="max-w-4xl">
-            <p data-about-reveal className="text-sm font-bold uppercase tracking-[0.22em] text-[#12a8e6]">
+        <div className="relative mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+          <div>
+            <div data-about-reveal className="inline-flex items-center gap-2 rounded-full border border-[#12a8e6]/25 bg-[#12a8e6]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-[#12a8e6]">
+              <Droplets className="h-4 w-4" />
               About Priya&apos;s Aqua Fresh
-            </p>
-            <h1 className="mt-4 max-w-3xl overflow-hidden text-4xl font-bold leading-tight text-white md:text-5xl">
-              {headingWords.map((word) => (
-                <span key={word} className="mr-3 inline-block overflow-hidden">
-                  <span data-about-word className="inline-block">
-                    {word}
+            </div>
+            <h1 className="mt-5 max-w-3xl overflow-hidden font-serif text-4xl font-medium leading-[0.98] tracking-normal text-white sm:text-5xl md:text-[3.45rem]">
+              {headingLines.map((line, index) => (
+                <span key={line} className="block overflow-hidden">
+                  <span data-about-word className={index === 1 ? "inline-block text-[#12a8e6]" : "inline-block"}>
+                    {line}
                   </span>
                 </span>
               ))}
@@ -59,16 +64,56 @@ export default function AboutPage() {
             <p data-about-reveal className="mt-5 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
               Priya&apos;s Aqua Fresh is committed to healthier living through advanced technology, trusted quality, customer care, clean water, reliability and peace of mind.
             </p>
-            <div data-about-reveal className="mt-6 grid max-w-2xl gap-3 sm:grid-cols-3">
+            <div data-about-reveal className="mt-7 flex flex-wrap gap-3">
+              <Link href="/products" className="inline-flex items-center gap-2 rounded-full bg-[#12a8e6] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#0871cf]">
+                Explore Products <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/contact" className="inline-flex items-center gap-2 rounded-full border border-[#12a8e6]/35 bg-[#12a8e6]/10 px-6 py-3 text-sm font-bold text-white transition hover:border-[#12a8e6] hover:bg-[#12a8e6]">
+                Contact Us
+              </Link>
+            </div>
+          </div>
+
+          <div data-about-mask className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-5 backdrop-blur-sm md:p-6">
+            <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#12a8e6]/20 blur-3xl" />
+            <div className="pointer-events-none absolute -left-20 bottom-0 h-56 w-56 rounded-full bg-[#00BFA6]/10 blur-3xl" />
+            <div className="relative grid gap-4 sm:grid-cols-[0.8fr_1.2fr] sm:items-center">
+              <div className="relative mx-auto aspect-square w-full max-w-[260px]">
+                <span className="absolute inset-x-8 bottom-5 h-12 rounded-full bg-black/50 blur-2xl" />
+                <Image
+                  src="/Untitled-design-10-2048x2048.png"
+                  alt="Priya's Aqua Fresh purifier"
+                  fill
+                  sizes="260px"
+                  className="object-contain"
+                  priority
+                />
+              </div>
+              <div>
+                <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#12a8e6]/12 text-[#12a8e6]">
+                  <ShieldCheck className="h-6 w-6" />
+                </div>
+                <h2 className="mt-4 text-2xl font-black leading-tight text-white md:text-3xl">
+                  Trusted purification for every space.
+                </h2>
+                <p className="mt-3 text-sm leading-7 text-slate-300">
+                  Built around cleaner water, reliable products, practical support and long-term customer confidence.
+                </p>
+              </div>
+            </div>
+            <div data-about-reveal className="relative mt-5 grid gap-3 sm:grid-cols-3">
               {trustHighlights.map((item) => (
-                <div key={item.label} className="about-trust-card">
-                  <span className="block text-2xl font-black text-[#12a8e6]">{item.value}</span>
-                  <span className="mt-1 block text-sm font-bold text-slate-200">{item.label}</span>
+                <div key={item.label} className="rounded-2xl border border-white/10 bg-[#07120f]/72 p-4">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#12a8e6]/12 text-[#12a8e6]">
+                    <Sparkles className="h-4 w-4" />
+                  </span>
+                  <span className="mt-3 block text-xl font-black text-[#12a8e6]">{item.value}</span>
+                  <span className="mt-1 block text-sm font-bold text-white">{item.label}</span>
+                  <span className="mt-1 block text-xs font-semibold text-slate-400">{item.detail}</span>
                 </div>
               ))}
             </div>
           </div>
-
         </div>
       </section>
 
@@ -114,7 +159,7 @@ export default function AboutPage() {
                   <span className="text-sm font-bold text-amber-500">★★★★★ <span className="text-slate-400">4.7/5</span></span>
                 </div>
                 <h3 className="mt-4 text-lg font-bold text-white">Business Class</h3>
-                <p className="mt-2 text-sm font-medium leading-6 text-slate-300">&quot;Exceptional dealer, highly recommended!&quot;</p>
+                <p className="mt-2 text-sm font-medium leading-6 text-slate-300">&quot;Exceptional service, highly recommended!&quot;</p>
               </div>
             </div>
           </div>

@@ -46,7 +46,7 @@
 - Testimonials are now managed from backend/admin instead of mock-only UI. Backend table `testimonials` has `customer_name`, `role`, `rating`, `message`, `image_url`, `sort_order`, and `ACTIVE/INACTIVE` status. Public frontend reads active testimonials from `/api/testimonials`; admin reads all testimonials with `/api/testimonials?includeInactive=true`.
 - About page preserves the source-requested headings and content points: "Delivering Pure Water with Innovation, Care & Trust", "Driven by Purpose, Powered by Innovation", "Vision That Flows Beyond Purity", "Our Mission: Safe Water for Every Home", "The Mind Behind the Mission", Mr. K Anand & Mrs. K Priya, and the Ali Garu excellence award line. It uses GSAP page-load word reveal, scroll-triggered reveals, image mask reveals, and a scrubbed vision line. The user-provided award image is saved at `public/images/about/award-excellence.jpg` and used in the award section.
 - About page trust highlights show `Review Customer`, `A+ Business Class`, and `No. 1 Purifiers Company In India`.
-- About page hero intro is text/trust highlights only; the old three mock product image strip was removed. The Who We Are visual uses the user-provided `/Untitled-design-10-2048x2048.png` purifier image with the India No. 1 badge overlay, and includes a `Why We Are` review block with `4.9+`, `A+`, star ratings, and the requested customer/dealer testimonial lines.
+- About page hero intro is text/trust highlights only; the old three mock product image strip was removed. The Who We Are visual uses the user-provided `/Untitled-design-10-2048x2048.png` purifier image with the India No. 1 badge overlay, and includes a `Why We Are` review block with `4.9+`, `A+`, star ratings, and customer/business testimonial lines.
 - Homepage replaced the old alkaline promo banner with the `Why We Are` section placed after featured products. It uses the user-provided purifier image on the left, right-side content, and `4.9+ Review Customer` / `A+ Business Class` cards below the content. The section uses GSAP ScrollTrigger like the About page: the image slowly reveals from left to right with a mask/slide, while the text and review cards rise into view and reverse when scrolled away.
 - Homepage no longer renders the old Commercial Solutions section; `commercial-solutions.tsx` was removed and the old "Powerful Purification for Business" copy is gone from `src`. The `Why We Are` `4.9+` value counts automatically from `1.0` to `4.9` when the section scrolls into view.
 - Mock product data now contains 24 products for the Shop listing.
@@ -67,7 +67,7 @@
 - Product detail page uses `ProductGallery` and displays all uploaded product images as thumbnails with a switchable main image.
 - Product detail page follows a compact ecommerce PDP layout with breadcrumb, vertical thumbnail gallery on desktop, large main image, right-side product info, rating row, price, category/SKU info, Add to Cart, Wishlist, Share, delivery/install notes, and product details.
 - Product cards and product detail pages use backend-provided `rating` and `reviewCount` values.
-- Product cards, product detail page, listing price filter/sort, cart drawer, cart subtotal, and checkout summary switch to dealer prices when the stored auth user role is `DEALER`; otherwise they use customer prices.
+- Product cards, product detail page, listing price filter/sort, cart drawer, cart subtotal, and checkout summary switch to special business pricing for approved business accounts; otherwise they use customer prices.
 - Product cards cycle through all uploaded product images on desktop hover; wishlist and share actions are icon-only overlays at the top-right of the product image.
 - Wishlist clicks use a short transparent CSS heart-burst animation instead of the previous GIF asset because the GIF has a visible colored background.
 - Add to Cart uses a frontend-only fly-to-cart animation after the cart API call succeeds: a product thumbnail moves from the product image area to the header cart icon, then the cart icon pulses.
@@ -87,7 +87,7 @@
 - Previous carousel assets and data remain in the project but are no longer used by the active homepage banner.
 - Backend created `backend/src` MVC/layered folders: config, controllers, services, repositories, models, routes, middleware, validators, utils, and database.
 - Backend schema is centralized at `backend/src/database/schema.sql` and includes users plus ecommerce/admin tables.
-- Users table supports `CUSTOMER`, `DEALER`, and `ADMIN` roles, but public `POST /api/auth/register` creates `CUSTOMER` users and ignores any frontend/manual role value.
+- Users table supports customer, business, and admin account roles, but public `POST /api/auth/register` creates customer users and ignores any frontend/manual role value.
 - Registration stores `password_hash` only, uses duplicate email/mobile checks, returns safe user data, and includes `GET /api/health` for basic server verification.
 - Existing frontend registration modal is connected through `src/services/auth-service.ts` using `NEXT_PUBLIC_API_BASE_URL`; no role selector was added.
 - Registration password validation now accepts a simple 4-digit numeric password, and the registration password/confirm password fields include eye toggle controls.
@@ -144,7 +144,7 @@
 - Homepage `Why We Are` cards now call `RatingStars` with `showText={false}` so `4.7 (0 reviews)` is not displayed. Frontend lint passed with the same unrelated `animated-logo-showcase.tsx` warning.
 - Header search now filters suggestions live from product data and submits to the new `/search` results page. Backend product listing supports `search` query matching product name, SKU, description, or category. Frontend lint passed with the same unrelated `animated-logo-showcase.tsx` warning; backend product repository/controller/validator syntax checks passed.
 - Header search suggestion rows were simplified to show only image and product title, hiding category and price. Frontend lint passed with the same unrelated `animated-logo-showcase.tsx` warning.
-- Dealer price display fix: product API mapping now keeps both customer/dealer price fields, `PriceDisplay` chooses dealer price for `DEALER` users, and cart/listing/checkout calculations use shared role-aware pricing. Frontend lint passed with the same unrelated `animated-logo-showcase.tsx` warning; backend cart/order syntax checks passed.
+- Special price display fix: product API mapping now keeps both customer and business price fields, `PriceDisplay` chooses special pricing for approved business accounts, and cart/listing/checkout calculations use shared role-aware pricing. Frontend lint passed with the same unrelated `animated-logo-showcase.tsx` warning; backend cart/order syntax checks passed.
 - Separate customer order list/detail pages with product images passed targeted frontend ESLint; backend order syntax checks passed.
 - Cart page `/cart` is now bound to the shared API-backed cart state with product images, quantity controls, remove action, subtotal, checkout, and login-required state.
 - Checkout summary displays product image, name, quantity, and line total for each cart item. Targeted frontend ESLint passed.
@@ -157,7 +157,7 @@
 - Homepage `Our Brands & Solutions` logo showcase was changed from a heavy black section to a lighter charcoal/blue-black surface with stronger logo opacity and subtle logo drop shadows while keeping the no-card logo layout and existing GSAP motion.
 - Homepage overlay header now becomes a fixed compact dark sticky header after scrolling, so the header remains visible while moving down the home page.
 - Product cards no longer use an outer rounded card radius, and product discount badges are circular using the Priya's/logo blue color.
-- Homepage now includes a `Frequently Asked Questions` section above the footer with project-specific support questions for purifier selection, installation, dealer pricing, spare parts, and contact support.
+- Homepage now includes a `Frequently Asked Questions` section above the footer with project-specific support questions for purifier selection, installation, special pricing, spare parts, and contact support.
 - Homepage `Why We Are`, `What Our Customers Say`, and `Why Choose Priya's Aqua Fresh?` sections now use the Priya's/logo blue (`#12a8e6`) for section accents, rating values, icons, carousel dots/buttons, and trust-feature hover states.
 - Homepage category section no longer uses changing hero/banner accent colors; category labels, glows, hover lines, More Categories button, and carousel arrows now use the fixed Priya's/logo blue (`#12a8e6`).
 - Testimonial cards inside `What Our Customers Say` now use the logo blue for the top accent line, avatar fallback, verified icon, product label, and hover border.
@@ -262,6 +262,17 @@
 - Footer video-text heading is constrained on desktop with `lg:whitespace-nowrap`, reduced desktop tracking, and a slightly smaller desktop clamp so `Priya's Aqua Fresh` fits on one line without affecting smaller responsive layouts.
 - Footer logo now uses the same `public/logo-header.png` asset as the header for consistent branding.
 - Footer logo wrapper no longer forces a white background/padding box, so the shared header logo asset sits directly on the dark footer surface.
+- Cart drawer quantity controls now use explicit white backgrounds with dark text/icons and blue hover states, fixing invisible quantity numbers between minus and plus buttons.
+- Header account dropdown for logged-in users now opens on mouse hover and uses dark/blue hover styling instead of white hover panels; logged-out users still click Login to open the auth modal.
+- Header account/login button now uses important fixed blue/white hover/focus/active classes so the shared ghost button styles cannot turn it into a pale white block on mouse hover.
+- About page first section was redesigned into a premium two-column dark intro with logo-blue badge/CTAs, stagger-ready heading words, a right purifier visual panel, and compact trust badges while keeping the existing About page content/API flow untouched.
+- About and Services page hero headings were tightened: About now uses clean stacked lines (`Pure Water. Trusted Care. Built on Innovation.`), and Services now uses the shorter polished heading `Expert Care for Pure Water`.
+- About and Services hero headings now match the homepage banner title treatment: serif font, medium weight, tight line-height, normal tracking, and the same responsive size scale.
+- Product card actual image element now uses top-only border radius so the image corners are rounded directly, without rounding the image background wrapper/card.
+- Header account/login control is now an icon-only button matching the search, wishlist, and cart icon style while preserving logged-in hover dropdown and logged-out login modal behavior.
+- Header wishlist and cart count badges now use Priya's/logo blue with white numbers and a small blue glow instead of white badges.
+- Product discount badge changed from a circle/glass tag to a compact Priya's/logo blue ribbon with a pointed edge and folded corner detail.
+- Frontend header now includes a desktop top social strip matching the footer social set: WhatsApp, Facebook, YouTube, Instagram, LinkedIn, and X. The strip is visible in both normal and sticky desktop header states. This was applied only in `frontend`, leaving `frontend2` untouched.
 
 ## Explicit Non-Goals
 - No Razorpay/payment integration.

@@ -15,19 +15,19 @@ export function QuantitySelector({ quantity, onIncrease, onDecrease }: QuantityS
       <Button
         variant="secondary"
         size="icon"
-        className="h-8 w-8"
+        className="h-8 w-8 border-slate-200 bg-white text-slate-950 hover:border-[#12a8e6] hover:bg-[#12a8e6] hover:text-white"
         aria-label="Decrease quantity"
         onClick={onDecrease}
       >
         <Minus className="h-4 w-4" />
       </Button>
-      <span className="flex h-8 min-w-10 items-center justify-center rounded-md border border-slate-200 text-sm font-semibold">
+      <span className="flex h-8 min-w-10 items-center justify-center rounded-md border border-slate-200 bg-white text-sm font-bold text-slate-950">
         {quantity}
       </span>
       <Button
         variant="secondary"
         size="icon"
-        className="h-8 w-8"
+        className="h-8 w-8 border-slate-200 bg-white text-slate-950 hover:border-[#12a8e6] hover:bg-[#12a8e6] hover:text-white"
         aria-label="Increase quantity"
         onClick={onIncrease}
       >

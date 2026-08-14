@@ -1,7 +1,11 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { SVGProps } from "react";
 import { Mail, MapPin, Phone } from "lucide-react";
+import { getStoredUser, type AuthUser } from "@/services/auth-service";
 
 function WhatsAppIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -124,6 +128,24 @@ const socialLinks = [
 ];
 
 export function Footer() {
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const isDealer = user?.role === "DEALER";
+  const visibleFooterColumns = isDealer
+    ? footerColumns.map((column) => ({
+        ...column,
+        links: column.links.filter((link) => link.href !== "/services"),
+      }))
+    : footerColumns;
+
+  useEffect(() => {
+    function syncUser() {
+      setUser(getStoredUser());
+    }
+    syncUser();
+    window.addEventListener("priyas-auth-changed", syncUser);
+    return () => window.removeEventListener("priyas-auth-changed", syncUser);
+  }, []);
+
   return (
     <footer className="relative z-20 border-t border-[#12a8e6]/20 bg-[#06120f] text-white shadow-[0_-18px_60px_rgba(0,0,0,0.28)]">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_50%_0%,rgba(18,168,230,0.18),transparent_42%)]" />
@@ -170,7 +192,7 @@ export function Footer() {
           </div>
         </div>
         <div className="grid gap-8 sm:grid-cols-3">
-          {footerColumns.map((column) => (
+          {visibleFooterColumns.map((column) => (
             <div key={column.title}>
               <h3 className="text-sm font-semibold tracking-[0.16em] text-[#12a8e6]">{column.title}</h3>
               <div className="mt-4 grid gap-3">

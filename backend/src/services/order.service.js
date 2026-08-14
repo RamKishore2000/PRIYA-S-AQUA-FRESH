@@ -9,27 +9,14 @@ const env = require("../config/env");
 const { ApiError } = require("../utils/apiError");
 
 async function createOrder(userId, payload, role) {
-  const cartRows = await cartRepository.getCart(userId);
-  if (cartRows.length === 0) {
-    throw new ApiError(422, "Cart is empty.", { cart: "Cart is empty." });
-  }
-
-  const items = [];
-  for (const row of cartRows) {
-    const product = await productRepository.findById(row.product_id);
-    if (!product || product.status !== "ACTIVE") continue;
-    const quantity = Number(row.quantity);
-    const unitPrice = getSellingPrice(product, role);
-    items.push({
-      product,
-      quantity,
-      unitPrice,
-      lineTotal: unitPrice * quantity,
-    });
-  }
+  const items = payload.buyNow
+    ? await buildBuyNowItems(payload.buyNow, role)
+    : await buildCartItems(userId, role);
 
   if (items.length === 0) {
-    throw new ApiError(422, "Cart has no active products.", { cart: "Cart has no active products." });
+    throw new ApiError(422, payload.buyNow ? "Product is not available." : "Cart has no active products.", {
+      [payload.buyNow ? "buyNow" : "cart"]: payload.buyNow ? "Product is not available." : "Cart has no active products.",
+    });
   }
 
   const shippingAddress = await resolveShippingAddress(userId, payload);
@@ -43,6 +30,9 @@ async function createOrder(userId, payload, role) {
   }
   const shippingAmount = 0;
   const totalAmount = subtotalAmount - discountAmount + shippingAmount;
+  const paymentMethod = payload.paymentMethod === "COD" ? "COD" : "ONLINE";
+  const advanceAmount = paymentMethod === "COD" ? Math.min(500, totalAmount) : totalAmount;
+  const balanceAmount = Math.max(totalAmount - advanceAmount, 0);
   const orderNumber = `PAF${Date.now()}`;
   const connection = await orderRepository.pool.getConnection();
 
@@ -50,9 +40,9 @@ async function createOrder(userId, payload, role) {
     await connection.beginTransaction();
     const [orderResult] = await connection.execute(
       `INSERT INTO orders
-       (order_number, user_id, coupon_id, subtotal_amount, discount_amount, shipping_amount, total_amount, shipping_address_json)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [orderNumber, userId, coupon?.id || null, subtotalAmount, discountAmount, shippingAmount, totalAmount, JSON.stringify(shippingAddress)],
+       (order_number, user_id, coupon_id, subtotal_amount, discount_amount, shipping_amount, total_amount, payment_method, advance_amount, balance_amount, shipping_address_json)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [orderNumber, userId, coupon?.id || null, subtotalAmount, discountAmount, shippingAmount, totalAmount, paymentMethod, advanceAmount, balanceAmount, JSON.stringify(shippingAddress)],
     );
     const orderId = orderResult.insertId;
     for (const item of items) {
@@ -71,6 +61,48 @@ async function createOrder(userId, payload, role) {
   } finally {
     connection.release();
   }
+}
+
+async function buildCartItems(userId, role) {
+  const cartRows = await cartRepository.getCart(userId);
+  if (cartRows.length === 0) {
+    throw new ApiError(422, "Cart is empty.", { cart: "Cart is empty." });
+  }
+
+  const items = [];
+  for (const row of cartRows) {
+    const product = await productRepository.findById(row.product_id);
+    if (!product || product.status !== "ACTIVE") continue;
+    const quantity = Number(row.quantity);
+    const unitPrice = getSellingPrice(product, role);
+    items.push({
+      product,
+      quantity,
+      unitPrice,
+      lineTotal: unitPrice * quantity,
+    });
+  }
+  return items;
+}
+
+async function buildBuyNowItems(buyNow, role) {
+  const productId = Number(buyNow.productId);
+  const requestedQuantity = Number(buyNow.quantity || 1);
+  const quantity = Number.isFinite(requestedQuantity) ? Math.max(1, Math.min(Math.floor(requestedQuantity), 99)) : 1;
+  if (!Number.isInteger(productId) || productId <= 0) {
+    throw new ApiError(422, "Valid product is required.", { productId: "Valid product is required." });
+  }
+  const product = await productRepository.findById(productId);
+  if (!product || product.status !== "ACTIVE") {
+    throw new ApiError(422, "Product is not available.", { productId: "Product is not available." });
+  }
+  const unitPrice = getSellingPrice(product, role);
+  return [{
+    product,
+    quantity,
+    unitPrice,
+    lineTotal: unitPrice * quantity,
+  }];
 }
 
 function getSellingPrice(product, role) {
@@ -107,6 +139,7 @@ async function createRazorpayOrder(userId, orderId) {
   if (!env.razorpay.keyId || !env.razorpay.keySecret) {
     throw new ApiError(500, "Razorpay keys are not configured.");
   }
+  const payableAmount = order.paymentMethod === "COD" ? order.advanceAmount : order.totalAmount;
   const response = await fetch("https://api.razorpay.com/v1/orders", {
     method: "POST",
     headers: {
@@ -114,10 +147,15 @@ async function createRazorpayOrder(userId, orderId) {
       Authorization: `Basic ${Buffer.from(`${env.razorpay.keyId}:${env.razorpay.keySecret}`).toString("base64")}`,
     },
     body: JSON.stringify({
-      amount: Math.round(order.totalAmount * 100),
+      amount: Math.round(payableAmount * 100),
       currency: "INR",
       receipt: order.orderNumber,
-      notes: { orderId: String(order.id), orderNumber: order.orderNumber },
+      notes: {
+        orderId: String(order.id),
+        orderNumber: order.orderNumber,
+        paymentMethod: order.paymentMethod,
+        balanceAmount: String(order.balanceAmount || 0),
+      },
     }),
   });
   const result = await response.json();
@@ -152,7 +190,9 @@ async function verifyRazorpayPayment(userId, payload) {
       discountAmount: Number(couponRow.discount_amount),
     });
   }
-  await cartRepository.clearCart(userId);
+  if (payload.checkoutMode !== "BUY_NOW") {
+    await cartRepository.clearCart(userId);
+  }
   return getOrder(userId, payload.orderId);
 }
 

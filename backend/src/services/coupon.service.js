@@ -5,6 +5,10 @@ async function listCoupons() {
   return couponRepository.findAll();
 }
 
+async function listPublicCoupons() {
+  return couponRepository.findActivePublic();
+}
+
 async function getCoupon(id) {
   const coupon = await couponRepository.findById(id);
   if (!coupon) throw new ApiError(404, "Coupon not found.");
@@ -102,6 +106,9 @@ function normalizeCouponPayload(payload) {
 
   return {
     code: payload.code.trim().toUpperCase().replace(/\s+/g, ""),
+    title: cleanOptionalText(payload.title),
+    subtitle: cleanOptionalText(payload.subtitle),
+    imageUrl: cleanOptionalText(payload.imageUrl),
     discountType: payload.discountType,
     discountValue: Number(payload.discountValue),
     minimumOrderAmount: Number(payload.minimumOrderAmount),
@@ -109,12 +116,19 @@ function normalizeCouponPayload(payload) {
     startAt,
     endAt,
     usageLimit: Number(payload.usageLimit),
+    sortOrder: payload.sortOrder ? Number(payload.sortOrder) : 0,
     status: payload.status || "ACTIVE",
   };
 }
 
+function cleanOptionalText(value) {
+  const text = String(value || "").trim();
+  return text || null;
+}
+
 module.exports = {
   listCoupons,
+  listPublicCoupons,
   getCoupon,
   createCoupon,
   updateCoupon,

@@ -38,14 +38,16 @@ export function ProductCard({ product, surface = "hover" }: { product: Product; 
       <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#0871cf]/40 to-transparent opacity-0 transition duration-500 group-hover:opacity-70" />
       <div
         data-product-image-area
-        className="relative m-3 aspect-[1.05/1] overflow-hidden rounded-[1.05rem] bg-transparent shadow-[inset_0_-18px_34px_rgba(0,0,0,0.22)]"
+        className="relative m-3 aspect-[1.05/1] overflow-hidden bg-transparent shadow-[inset_0_-18px_34px_rgba(0,0,0,0.22)]"
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={resetSlider}
       >
         <div className="pointer-events-none absolute inset-x-8 bottom-4 h-12 rounded-full bg-[#12a8e6]/0 blur-2xl transition duration-500 group-hover:scale-105 group-hover:bg-[#12a8e6]/10" />
-        {product.discount > 0 ? (
-          <div className="absolute left-0 top-0 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-[#0871cf] text-center text-[10px] font-black uppercase leading-tight tracking-[0.04em] text-white shadow-[0_10px_22px_rgba(8,113,207,0.34)]">
-            <span>{product.discount}%<br />Off</span>
+        {(product.discount ?? 0) > 0 ? (
+          <div className="absolute left-0 top-4 z-10 bg-[#12a8e6] px-3 py-1.5 text-[11px] font-black uppercase leading-none tracking-[0.12em] text-white shadow-[0_12px_24px_rgba(18,168,230,0.28)]">
+            <span>{product.discount}% Off</span>
+            <span className="absolute -right-3 top-0 h-0 w-0 border-y-[12px] border-l-[12px] border-y-transparent border-l-[#12a8e6]" />
+            <span className="absolute left-0 top-full h-0 w-0 border-r-[8px] border-t-[7px] border-r-transparent border-t-[#0871cf]" />
           </div>
         ) : null}
         {product.stock === "out-of-stock" ? (
@@ -74,7 +76,7 @@ export function ProductCard({ product, surface = "hover" }: { product: Product; 
                 alt={product.name}
                 fill
                 sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                className="object-contain p-3 transition duration-700 group-hover:scale-[1.08] sm:p-4"
+                className="rounded-t-[1.05rem] object-contain p-3 transition duration-700 group-hover:scale-[1.08] sm:p-4"
                 unoptimized
               />
             </div>
@@ -97,11 +99,17 @@ export function ProductCard({ product, surface = "hover" }: { product: Product; 
         <div className="mt-3 [&>div]:justify-center [&_span:first-child]:text-xl [&_span:first-child]:text-white [&_span]:text-slate-400">
           <PriceDisplay product={product} />
         </div>
-        <div className="mt-auto w-full max-h-0 translate-y-3 overflow-hidden pt-0 opacity-0 transition-all duration-500 group-hover:max-h-16 group-hover:translate-y-0 group-hover:pt-4 group-hover:opacity-100">
+        <div className="mt-auto grid w-full max-h-0 translate-y-3 grid-cols-2 gap-2 overflow-hidden pt-0 opacity-0 transition-all duration-500 group-hover:max-h-16 group-hover:translate-y-0 group-hover:pt-4 group-hover:opacity-100">
           <AddToCartButton
             product={product}
-            className="h-11 rounded-full !bg-[#0871cf] !text-white shadow-[0_16px_34px_rgba(8,113,207,0.3)] transition hover:!bg-[#12a8e6]"
+            className="h-11 rounded-full !bg-[#0871cf] !px-3 !text-xs !text-white shadow-[0_16px_34px_rgba(8,113,207,0.3)] transition hover:!bg-[#12a8e6]"
           />
+          <Link
+            href={`/checkout?buyNow=${product.id}`}
+            className="inline-flex h-11 items-center justify-center rounded-full border border-[#12a8e6]/45 px-3 text-xs font-black text-white transition hover:border-[#12a8e6] hover:bg-[#12a8e6]/15"
+          >
+            Buy Now
+          </Link>
         </div>
       </div>
     </article>

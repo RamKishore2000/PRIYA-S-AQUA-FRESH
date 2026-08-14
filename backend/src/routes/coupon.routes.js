@@ -7,6 +7,7 @@ const { couponIdValidator, couponPayloadValidator, couponStatusValidator } = req
 const router = express.Router();
 
 router.get("/", asyncHandler(couponController.listCoupons));
+router.get("/public", asyncHandler(couponController.listPublicCoupons));
 router.post("/validate", asyncHandler(couponController.validateCoupon));
 router.get("/:id", couponIdValidator, validateRequest, asyncHandler(couponController.getCoupon));
 router.post("/", couponPayloadValidator, validateRequest, asyncHandler(couponController.createCoupon));

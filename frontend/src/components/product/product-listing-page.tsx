@@ -48,12 +48,20 @@ export function ProductListingPage({
   useEffect(() => {
     const category = normalizeSlug(searchParams.get("category"));
     const matchedProduct = category ? products.find((product) => normalizeSlug(product.category) === category) : null;
+    let mounted = true;
 
-    setFilters((current) => ({
-      ...current,
-      categories: matchedProduct ? [matchedProduct.category] : [],
-      priceRange: priceBounds,
-    }));
+    queueMicrotask(() => {
+      if (!mounted) return;
+      setFilters((current) => ({
+        ...current,
+        categories: matchedProduct ? [matchedProduct.category] : [],
+        priceRange: priceBounds,
+      }));
+    });
+
+    return () => {
+      mounted = false;
+    };
   }, [priceBounds, products, searchParams]);
 
   useEffect(() => {

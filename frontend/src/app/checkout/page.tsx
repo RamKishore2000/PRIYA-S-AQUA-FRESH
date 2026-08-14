@@ -2,7 +2,7 @@
 
 import Script from "next/script";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/common/page-header";
@@ -11,9 +11,11 @@ import { Button, LinkButton } from "@/components/ui/button";
 import { useShop } from "@/context/shop-context";
 import { getProductDisplayPrice } from "@/lib/pricing";
 import { formatPrice } from "@/lib/utils";
+import { getProductById } from "@/services/catalog-service";
 import { createAddress, fetchAddresses, type Address, type AddressPayload } from "@/services/address-service";
 import { getStoredUser } from "@/services/auth-service";
 import { createOrder, createRazorpayOrder, validateCoupon, verifyRazorpayPayment, type CouponValidation } from "@/services/order-service";
+import type { Product } from "@/types/product";
 
 declare global {
   interface Window {
@@ -36,9 +38,17 @@ const emptyAddressForm: AddressPayload = {
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const buyNowId = searchParams.get("buyNow");
+  const requestedBuyNowQuantity = Number(searchParams.get("qty") || 1);
+  const buyNowQuantity = Number.isFinite(requestedBuyNowQuantity) ? Math.max(1, Math.min(Math.floor(requestedBuyNowQuantity), 99)) : 1;
+  const isBuyNow = Boolean(buyNowId);
   const { cartItems, subtotal, clearCartState } = useShop();
   const role = getStoredUser()?.role || null;
+  const [buyNowProduct, setBuyNowProduct] = useState<Product | null>(null);
+  const [buyNowLoading, setBuyNowLoading] = useState(Boolean(buyNowId));
   const [saving, setSaving] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"ONLINE" | "COD">("ONLINE");
   const [addressLoading, setAddressLoading] = useState(true);
   const [addressSaving, setAddressSaving] = useState(false);
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -69,6 +79,32 @@ export default function CheckoutPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!buyNowId) {
+      return;
+    }
+
+    let mounted = true;
+    void (async () => {
+      setBuyNowLoading(true);
+      try {
+        const product = await getProductById(buyNowId);
+        if (mounted) setBuyNowProduct(product);
+      } catch (error) {
+        if (mounted) {
+          setBuyNowProduct(null);
+          toast.error(error instanceof Error ? error.message : "Unable to load Buy Now product.");
+        }
+      } finally {
+        if (mounted) setBuyNowLoading(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, [buyNowId]);
+
   function updateField<K extends keyof AddressPayload>(field: K, value: AddressPayload[K]) {
     setForm((current) => ({ ...current, [field]: value }));
   }
@@ -95,8 +131,8 @@ export default function CheckoutPage() {
 
   async function submitOrder(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (cartItems.length === 0) {
-      toast.error("Your cart is empty.");
+    if (checkoutItems.length === 0) {
+      toast.error(isBuyNow ? "Buy Now product is not available." : "Your cart is empty.");
       return;
     }
     if (!window.Razorpay) {
@@ -112,7 +148,12 @@ export default function CheckoutPage() {
     setSaving(true);
     try {
       const selectedAddress = addresses.find((address) => address.id === selectedAddressId);
-      const order = await createOrder({ addressId: selectedAddressId }, appliedCoupon?.coupon.code);
+      const order = await createOrder(
+        isBuyNow && buyNowId
+          ? { addressId: selectedAddressId, paymentMethod, buyNow: { productId: buyNowId, quantity: buyNowQuantity } }
+          : { addressId: selectedAddressId, paymentMethod },
+        appliedCoupon?.coupon.code,
+      );
       const payment = await createRazorpayOrder(order.id);
       const razorpay = new window.Razorpay({
         key: payment.keyId,
@@ -127,8 +168,11 @@ export default function CheckoutPage() {
             razorpayOrderId: response.razorpay_order_id,
             razorpayPaymentId: response.razorpay_payment_id,
             razorpaySignature: response.razorpay_signature,
+            checkoutMode: isBuyNow ? "BUY_NOW" : "CART",
           });
-          clearCartState();
+          if (!isBuyNow) {
+            clearCartState();
+          }
           toast.success("Payment successful. Order confirmed.");
           router.push("/profile/orders");
         },
@@ -152,7 +196,7 @@ export default function CheckoutPage() {
       return;
     }
     try {
-      const validation = await validateCoupon(couponCode, subtotal);
+      const validation = await validateCoupon(couponCode, checkoutSubtotal);
       setAppliedCoupon(validation);
       toast.success("Coupon applied.");
     } catch (error) {
@@ -161,7 +205,15 @@ export default function CheckoutPage() {
     }
   }
 
-  const payableTotal = Math.max(0, subtotal - (appliedCoupon?.discountAmount ?? 0));
+  const checkoutItems = isBuyNow && buyNowProduct
+    ? [{ product: buyNowProduct, quantity: buyNowQuantity }]
+    : cartItems;
+  const checkoutSubtotal = isBuyNow
+    ? checkoutItems.reduce((sum, item) => sum + getProductDisplayPrice(item.product, role).price * item.quantity, 0)
+    : subtotal;
+  const payableTotal = Math.max(0, checkoutSubtotal - (appliedCoupon?.discountAmount ?? 0));
+  const advanceAmount = paymentMethod === "COD" ? Math.min(500, payableTotal) : payableTotal;
+  const balanceAmount = Math.max(payableTotal - advanceAmount, 0);
 
   return (
     <SitePage>
@@ -252,12 +304,14 @@ export default function CheckoutPage() {
         </section>
 
         <aside className="h-fit rounded-lg border border-white/10 bg-[#111418] p-5 shadow-sm">
-          <h2 className="text-lg font-bold text-white">Order Summary</h2>
+          <h2 className="text-lg font-bold text-white">{isBuyNow ? "Buy Now Summary" : "Order Summary"}</h2>
           <div className="mt-4 space-y-3">
-            {cartItems.length === 0 ? (
-              <p className="text-sm text-slate-300">Your cart is empty.</p>
+            {buyNowLoading ? (
+              <p className="text-sm text-slate-300">Loading product...</p>
+            ) : checkoutItems.length === 0 ? (
+              <p className="text-sm text-slate-300">{isBuyNow ? "Product is not available." : "Your cart is empty."}</p>
             ) : (
-              cartItems.map((item) => (
+              checkoutItems.map((item) => (
                 <div key={item.product.id} className="grid grid-cols-[56px_1fr_auto] gap-3 rounded-md border border-white/10 p-2 text-sm">
                   <div className="relative h-14 w-14 overflow-hidden rounded bg-white">
                     <Image src={item.product.image} alt={item.product.name} fill sizes="56px" className="object-contain p-1.5" unoptimized />
@@ -274,7 +328,7 @@ export default function CheckoutPage() {
           <div className="mt-5 border-t border-white/10 pt-4">
             <div className="flex justify-between text-sm text-slate-300">
               <span>Subtotal</span>
-              <span>{formatPrice(subtotal)}</span>
+              <span>{formatPrice(checkoutSubtotal)}</span>
             </div>
             <div className="mt-4 flex gap-2">
               <input
@@ -291,15 +345,52 @@ export default function CheckoutPage() {
                 <span>-{formatPrice(appliedCoupon.discountAmount)}</span>
               </div>
             ) : null}
+            <div className="mt-5 grid gap-3 border-t border-white/10 pt-4">
+              <p className="text-sm font-bold text-white">Payment Option</p>
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("ONLINE")}
+                className={`rounded-md border p-3 text-left transition ${paymentMethod === "ONLINE" ? "border-[#12a8e6] bg-[#12a8e6]/10" : "border-white/10 bg-[#0d1114] hover:border-[#12a8e6]/40"}`}
+              >
+                <span className="flex items-start gap-3">
+                  <span className={`mt-1 h-4 w-4 rounded-full border ${paymentMethod === "ONLINE" ? "border-[#12a8e6] bg-[#12a8e6]" : "border-slate-500"}`} />
+                  <span>
+                    <span className="block font-bold text-white">Pay Online</span>
+                    <span className="mt-1 block text-xs font-semibold text-slate-300">Pay full amount now through Razorpay.</span>
+                  </span>
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("COD")}
+                className={`rounded-md border p-3 text-left transition ${paymentMethod === "COD" ? "border-[#12a8e6] bg-[#12a8e6]/10" : "border-white/10 bg-[#0d1114] hover:border-[#12a8e6]/40"}`}
+              >
+                <span className="flex items-start gap-3">
+                  <span className={`mt-1 h-4 w-4 rounded-full border ${paymentMethod === "COD" ? "border-[#12a8e6] bg-[#12a8e6]" : "border-slate-500"}`} />
+                  <span>
+                    <span className="block font-bold text-white">Cash on Delivery</span>
+                    <span className="mt-1 block text-xs font-semibold text-slate-300">Pay Rs. 500 advance now. Pay remaining amount on delivery.</span>
+                  </span>
+                </span>
+              </button>
+            </div>
             <div className="mt-4 flex justify-between border-t border-white/10 pt-4 font-bold text-white">
               <span>Total</span>
               <span>{formatPrice(payableTotal)}</span>
             </div>
+            {paymentMethod === "COD" ? (
+              <div className="mt-3 grid gap-2 text-sm font-semibold text-slate-300">
+                <div className="flex justify-between text-[#12a8e6]"><span>Advance Payable Now</span><span>{formatPrice(advanceAmount)}</span></div>
+                <div className="flex justify-between"><span>Balance on Delivery</span><span>{formatPrice(balanceAmount)}</span></div>
+              </div>
+            ) : null}
           </div>
-          <Button type="submit" disabled={saving || cartItems.length === 0} className="mt-5 w-full">
-            {saving ? "Processing..." : "Pay with Razorpay"}
+          <Button type="submit" disabled={saving || buyNowLoading || checkoutItems.length === 0} className="mt-5 w-full">
+            {saving ? "Processing..." : paymentMethod === "COD" ? `Pay ${formatPrice(advanceAmount)} Advance` : "Pay with Razorpay"}
           </Button>
-          <LinkButton href="/cart" variant="secondary" className="mt-3 w-full">Back to Cart</LinkButton>
+          <LinkButton href={isBuyNow ? "/products" : "/cart"} variant="secondary" className="mt-3 w-full">
+            {isBuyNow ? "Continue Shopping" : "Back to Cart"}
+          </LinkButton>
         </aside>
       </form>
     </SitePage>

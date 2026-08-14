@@ -22,6 +22,14 @@ async function initDatabase() {
     await addColumnIfMissing(connection, "banners", "description", "TEXT NULL AFTER subtitle");
     await addColumnIfMissing(connection, "banners", "theme_color", "VARCHAR(40) NULL AFTER button_url");
     await addColumnIfMissing(connection, "banners", "glow_color", "VARCHAR(80) NULL AFTER theme_color");
+    await addColumnIfMissing(connection, "coupons", "title", "VARCHAR(160) NULL AFTER code");
+    await addColumnIfMissing(connection, "coupons", "subtitle", "VARCHAR(255) NULL AFTER title");
+    await addColumnIfMissing(connection, "coupons", "image_url", "VARCHAR(500) NULL AFTER subtitle");
+    await addColumnIfMissing(connection, "coupons", "sort_order", "INT UNSIGNED NOT NULL DEFAULT 0 AFTER usage_limit");
+    await addColumnIfMissing(connection, "orders", "payment_method", "ENUM('ONLINE', 'COD') NOT NULL DEFAULT 'ONLINE' AFTER order_status");
+    await addColumnIfMissing(connection, "orders", "advance_amount", "DECIMAL(12,2) NOT NULL DEFAULT 0.00 AFTER payment_method");
+    await addColumnIfMissing(connection, "orders", "balance_amount", "DECIMAL(12,2) NOT NULL DEFAULT 0.00 AFTER advance_amount");
+    await normalizeOrdersTable(connection);
     await normalizeTestimonialsTable(connection);
 
     console.log(`Database initialized: ${env.db.database}`);
@@ -30,6 +38,12 @@ async function initDatabase() {
       await connection.end();
     }
   }
+}
+
+async function normalizeOrdersTable(connection) {
+  await connection.query(
+    "ALTER TABLE `orders` MODIFY COLUMN `payment_status` ENUM('PENDING', 'PARTIAL', 'PAID', 'FAILED', 'REFUNDED') NOT NULL DEFAULT 'PENDING'",
+  );
 }
 
 async function normalizeTestimonialsTable(connection) {

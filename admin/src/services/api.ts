@@ -1,4 +1,4 @@
-import type { Banner, Category, Coupon, Customer, Dealer, Order, OrderStatus, Product, ServiceRequest, Status, Testimonial } from "@/types/admin";
+import type { Banner, Category, Coupon, Customer, Dealer, Order, OrderStatus, Product, Review, ServiceRequest, Status, Testimonial } from "@/types/admin";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
@@ -88,6 +88,9 @@ type ApiCustomer = {
 type ApiCoupon = {
   id: number;
   code: string;
+  title: string | null;
+  subtitle: string | null;
+  imageUrl: string | null;
   discountType: "PERCENTAGE" | "FLAT_AMOUNT";
   discountValue: number;
   minimumOrderAmount: number;
@@ -95,6 +98,7 @@ type ApiCoupon = {
   startAt: string;
   endAt: string;
   usageLimit: number;
+  sortOrder: number;
   status: "ACTIVE" | "INACTIVE";
   createdAt: string;
 };
@@ -125,6 +129,17 @@ type ApiTestimonial = {
   createdAt: string;
 };
 
+type ApiReview = {
+  id: number;
+  userId: number;
+  customerName: string;
+  role: "CUSTOMER" | "DEALER";
+  rating: number;
+  message: string;
+  status: "VISIBLE" | "HIDDEN";
+  createdAt: string;
+};
+
 type ApiOrder = {
   id: number;
   orderNumber: string;
@@ -132,7 +147,10 @@ type ApiOrder = {
   discountAmount: number;
   shippingAmount: number;
   totalAmount: number;
-  paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
+  paymentStatus: "PENDING" | "PARTIAL" | "PAID" | "FAILED" | "REFUNDED";
+  paymentMethod?: "ONLINE" | "COD";
+  advanceAmount?: number;
+  balanceAmount?: number;
   orderStatus: "PENDING" | "CONFIRMED" | "PACKED" | "SHIPPED" | "DELIVERED" | "CANCELLED";
   customer: {
     id: number;
@@ -157,10 +175,12 @@ type ApiOrder = {
 };
 
 export async function apiRequest<T>(path: string, init?: RequestInit) {
+  const token = typeof window === "undefined" ? null : sessionStorage.getItem("priyas-admin-access-token");
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(init?.headers || {}),
     },
     cache: "no-store",
@@ -377,6 +397,20 @@ export const adminApi = {
   async deleteTestimonial(id: string) {
     await apiRequest(`/api/testimonials/${id}`, { method: "DELETE" });
   },
+  async listReviews() {
+    const data = await apiRequest<{ reviews: ApiReview[] }>("/api/reviews/admin?includeHidden=true&limit=100");
+    return data.reviews.map(mapReview);
+  },
+  async setReviewStatus(id: string, status: "VISIBLE" | "HIDDEN") {
+    const data = await apiRequest<{ review: ApiReview }>(`/api/reviews/${id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    });
+    return mapReview(data.review);
+  },
+  async deleteReview(id: string) {
+    await apiRequest(`/api/reviews/${id}`, { method: "DELETE" });
+  },
 };
 
 function mapStatus(status: string): Status {
@@ -550,6 +584,9 @@ function mapCoupon(coupon: ApiCoupon): Coupon {
   return {
     id: String(coupon.id),
     code: coupon.code,
+    title: coupon.title || undefined,
+    subtitle: coupon.subtitle || undefined,
+    imageUrl: coupon.imageUrl || undefined,
     discountType: coupon.discountType === "PERCENTAGE" ? "Percentage" : "Flat Amount",
     discountValue: coupon.discountValue,
     minimumOrderAmount: coupon.minimumOrderAmount,
@@ -559,6 +596,7 @@ function mapCoupon(coupon: ApiCoupon): Coupon {
     endDate: end.date,
     endTime: end.time,
     usageLimit: coupon.usageLimit,
+    sortOrder: Number(coupon.sortOrder || 0),
     manualStatus: coupon.status === "ACTIVE" ? "Active" : "Inactive",
     createdDate: formatDate(coupon.createdAt),
   };
@@ -567,6 +605,9 @@ function mapCoupon(coupon: ApiCoupon): Coupon {
 function toCouponPayload(coupon: Coupon) {
   return {
     code: coupon.code,
+    title: coupon.title,
+    subtitle: coupon.subtitle,
+    imageUrl: coupon.imageUrl,
     discountType: coupon.discountType === "Percentage" ? "PERCENTAGE" : "FLAT_AMOUNT",
     discountValue: coupon.discountValue,
     minimumOrderAmount: coupon.minimumOrderAmount,
@@ -574,6 +615,7 @@ function toCouponPayload(coupon: Coupon) {
     startAt: `${coupon.startDate}T${coupon.startTime}:00`,
     endAt: `${coupon.endDate}T${coupon.endTime}:00`,
     usageLimit: coupon.usageLimit,
+    sortOrder: coupon.sortOrder,
     status: coupon.manualStatus === "Active" ? "ACTIVE" : "INACTIVE",
   };
 }
@@ -615,6 +657,7 @@ export function mapOrderStatusToApi(status: OrderStatus): ApiOrder["orderStatus"
 
 function mapPaymentStatus(status: ApiOrder["paymentStatus"]): Order["payment"] {
   if (status === "PAID") return "Paid";
+  if (status === "PARTIAL") return "Partial";
   if (status === "FAILED") return "Failed";
   return "Pending";
 }
@@ -669,6 +712,9 @@ function mapOrder(order: ApiOrder): Order {
     subtotalAmount: Number(order.subtotalAmount || 0),
     discountAmount: Number(order.discountAmount || 0),
     shippingAmount: Number(order.shippingAmount || 0),
+    paymentMethod: order.paymentMethod === "COD" ? "COD" : "Online",
+    advanceAmount: Number(order.advanceAmount || 0),
+    balanceAmount: Number(order.balanceAmount || 0),
     shippingAddress: order.shippingAddress,
     products: order.items.map((item) => ({
       id: String(item.id),
@@ -707,5 +753,18 @@ function toTestimonialPayload(testimonial: Testimonial) {
     imageUrl: testimonial.imageUrl,
     sortOrder: Number(testimonial.sortOrder || 0),
     status: testimonial.status === "Active" ? "ACTIVE" : "INACTIVE",
+  };
+}
+
+function mapReview(review: ApiReview): Review {
+  return {
+    id: String(review.id),
+    userId: String(review.userId),
+    customerName: review.customerName,
+    role: review.role === "DEALER" ? "Dealer" : "Customer",
+    rating: Number(review.rating || 0),
+    message: review.message,
+    status: review.status === "HIDDEN" ? "Hidden" : "Visible",
+    createdDate: formatDate(review.createdAt),
   };
 }

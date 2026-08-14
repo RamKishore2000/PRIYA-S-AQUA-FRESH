@@ -21,7 +21,7 @@ const cards = [
     value: "A",
     suffix: "+",
     title: "Business Class",
-    quote: "Exceptional dealer, highly recommended!",
+    quote: "Exceptional service, highly recommended!",
     icon: Award,
   },
 ];
@@ -129,7 +129,7 @@ export function WhyWeAre() {
               Trusted by Customers, Built for Better Water
             </h2>
             <p data-home-why-reveal className="mt-4 max-w-2xl leading-8 text-slate-300">
-              Priya&apos;s Aqua Fresh focuses on dependable purification, practical support, and long-term customer trust across homes, dealers and commercial needs.
+              Priya&apos;s Aqua Fresh focuses on dependable purification, practical support, and long-term customer trust across homes, businesses and commercial needs.
             </p>
           </div>
 

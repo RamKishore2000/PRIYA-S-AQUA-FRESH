@@ -14,7 +14,10 @@ export type Order = {
   discountAmount: number;
   shippingAmount: number;
   totalAmount: number;
-  paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
+  paymentStatus: "PENDING" | "PARTIAL" | "PAID" | "FAILED" | "REFUNDED";
+  paymentMethod?: "ONLINE" | "COD";
+  advanceAmount?: number;
+  balanceAmount?: number;
   orderStatus: "PENDING" | "CONFIRMED" | "PACKED" | "SHIPPED" | "DELIVERED" | "CANCELLED";
   createdAt: string;
   customer?: {
@@ -96,10 +99,18 @@ async function apiRequest<T>(path: string, init?: RequestInit) {
   return result.data;
 }
 
-export async function createOrder(payload: ShippingAddress | { addressId: number }, couponCode?: string) {
+type CreateOrderPayload = (ShippingAddress | { addressId: number }) & {
+  paymentMethod?: "ONLINE" | "COD";
+  buyNow?: {
+    productId: string | number;
+    quantity: number;
+  };
+};
+
+export async function createOrder(payload: CreateOrderPayload, couponCode?: string) {
   const data = await apiRequest<{ order: Order }>("/api/orders", {
     method: "POST",
-    body: JSON.stringify("addressId" in payload ? { addressId: payload.addressId, couponCode } : { shippingAddress: payload, couponCode }),
+    body: JSON.stringify("addressId" in payload ? { ...payload, addressId: payload.addressId, couponCode } : { ...payload, shippingAddress: payload, couponCode }),
   });
   return data.order;
 }
@@ -124,6 +135,7 @@ export async function verifyRazorpayPayment(payload: {
   razorpayOrderId: string;
   razorpayPaymentId: string;
   razorpaySignature: string;
+  checkoutMode?: "CART" | "BUY_NOW";
 }) {
   const data = await apiRequest<{ order: Order }>("/api/orders/razorpay/verify", {
     method: "POST",

@@ -132,7 +132,10 @@ export default function CouponsPage() {
                 const status = getCouponStatus(coupon);
                 return (
                   <tr key={coupon.id}>
-                    <td className="px-5 py-4 font-bold text-slate-950">{coupon.code}</td>
+                    <td className="px-5 py-4">
+                      <p className="font-bold text-slate-950">{coupon.code}</p>
+                      {coupon.title ? <p className="mt-1 text-xs font-semibold text-slate-500">{coupon.title}</p> : null}
+                    </td>
                     <td className="px-5 py-4 text-slate-600">
                       <p className="font-bold">{discountText(coupon)}</p>
                       {coupon.maximumDiscountAmount ? <p className="text-xs text-slate-400">Max {formatCurrency(coupon.maximumDiscountAmount)}</p> : null}

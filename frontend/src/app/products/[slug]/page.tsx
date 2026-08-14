@@ -62,8 +62,14 @@ export default async function ProductDetailPage({ params }: PageProps<"/products
               {product.sku ? <p className="mt-3 text-sm font-semibold text-slate-400">Product Code: {product.sku}</p> : null}
             </div>
 
-            <div className="mt-6 flex w-full items-center gap-4">
+            <div className="mt-6 grid w-full grid-cols-[1fr_1fr_auto] items-center gap-4">
               <AddToCartButton product={product} className="h-14 min-w-0 flex-1 rounded-lg text-lg" />
+              <Link
+                href={`/checkout?buyNow=${product.id}`}
+                className="inline-flex h-14 items-center justify-center rounded-lg border border-[#12a8e6]/45 px-6 text-base font-bold text-white transition hover:border-[#12a8e6] hover:bg-[#12a8e6]/15"
+              >
+                Buy Now
+              </Link>
               <ProductShareButton product={product} variant="button" className="h-14 shrink-0 rounded-lg px-6 text-base whitespace-nowrap" />
             </div>
 

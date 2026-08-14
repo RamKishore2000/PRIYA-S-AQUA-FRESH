@@ -18,7 +18,7 @@ const serviceHighlights = [
   },
   {
     title: "Water Expertise",
-    description: "Water quality consultation for home, dealer, and commercial requirements.",
+    description: "Water quality consultation for home, business, and commercial requirements.",
     icon: Droplets,
   },
 ];
@@ -41,8 +41,8 @@ export default function ServicesPage() {
                 <Wrench className="h-4 w-4" />
                 Services
               </div>
-              <h1 className="mt-5 max-w-2xl text-4xl font-black tracking-tight text-white md:text-6xl">
-                Professional Water Purifier <span className="text-[#12a8e6]">Services</span>
+              <h1 className="mt-5 max-w-2xl font-serif text-4xl font-medium leading-[0.98] tracking-normal text-white sm:text-5xl md:text-[3.45rem]">
+                Expert Care for <span className="text-[#12a8e6]">Pure Water</span>
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
                 From installation and maintenance to filter replacement and commercial RO support, Priya&apos;s Aqua Fresh helps keep your purification system performing at its best.

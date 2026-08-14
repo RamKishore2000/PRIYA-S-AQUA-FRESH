@@ -1,11 +1,16 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { AdminModalShell } from "@/components/admin/admin-modal-shell";
+import { uploadImage } from "@/services/api";
 import type { Coupon, CouponManualStatus, DiscountType } from "@/types/admin";
 
 type CouponFormState = {
   code: string;
+  title: string;
+  subtitle: string;
+  imageUrl: string;
   discountType: DiscountType;
   discountValue: string;
   minimumOrderAmount: string;
@@ -15,6 +20,7 @@ type CouponFormState = {
   endDate: string;
   endTime: string;
   usageLimit: string;
+  sortOrder: string;
   manualStatus: CouponManualStatus;
 };
 
@@ -31,6 +37,9 @@ const inputClass = "h-10 w-full rounded-md border border-slate-200 px-3 text-sm 
 function initialState(coupon?: Coupon | null): CouponFormState {
   return {
     code: coupon?.code ?? "",
+    title: coupon?.title ?? "",
+    subtitle: coupon?.subtitle ?? "",
+    imageUrl: coupon?.imageUrl ?? "",
     discountType: coupon?.discountType ?? "Percentage",
     discountValue: coupon ? String(coupon.discountValue) : "",
     minimumOrderAmount: coupon ? String(coupon.minimumOrderAmount) : "",
@@ -40,6 +49,7 @@ function initialState(coupon?: Coupon | null): CouponFormState {
     endDate: coupon?.endDate ?? "",
     endTime: coupon?.endTime ?? "",
     usageLimit: coupon ? String(coupon.usageLimit) : "",
+    sortOrder: coupon ? String(coupon.sortOrder) : "0",
     manualStatus: coupon?.manualStatus ?? "Active",
   };
 }
@@ -47,6 +57,7 @@ function initialState(coupon?: Coupon | null): CouponFormState {
 export function CouponFormDialog({ mode, open, initialCoupon, onClose, onSave }: CouponFormDialogProps) {
   const [form, setForm] = useState<CouponFormState>(() => initialState(initialCoupon));
   const [errors, setErrors] = useState<Partial<Record<keyof CouponFormState | "dateRange", string>>>({});
+  const [uploading, setUploading] = useState(false);
 
   if (!open) return null;
 
@@ -59,6 +70,20 @@ export function CouponFormDialog({ mode, open, initialCoupon, onClose, onSave }:
     return value.toUpperCase().replace(/\s+/g, "");
   }
 
+  async function uploadOfferImage(file?: File) {
+    if (!file) return;
+    setUploading(true);
+    setErrors((current) => ({ ...current, imageUrl: undefined }));
+    try {
+      const imageUrl = await uploadImage(file, "banners");
+      updateField("imageUrl", imageUrl);
+    } catch (error) {
+      setErrors((current) => ({ ...current, imageUrl: error instanceof Error ? error.message : "Image upload failed." }));
+    } finally {
+      setUploading(false);
+    }
+  }
+
   function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextErrors: Partial<Record<keyof CouponFormState | "dateRange", string>> = {};
@@ -66,14 +91,17 @@ export function CouponFormDialog({ mode, open, initialCoupon, onClose, onSave }:
     const end = new Date(`${form.endDate}T${form.endTime}`);
 
     if (!form.code.trim()) nextErrors.code = "Coupon code is required.";
+    if (form.title.length > 160) nextErrors.title = "Offer title is too long.";
+    if (form.subtitle.length > 255) nextErrors.subtitle = "Offer subtitle is too long.";
     if (!Number(form.discountValue) || Number(form.discountValue) <= 0) nextErrors.discountValue = "Enter a valid discount value.";
-    if (!Number(form.minimumOrderAmount) || Number(form.minimumOrderAmount) <= 0) nextErrors.minimumOrderAmount = "Enter a valid minimum order amount.";
+    if (form.minimumOrderAmount === "" || Number(form.minimumOrderAmount) < 0) nextErrors.minimumOrderAmount = "Enter a valid minimum order amount.";
     if (form.maximumDiscountAmount && Number(form.maximumDiscountAmount) <= 0) nextErrors.maximumDiscountAmount = "Enter a valid maximum discount amount.";
     if (!form.startDate) nextErrors.startDate = "Start date is required.";
     if (!form.startTime) nextErrors.startTime = "Start time is required.";
     if (!form.endDate) nextErrors.endDate = "End date is required.";
     if (!form.endTime) nextErrors.endTime = "End time is required.";
     if (!Number(form.usageLimit) || Number(form.usageLimit) <= 0) nextErrors.usageLimit = "Enter a valid usage limit.";
+    if (form.sortOrder && Number(form.sortOrder) < 0) nextErrors.sortOrder = "Sort order cannot be negative.";
     if (form.startDate && form.startTime && form.endDate && form.endTime && end <= start) {
       nextErrors.dateRange = "End date and time must be after the start date and time.";
     }
@@ -84,6 +112,9 @@ export function CouponFormDialog({ mode, open, initialCoupon, onClose, onSave }:
     onSave({
       id: initialCoupon?.id ?? `cpn-${Date.now()}`,
       code: normalizeCode(form.code),
+      title: form.title.trim() || undefined,
+      subtitle: form.subtitle.trim() || undefined,
+      imageUrl: form.imageUrl.trim() || undefined,
       discountType: form.discountType,
       discountValue: Number(form.discountValue),
       minimumOrderAmount: Number(form.minimumOrderAmount),
@@ -93,6 +124,7 @@ export function CouponFormDialog({ mode, open, initialCoupon, onClose, onSave }:
       endDate: form.endDate,
       endTime: form.endTime,
       usageLimit: Number(form.usageLimit),
+      sortOrder: form.sortOrder ? Number(form.sortOrder) : 0,
       manualStatus: form.manualStatus,
       createdDate: initialCoupon?.createdDate ?? "09 Aug 2026",
     });
@@ -114,6 +146,39 @@ export function CouponFormDialog({ mode, open, initialCoupon, onClose, onSave }:
             <input className={`${inputClass} mt-2 font-bold uppercase`} value={form.code} onChange={(event) => updateField("code", normalizeCode(event.target.value))} placeholder="AQUA20" />
             {errors.code ? <span className="mt-1 block text-xs font-semibold text-red-600">{errors.code}</span> : null}
           </label>
+          <label className="block">
+            <span className="text-sm font-semibold text-slate-700">Offer Title</span>
+            <input className={`${inputClass} mt-2`} value={form.title} onChange={(event) => updateField("title", event.target.value)} placeholder="Festival Water Purifier Offer" />
+            {errors.title ? <span className="mt-1 block text-xs font-semibold text-red-600">{errors.title}</span> : null}
+          </label>
+          <label className="block">
+            <span className="text-sm font-semibold text-slate-700">Offer Subtitle</span>
+            <input className={`${inputClass} mt-2`} value={form.subtitle} onChange={(event) => updateField("subtitle", event.target.value)} placeholder="Limited time savings on selected products" />
+            {errors.subtitle ? <span className="mt-1 block text-xs font-semibold text-red-600">{errors.subtitle}</span> : null}
+          </label>
+          <div className="md:col-span-2">
+            <span className="text-sm font-semibold text-slate-700">Festival Banner Image</span>
+            <div className="mt-2 grid gap-3 rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4 md:grid-cols-[220px_1fr]">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-md border border-slate-200 bg-white">
+                {form.imageUrl ? <Image src={form.imageUrl} alt="Coupon offer banner" fill className="object-contain p-2" unoptimized /> : <span className="grid h-full place-items-center text-xs font-semibold text-slate-400">No image</span>}
+              </div>
+              <div className="flex flex-col justify-center gap-3">
+                <p className="text-xs font-semibold text-slate-500">Optional. Upload the left-side festive image. It will be preserved without cropping.</p>
+                <div className="flex flex-wrap gap-2">
+                  <label className="inline-flex cursor-pointer rounded-md bg-slate-950 px-3 py-2 text-xs font-semibold text-white">
+                    {uploading ? "Uploading..." : form.imageUrl ? "Replace Image" : "Upload Image"}
+                    <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" className="sr-only" disabled={uploading} onChange={(event) => uploadOfferImage(event.target.files?.[0])} />
+                  </label>
+                  {form.imageUrl ? (
+                    <button type="button" onClick={() => updateField("imageUrl", "")} className="rounded-md border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700">
+                      Remove
+                    </button>
+                  ) : null}
+                </div>
+                {errors.imageUrl ? <span className="text-xs font-semibold text-red-600">{errors.imageUrl}</span> : null}
+              </div>
+            </div>
+          </div>
           <label className="block">
             <span className="text-sm font-semibold text-slate-700">Discount Type</span>
             <select className={`${inputClass} mt-2`} value={form.discountType} onChange={(event) => updateField("discountType", event.target.value as DiscountType)}>
@@ -161,6 +226,11 @@ export function CouponFormDialog({ mode, open, initialCoupon, onClose, onSave }:
             <span className="text-sm font-semibold text-slate-700">Usage Limit</span>
             <input type="number" className={`${inputClass} mt-2`} value={form.usageLimit} onChange={(event) => updateField("usageLimit", event.target.value)} placeholder="100" />
             {errors.usageLimit ? <span className="mt-1 block text-xs font-semibold text-red-600">{errors.usageLimit}</span> : null}
+          </label>
+          <label className="block">
+            <span className="text-sm font-semibold text-slate-700">Sort Order</span>
+            <input type="number" className={`${inputClass} mt-2`} value={form.sortOrder} onChange={(event) => updateField("sortOrder", event.target.value)} placeholder="0" />
+            {errors.sortOrder ? <span className="mt-1 block text-xs font-semibold text-red-600">{errors.sortOrder}</span> : null}
           </label>
           <label className="block">
             <span className="text-sm font-semibold text-slate-700">Status</span>

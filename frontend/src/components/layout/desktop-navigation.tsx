@@ -12,13 +12,18 @@ export const navItems = [
   { label: "Contact Us", href: "/contact" },
 ];
 
-export function DesktopNavigation() {
+type DesktopNavigationProps = {
+  hideServices?: boolean;
+};
+
+export function DesktopNavigation({ hideServices = false }: DesktopNavigationProps) {
   const pathname = usePathname();
+  const visibleNavItems = hideServices ? navItems.filter((item) => item.href !== "/services") : navItems;
 
   return (
     <nav className="hidden items-center justify-center lg:flex" aria-label="Main navigation">
       <div className="inline-flex items-center gap-7 rounded-full border border-white/25 px-5 py-2.5 shadow-[0_12px_34px_rgba(0,0,0,0.18)] backdrop-blur">
-        {navItems.map((item) => (
+        {visibleNavItems.map((item) => (
           <NavLink key={item.href} href={item.href} label={item.label} active={isActive(pathname, item.href)} />
         ))}
       </div>

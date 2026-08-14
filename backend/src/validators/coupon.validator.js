@@ -6,6 +6,9 @@ const couponIdValidator = [
 
 const couponPayloadValidator = [
   body("code").trim().notEmpty().withMessage("Coupon code is required.").isLength({ max: 40 }).withMessage("Coupon code is too long."),
+  body("title").optional({ nullable: true, checkFalsy: true }).trim().isLength({ max: 160 }).withMessage("Offer title is too long."),
+  body("subtitle").optional({ nullable: true, checkFalsy: true }).trim().isLength({ max: 255 }).withMessage("Offer subtitle is too long."),
+  body("imageUrl").optional({ nullable: true, checkFalsy: true }).trim().isLength({ max: 500 }).withMessage("Offer image URL is too long."),
   body("discountType").isIn(["PERCENTAGE", "FLAT_AMOUNT"]).withMessage("Discount type is invalid."),
   body("discountValue").isFloat({ min: 0.01 }).withMessage("Discount value is required."),
   body("minimumOrderAmount").isFloat({ min: 0 }).withMessage("Minimum order amount is required."),
@@ -13,6 +16,7 @@ const couponPayloadValidator = [
   body("startAt").isISO8601().withMessage("Start date and time is required."),
   body("endAt").isISO8601().withMessage("End date and time is required."),
   body("usageLimit").isInt({ min: 1 }).withMessage("Usage limit is required."),
+  body("sortOrder").optional({ nullable: true, checkFalsy: true }).isInt({ min: 0 }).withMessage("Sort order is invalid."),
   body("status").optional().isIn(["ACTIVE", "INACTIVE"]).withMessage("Status is invalid."),
 ];
 

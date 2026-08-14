@@ -16,9 +16,9 @@ const faqs = [
       "Yes. Installation support is available for eligible purifier models, including home and commercial RO systems.",
   },
   {
-    question: "Can dealers see dealer pricing?",
+    question: "Can registered partners see special pricing?",
     answer:
-      "Yes. Registered dealer accounts can log in and view dealer prices where products have dealer pricing configured.",
+      "Yes. Approved business accounts can log in and view special pricing where products have that pricing configured.",
   },
   {
     question: "Do you sell spare parts and filters?",
@@ -49,7 +49,7 @@ export function FaqsSection() {
             Frequently Asked Questions
           </h2>
           <p className="mt-4 max-w-sm text-sm leading-7 text-slate-300">
-            Quick answers for water purifiers, dealer pricing, installation, spare parts and customer support.
+            Quick answers for water purifiers, special pricing, installation, spare parts and customer support.
           </p>
           <Link
             href="/faqs"

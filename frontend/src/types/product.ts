@@ -42,6 +42,21 @@ export type Banner = {
   sortOrder: number;
 };
 
+export type CouponOffer = {
+  id: string;
+  code: string;
+  title: string;
+  subtitle: string;
+  image?: string;
+  discountType: "PERCENTAGE" | "FLAT_AMOUNT";
+  discountValue: number;
+  minimumOrderAmount: number;
+  maximumDiscountAmount?: number;
+  startAt: string;
+  endAt: string;
+  sortOrder: number;
+};
+
 export type Testimonial = {
   id: string;
   name: string;
@@ -51,4 +66,14 @@ export type Testimonial = {
   product: string;
   avatar: string;
   imageUrl?: string;
+};
+
+export type Review = {
+  id: string;
+  name: string;
+  role: "Customer" | "Dealer";
+  rating: number;
+  message: string;
+  status?: "Visible" | "Hidden";
+  createdAt: string;
 };

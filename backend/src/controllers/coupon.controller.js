@@ -6,6 +6,11 @@ async function listCoupons(_req, res) {
   return sendSuccess(res, 200, "Coupons fetched successfully.", { coupons });
 }
 
+async function listPublicCoupons(_req, res) {
+  const coupons = await couponService.listPublicCoupons();
+  return sendSuccess(res, 200, "Active coupons fetched successfully.", { coupons });
+}
+
 async function getCoupon(req, res) {
   const coupon = await couponService.getCoupon(req.params.id);
   return sendSuccess(res, 200, "Coupon fetched successfully.", { coupon });
@@ -38,6 +43,7 @@ async function validateCoupon(req, res) {
 
 module.exports = {
   listCoupons,
+  listPublicCoupons,
   getCoupon,
   createCoupon,
   updateCoupon,

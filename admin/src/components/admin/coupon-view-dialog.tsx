@@ -7,6 +7,8 @@ import { formatCurrency } from "@/utils/format-currency";
 
 export function CouponViewDialog({ coupon, status, onClose }: { coupon: Coupon; status: CouponComputedStatus; onClose: () => void }) {
   const rows = [
+    ["Offer Title", coupon.title || "Not set"],
+    ["Offer Subtitle", coupon.subtitle || "Not set"],
     ["Coupon Code", coupon.code],
     ["Discount Type", coupon.discountType],
     ["Discount Value", coupon.discountType === "Percentage" ? `${coupon.discountValue}%` : formatCurrency(coupon.discountValue)],
@@ -15,6 +17,7 @@ export function CouponViewDialog({ coupon, status, onClose }: { coupon: Coupon; 
     ["Start Date & Time", `${coupon.startDate} ${coupon.startTime}`],
     ["End Date & Time", `${coupon.endDate} ${coupon.endTime}`],
     ["Usage Limit", String(coupon.usageLimit)],
+    ["Sort Order", String(coupon.sortOrder)],
   ];
 
   return (

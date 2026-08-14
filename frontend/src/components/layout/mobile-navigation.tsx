@@ -10,9 +10,10 @@ type MobileNavigationProps = {
   open: boolean;
   onClose: () => void;
   onOpenAuth: () => void;
+  hideServices?: boolean;
 };
 
-export function MobileNavigation({ open, onClose, onOpenAuth }: MobileNavigationProps) {
+export function MobileNavigation({ open, onClose, onOpenAuth, hideServices = false }: MobileNavigationProps) {
   const pathname = usePathname();
   const orderedItems = [
     { label: "Home", href: "/" },
@@ -21,6 +22,7 @@ export function MobileNavigation({ open, onClose, onOpenAuth }: MobileNavigation
     { label: "Services", href: "/services" },
     { label: "Contact Us", href: "/contact" },
   ];
+  const visibleItems = hideServices ? orderedItems.filter((item) => item.href !== "/services") : orderedItems;
 
   return (
     <div
@@ -46,7 +48,7 @@ export function MobileNavigation({ open, onClose, onOpenAuth }: MobileNavigation
           </Button>
         </div>
         <div className="grid gap-1">
-          {orderedItems.map((item) => (
+          {visibleItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}

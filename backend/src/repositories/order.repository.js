@@ -12,6 +12,9 @@ function mapOrderRows(rows) {
         shippingAmount: Number(row.shipping_amount),
         totalAmount: Number(row.total_amount),
         paymentStatus: row.payment_status,
+        paymentMethod: row.payment_method || "ONLINE",
+        advanceAmount: Number(row.advance_amount || 0),
+        balanceAmount: Number(row.balance_amount || 0),
         orderStatus: row.order_status,
         customer: row.customer_id
           ? {
@@ -46,7 +49,7 @@ function mapOrderRows(rows) {
 
 const orderSelect = `
   SELECT o.id, o.order_number, o.subtotal_amount, o.discount_amount, o.shipping_amount, o.total_amount,
-         o.payment_status, o.order_status, o.shipping_address_json, o.created_at,
+         o.payment_status, o.payment_method, o.advance_amount, o.balance_amount, o.order_status, o.shipping_address_json, o.created_at,
          u.id AS customer_id, u.full_name AS customer_name, u.mobile AS customer_mobile, u.email AS customer_email, u.role AS customer_role,
          oi.id AS item_id, oi.product_id, oi.product_name, oi.product_sku, oi.unit_price, oi.quantity, oi.line_total,
          p.slug AS product_slug,
@@ -110,15 +113,22 @@ async function markPaid(orderId, paymentId, rawResponse) {
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
-    await connection.execute(
-      "UPDATE orders SET payment_status = 'PAID', order_status = 'CONFIRMED' WHERE id = ?",
+    const [orders] = await connection.execute(
+      "SELECT payment_method, total_amount, advance_amount, balance_amount FROM orders WHERE id = ? LIMIT 1",
       [orderId],
+    );
+    const order = orders[0];
+    const paidAmount = Number(order?.payment_method === "COD" ? order.advance_amount : order?.total_amount || 0);
+    const nextPaymentStatus = order?.payment_method === "COD" && Number(order.balance_amount || 0) > 0 ? "PARTIAL" : "PAID";
+    await connection.execute(
+      "UPDATE orders SET payment_status = ?, order_status = 'CONFIRMED' WHERE id = ?",
+      [nextPaymentStatus, orderId],
     );
     await connection.execute(
       `INSERT INTO payments (order_id, provider, provider_payment_id, amount, status, raw_response)
-       SELECT id, 'RAZORPAY', ?, total_amount, 'PAID', ?
+       SELECT id, 'RAZORPAY', ?, ?, 'PAID', ?
        FROM orders WHERE id = ?`,
-      [paymentId, JSON.stringify(rawResponse), orderId],
+      [paymentId, paidAmount, JSON.stringify(rawResponse), orderId],
     );
     await connection.commit();
   } catch (error) {

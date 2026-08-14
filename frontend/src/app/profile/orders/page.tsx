@@ -13,6 +13,7 @@ import { fetchMyOrders, orderImageUrl, type Order } from "@/services/order-servi
 
 function statusClass(value: string) {
   if (value === "PAID" || value === "CONFIRMED" || value === "DELIVERED") return "bg-emerald-50 text-emerald-700";
+  if (value === "PARTIAL") return "bg-blue-50 text-blue-700";
   if (value === "PENDING") return "bg-amber-50 text-amber-700";
   if (value === "CANCELLED" || value === "FAILED") return "bg-red-50 text-red-700";
   return "bg-blue-50 text-blue-700";

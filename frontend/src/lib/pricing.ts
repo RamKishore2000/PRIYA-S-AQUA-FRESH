@@ -10,6 +10,6 @@ export function getProductDisplayPrice(product: Product, role?: string | null) {
     price,
     originalPrice,
     discount,
-    label: isDealer ? "Dealer Price" : "Customer Price",
+    label: isDealer ? "Special Price" : "Customer Price",
   };
 }

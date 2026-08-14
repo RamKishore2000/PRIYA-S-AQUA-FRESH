@@ -1,4 +1,4 @@
-import type { Banner, Category, Product, Testimonial } from "@/types/product";
+import type { Banner, Category, CouponOffer, Product, Review, Testimonial } from "@/types/product";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
@@ -29,6 +29,21 @@ type ApiBanner = {
   sortOrder: number;
 };
 
+type ApiCoupon = {
+  id: number;
+  code: string;
+  title: string | null;
+  subtitle: string | null;
+  imageUrl: string | null;
+  discountType: "PERCENTAGE" | "FLAT_AMOUNT";
+  discountValue: number;
+  minimumOrderAmount: number;
+  maximumDiscountAmount: number | null;
+  startAt: string;
+  endAt: string;
+  sortOrder: number;
+};
+
 type ApiProduct = {
   id: number;
   slug: string;
@@ -56,6 +71,16 @@ type ApiTestimonial = {
   imageUrl: string | null;
 };
 
+type ApiReview = {
+  id: number;
+  customerName: string;
+  role: "CUSTOMER" | "DEALER";
+  rating: number;
+  message: string;
+  status: "VISIBLE" | "HIDDEN";
+  createdAt: string;
+};
+
 async function request<T>(path: string) {
   const response = await fetch(`${API_BASE_URL}${path}`, { cache: "no-store" });
   const result = (await response.json()) as ApiResponse<T>;
@@ -75,6 +100,11 @@ export async function getBanners() {
   return data.banners.map(mapBanner);
 }
 
+export async function getCouponOffers() {
+  const data = await request<{ coupons: ApiCoupon[] }>("/api/coupons/public");
+  return data.coupons.map(mapCouponOffer);
+}
+
 export async function getProducts(categorySlug?: string, searchTerm?: string) {
   const params = new URLSearchParams();
   if (categorySlug) params.set("category", categorySlug);
@@ -89,9 +119,19 @@ export async function getProductBySlug(slug: string) {
   return mapProduct(data.product);
 }
 
+export async function getProductById(id: string | number) {
+  const data = await request<{ product: ApiProduct }>(`/api/products/${id}`);
+  return mapProduct(data.product);
+}
+
 export async function getTestimonials() {
   const data = await request<{ testimonials: ApiTestimonial[] }>("/api/testimonials");
   return data.testimonials.map(mapTestimonial);
+}
+
+export async function getReviews(limit = 12) {
+  const data = await request<{ reviews: ApiReview[] }>(`/api/reviews?limit=${limit}`);
+  return data.reviews.map(mapReview);
 }
 
 function withApiUrl(url?: string | null) {
@@ -123,6 +163,27 @@ function mapBanner(banner: ApiBanner): Banner {
     themeColor: banner.themeColor || "#2dd4bf",
     glowColor: banner.glowColor || "rgba(45, 212, 191, 0.34)",
     sortOrder: Number(banner.sortOrder || 0),
+  };
+}
+
+function mapCouponOffer(coupon: ApiCoupon): CouponOffer {
+  const defaultTitle = coupon.discountType === "PERCENTAGE"
+    ? `${Number(coupon.discountValue)}% Festival Offer`
+    : `Save Rs. ${Number(coupon.discountValue)}`;
+
+  return {
+    id: String(coupon.id),
+    code: coupon.code,
+    title: coupon.title || defaultTitle,
+    subtitle: coupon.subtitle || "Apply this coupon at checkout for a limited-time Priya's Aqua Fresh offer.",
+    image: coupon.imageUrl ? withApiUrl(coupon.imageUrl) : undefined,
+    discountType: coupon.discountType,
+    discountValue: Number(coupon.discountValue),
+    minimumOrderAmount: Number(coupon.minimumOrderAmount || 0),
+    maximumDiscountAmount: coupon.maximumDiscountAmount ? Number(coupon.maximumDiscountAmount) : undefined,
+    startAt: coupon.startAt,
+    endAt: coupon.endAt,
+    sortOrder: Number(coupon.sortOrder || 0),
   };
 }
 
@@ -165,5 +226,17 @@ function mapTestimonial(testimonial: ApiTestimonial): Testimonial {
     product: testimonial.role || "Priya's Aqua Fresh",
     avatar: testimonial.customerName.slice(0, 1).toUpperCase(),
     imageUrl: testimonial.imageUrl ? withApiUrl(testimonial.imageUrl) : undefined,
+  };
+}
+
+function mapReview(review: ApiReview): Review {
+  return {
+    id: String(review.id),
+    name: review.customerName,
+    role: review.role === "DEALER" ? "Dealer" : "Customer",
+    rating: Number(review.rating || 0),
+    message: review.message,
+    status: review.status === "HIDDEN" ? "Hidden" : "Visible",
+    createdAt: review.createdAt,
   };
 }

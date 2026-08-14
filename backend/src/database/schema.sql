@@ -185,6 +185,9 @@ CREATE TABLE IF NOT EXISTS wishlist_items (
 CREATE TABLE IF NOT EXISTS coupons (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   code VARCHAR(40) NOT NULL,
+  title VARCHAR(160) NULL,
+  subtitle VARCHAR(255) NULL,
+  image_url VARCHAR(500) NULL,
   discount_type ENUM('PERCENTAGE', 'FLAT_AMOUNT') NOT NULL,
   discount_value DECIMAL(12,2) NOT NULL,
   minimum_order_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
@@ -192,11 +195,13 @@ CREATE TABLE IF NOT EXISTS coupons (
   start_at DATETIME NOT NULL,
   end_at DATETIME NOT NULL,
   usage_limit INT UNSIGNED NOT NULL,
+  sort_order INT UNSIGNED NOT NULL DEFAULT 0,
   status ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY uq_coupons_code (code),
+  KEY idx_coupons_status_dates_sort (status, start_at, end_at, sort_order),
   CONSTRAINT chk_coupons_dates CHECK (end_at > start_at),
   CONSTRAINT chk_coupons_amounts CHECK (
     discount_value > 0
@@ -214,8 +219,11 @@ CREATE TABLE IF NOT EXISTS orders (
   discount_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
   shipping_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
   total_amount DECIMAL(12,2) NOT NULL,
-  payment_status ENUM('PENDING', 'PAID', 'FAILED', 'REFUNDED') NOT NULL DEFAULT 'PENDING',
+  payment_status ENUM('PENDING', 'PARTIAL', 'PAID', 'FAILED', 'REFUNDED') NOT NULL DEFAULT 'PENDING',
   order_status ENUM('PENDING', 'CONFIRMED', 'PACKED', 'SHIPPED', 'DELIVERED', 'CANCELLED') NOT NULL DEFAULT 'PENDING',
+  payment_method ENUM('ONLINE', 'COD') NOT NULL DEFAULT 'ONLINE',
+  advance_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+  balance_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
   shipping_address_json JSON NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -313,6 +321,23 @@ CREATE TABLE IF NOT EXISTS testimonials (
   KEY idx_testimonials_status_sort (status, sort_order),
   CONSTRAINT chk_testimonials_rating CHECK (rating BETWEEN 1 AND 5),
   CONSTRAINT fk_testimonials_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS reviews (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id BIGINT UNSIGNED NOT NULL,
+  customer_name VARCHAR(120) NOT NULL,
+  role ENUM('CUSTOMER', 'DEALER') NOT NULL,
+  rating DECIMAL(2,1) NOT NULL DEFAULT 5.0,
+  message TEXT NOT NULL,
+  status ENUM('VISIBLE', 'HIDDEN') NOT NULL DEFAULT 'VISIBLE',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_reviews_user_id (user_id),
+  KEY idx_reviews_status_created (status, created_at),
+  CONSTRAINT chk_reviews_rating CHECK (rating BETWEEN 1 AND 5),
+  CONSTRAINT fk_reviews_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS contact_messages (

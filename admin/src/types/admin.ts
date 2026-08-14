@@ -64,6 +64,9 @@ export type Banner = {
 export type Coupon = {
   id: string;
   code: string;
+  title?: string;
+  subtitle?: string;
+  imageUrl?: string;
   discountType: DiscountType;
   discountValue: number;
   minimumOrderAmount: number;
@@ -73,6 +76,7 @@ export type Coupon = {
   endDate: string;
   endTime: string;
   usageLimit: number;
+  sortOrder: number;
   manualStatus: CouponManualStatus;
   createdDate: string;
 };
@@ -108,12 +112,15 @@ export type Order = {
   firstProductName: string;
   firstProductImage: string;
   amount: number;
-  payment: "Paid" | "Pending" | "Failed";
+  payment: "Paid" | "Partial" | "Pending" | "Failed";
   status: OrderStatus;
   date: string;
   subtotalAmount: number;
   discountAmount: number;
   shippingAmount: number;
+  paymentMethod?: "Online" | "COD";
+  advanceAmount?: number;
+  balanceAmount?: number;
   shippingAddress?: {
     fullName: string;
     mobile: string;
@@ -160,5 +167,16 @@ export type Testimonial = {
   imageUrl: string;
   sortOrder: number;
   status: Status;
+  createdDate: string;
+};
+
+export type Review = {
+  id: string;
+  userId: string;
+  customerName: string;
+  role: BuyerRole;
+  rating: number;
+  message: string;
+  status: "Visible" | "Hidden";
   createdDate: string;
 };
