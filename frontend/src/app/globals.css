@@ -29,6 +29,12 @@ body {
   overflow-x: hidden;
 }
 
+@media (max-width: 1023px) {
+  body {
+    padding-bottom: calc(74px + env(safe-area-inset-bottom));
+  }
+}
+
 button,
 a,
 input {
@@ -529,6 +535,19 @@ input {
   animation: cartTargetPop 520ms ease;
 }
 
+.order-progress-fill-once {
+  width: 0;
+  box-shadow: 0 0 18px rgb(18 168 230 / 0.24);
+  animation: orderProgressFillOnce 1.15s cubic-bezier(0.2, 0.86, 0.24, 1) forwards;
+  transform-origin: left center;
+}
+
+.order-progress-step-done {
+  background: #0a4a45;
+  animation: orderProgressStepDone 360ms ease forwards;
+  animation-delay: var(--order-step-delay, 0ms);
+}
+
 [data-sonner-toast].priyas-toast {
   min-height: 52px;
   width: min(320px, calc(100vw - 28px));
@@ -827,6 +846,34 @@ input {
   }
 }
 
+@keyframes orderProgressFillOnce {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--order-progress-width, 0%);
+  }
+}
+
+@keyframes orderProgressStepDone {
+  0% {
+    transform: scale(0.92);
+    background: #111418;
+    color: transparent;
+    box-shadow: 0 0 0 0 rgb(18 168 230 / 0);
+  }
+  65% {
+    transform: scale(1.12);
+    box-shadow: 0 0 0 8px rgb(18 168 230 / 0.12);
+  }
+  100% {
+    transform: scale(1);
+    background: #0a4a45;
+    color: #ffffff;
+    box-shadow: 0 0 0 0 rgb(18 168 230 / 0);
+  }
+}
+
 @keyframes priyasToastRise {
   from {
     opacity: 0;
@@ -926,6 +973,15 @@ input {
 
   .cart-fly-item {
     transition: none;
+  }
+
+  .order-progress-fill-once {
+    width: var(--order-progress-width, 0%);
+  }
+
+  .order-progress-step-done {
+    background: #0a4a45;
+    color: #ffffff;
   }
 
   .footer-video-text {

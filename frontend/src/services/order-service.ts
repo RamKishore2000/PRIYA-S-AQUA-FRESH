@@ -156,6 +156,8 @@ export async function fetchMyOrder(id: string | number) {
 
 export function orderImageUrl(imageUrl?: string | null) {
   if (!imageUrl) return "/file.svg";
-  if (imageUrl.startsWith("http") || imageUrl.startsWith("/images")) return imageUrl;
+  if (imageUrl.startsWith("http")) return imageUrl;
+  if (imageUrl.startsWith("/uploads")) return `${API_BASE_URL}${imageUrl}`;
+  if (imageUrl.startsWith("/")) return imageUrl;
   return `${API_BASE_URL}${imageUrl}`;
 }

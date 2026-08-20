@@ -19,8 +19,22 @@ export default function ProductsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All Categories");
+  const [statusFilter, setStatusFilter] = useState("All Status");
   const activeProducts = products.filter((product) => product.status === "Active").length;
   const inactiveProducts = products.filter((product) => product.status === "Inactive").length;
+  const filteredProducts = products.filter((product) => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+    const matchesSearch = !normalizedSearch
+      || product.name.toLowerCase().includes(normalizedSearch)
+      || product.sku.toLowerCase().includes(normalizedSearch)
+      || product.category.toLowerCase().includes(normalizedSearch)
+      || product.description.toLowerCase().includes(normalizedSearch);
+    const matchesCategory = categoryFilter === "All Categories" || product.category === categoryFilter;
+    const matchesStatus = statusFilter === "All Status" || product.status === statusFilter;
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
 
   useEffect(() => {
     Promise.all([adminApi.listProducts(), adminApi.listCategories()])
@@ -45,13 +59,32 @@ export default function ProductsPage() {
 
       <section className="mt-5 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <input placeholder="Search products" className="h-10 rounded-md border border-slate-200 px-3 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100" />
-          <select className="h-10 rounded-md border border-slate-200 px-3 text-sm outline-none">
-            <option>All Categories</option>
-            {categories.map((category) => <option key={category.id}>{category.name}</option>)}
+          <input
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Search product name, SKU, category"
+            className="h-10 rounded-md border border-slate-200 px-3 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+          />
+          <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)} className="h-10 rounded-md border border-slate-200 px-3 text-sm outline-none">
+            <option value="All Categories">All Categories</option>
+            {categories.map((category) => <option key={category.id} value={category.name}>{category.name}</option>)}
           </select>
-          <select className="h-10 rounded-md border border-slate-200 px-3 text-sm outline-none"><option>All Status</option><option>Active</option><option>Inactive</option></select>
-          <button type="button" className="h-10 rounded-md border border-slate-200 px-4 text-sm font-semibold text-slate-700">Reset Filters</button>
+          <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className="h-10 rounded-md border border-slate-200 px-3 text-sm outline-none">
+            <option value="All Status">All Status</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+          <button
+            type="button"
+            onClick={() => {
+              setSearchTerm("");
+              setCategoryFilter("All Categories");
+              setStatusFilter("All Status");
+            }}
+            className="h-10 rounded-md border border-slate-200 px-4 text-sm font-semibold text-slate-700"
+          >
+            Reset Filters
+          </button>
         </div>
       </section>
 
@@ -62,7 +95,7 @@ export default function ProductsPage() {
               <tr>{["Main Image", "Product Name", "Product Code", "Category", "Customer Price", "Dealer Price", "Status", "Created Date", "Actions"].map((header) => <th key={header} className="px-5 py-3 font-bold">{header}</th>)}</tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
                 <tr key={product.id}>
                   <td className="px-5 py-4">
                     <div className="relative h-14 w-14 rounded-md border border-slate-200 bg-slate-50">
@@ -109,6 +142,7 @@ export default function ProductsPage() {
             </tbody>
           </table>
           {!loading && products.length === 0 ? <p className="p-5 text-sm font-semibold text-slate-500">No products found. Add your first product.</p> : null}
+          {!loading && products.length > 0 && filteredProducts.length === 0 ? <p className="p-5 text-sm font-semibold text-slate-500">No products match the selected filters.</p> : null}
         </div>
       </section>
     </AdminShell>

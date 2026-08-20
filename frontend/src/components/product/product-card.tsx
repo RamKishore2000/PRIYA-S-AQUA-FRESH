@@ -83,30 +83,30 @@ export function ProductCard({ product, surface = "hover" }: { product: Product; 
           ))}
         </div>
       </div>
-      <div className="flex flex-1 flex-col items-center px-4 pb-4 pt-1 text-center">
-        <p className="text-center text-[11px] font-bold uppercase tracking-[0.22em] text-[#12a8e6]">
+      <div className="flex flex-1 flex-col items-center px-3 pb-3 pt-1 text-center sm:px-4 sm:pb-4">
+        <p className="text-center text-[9px] font-bold uppercase tracking-[0.16em] text-[#12a8e6] sm:text-[11px] sm:tracking-[0.22em]">
           {product.category}
         </p>
         <Link
           href={`/products/${product.slug}`}
-          className="mt-2 line-clamp-2 text-center text-[15px] font-extrabold leading-5 text-white transition hover:text-[#12a8e6]"
+          className="mt-2 line-clamp-2 text-center text-[13px] font-extrabold leading-4 text-white transition hover:text-[#12a8e6] sm:text-[15px] sm:leading-5"
         >
           {product.name}
         </Link>
         <div className="mt-0 max-h-0 translate-y-2 overflow-hidden rounded-full bg-white/[0.05] px-3 py-0 opacity-0 transition-all duration-500 group-hover:mt-3 group-hover:max-h-8 group-hover:translate-y-0 group-hover:py-1.5 group-hover:opacity-100 [&>div]:justify-center [&>div]:text-slate-300 [&_span.font-semibold]:text-white">
           <RatingStars rating={product.rating} reviewCount={product.reviewCount} />
         </div>
-        <div className="mt-3 [&>div]:justify-center [&_span:first-child]:text-xl [&_span:first-child]:text-white [&_span]:text-slate-400">
+        <div className="mt-3 [&>div]:justify-center [&_span:first-child]:text-base [&_span:first-child]:text-white [&_span]:text-slate-400 sm:[&_span:first-child]:text-xl">
           <PriceDisplay product={product} />
         </div>
-        <div className="mt-auto grid w-full max-h-0 translate-y-3 grid-cols-2 gap-2 overflow-hidden pt-0 opacity-0 transition-all duration-500 group-hover:max-h-16 group-hover:translate-y-0 group-hover:pt-4 group-hover:opacity-100">
+        <div className="mt-auto grid w-full grid-cols-1 gap-2 overflow-hidden pt-3 opacity-100 transition-all duration-500 sm:grid-cols-2 lg:max-h-0 lg:translate-y-3 lg:grid-cols-2 lg:pt-0 lg:opacity-0 lg:group-hover:max-h-16 lg:group-hover:translate-y-0 lg:group-hover:pt-4 lg:group-hover:opacity-100">
           <AddToCartButton
             product={product}
-            className="h-11 rounded-full !bg-[#0871cf] !px-3 !text-xs !text-white shadow-[0_16px_34px_rgba(8,113,207,0.3)] transition hover:!bg-[#12a8e6]"
+            className="h-9 rounded-full !bg-[#0871cf] !px-2 !text-[11px] !text-white shadow-[0_16px_34px_rgba(8,113,207,0.3)] transition hover:!bg-[#12a8e6] sm:h-11 sm:!px-3 sm:!text-xs"
           />
           <Link
             href={`/checkout?buyNow=${product.id}`}
-            className="inline-flex h-11 items-center justify-center rounded-full border border-[#12a8e6]/45 px-3 text-xs font-black text-white transition hover:border-[#12a8e6] hover:bg-[#12a8e6]/15"
+            className="inline-flex h-9 items-center justify-center rounded-full border border-[#12a8e6]/45 px-2 text-[11px] font-black text-white transition hover:border-[#12a8e6] hover:bg-[#12a8e6]/15 sm:h-11 sm:px-3 sm:text-xs"
           >
             Buy Now
           </Link>

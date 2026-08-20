@@ -13,13 +13,14 @@ import { Testimonials } from "@/components/home/testimonials";
 import { WhyChoose } from "@/components/home/why-choose";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { MobileBottomTabs } from "@/components/layout/mobile-bottom-tabs";
 import { getHomeData } from "@/services/home-data";
 
 export default async function Home() {
   const { categories, banners, products, couponOffers, testimonials } = await getHomeData();
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#F8F3EC] text-[#1D2D2E]">
+    <main className="min-h-screen overflow-x-hidden bg-[#F8F3EC] pb-20 text-[#1D2D2E] lg:pb-0">
       <HomeAnimations />
       <Header overlay />
       <Hero banners={banners} categories={categories} />
@@ -35,6 +36,7 @@ export default async function Home() {
       <NewsletterStrip />
       <FaqSection />
       <Footer />
+      <MobileBottomTabs />
     </main>
   );
 }

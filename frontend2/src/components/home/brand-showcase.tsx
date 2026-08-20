@@ -5,7 +5,7 @@ import Image from "next/image";
 import gsap from "gsap";
 
 const brands = [
-  { name: "Priya's Aqua Mart", image: "/images/brands/priyas-aqua-mart.png" },
+  { name: "Priya's Aqua Mart", image: "/images/brands/priyas-aqua-mart-transparent-hd.png" },
   { name: "Priya's Smart LED TV", image: "/images/brands/priyas-smart-led-tv.png" },
   { name: "Priya's RO Care India", image: "/images/brands/priyas-ro-care-india.png" },
   { name: "Priya's Aqua RO Water Solutions", image: "/images/brands/priyas-aqua-ro-water-solutions.png" },
@@ -45,16 +45,16 @@ export function BrandShowcase() {
   }, []);
 
   return (
-    <section data-home-reveal className="relative overflow-hidden bg-[#F8F0E6] py-16 md:py-20">
+    <section data-home-reveal className="relative overflow-hidden bg-[#F8F0E6] py-10 md:py-12 lg:py-20">
       <div className="absolute left-1/2 top-0 h-px w-[72%] -translate-x-1/2 bg-gradient-to-r from-transparent via-[#B68A45]/45 to-transparent" />
 
-      <div className="relative mx-auto max-w-7xl px-5 md:px-8">
-        <div data-reveal-item className="mb-12 flex flex-wrap items-end justify-between gap-6">
+      <div className="relative mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
+        <div data-reveal-item className="mb-7 flex flex-wrap items-end justify-between gap-4 lg:mb-12 lg:gap-6">
           <div className="max-w-3xl">
             <p className="text-xs font-black uppercase tracking-[0.28em] text-[#B68A45]">Trusted Brands</p>
-            <h2 className="mt-3 font-serif text-4xl font-semibold leading-tight text-[#1D2D2E] md:text-6xl">Our Brands &amp; Solutions</h2>
+            <h2 className="mt-2 font-serif text-3xl font-semibold leading-tight text-[#1D2D2E] md:text-4xl lg:mt-3 lg:text-6xl">Our Brands &amp; Solutions</h2>
           </div>
-          <p className="max-w-md text-sm font-semibold leading-7 text-[#5A6362] md:text-base">
+          <p className="hidden max-w-md text-sm font-semibold leading-7 text-[#5A6362] lg:block lg:text-base">
             Real Priya&apos;s brand marks and solution partners presented in a clean premium strip.
           </p>
         </div>
@@ -65,7 +65,13 @@ export function BrandShowcase() {
           <div ref={trackRef} className="brand-gsap-track">
             {[...brands, ...brands].map((brand, index) => (
               <div key={`${brand.name}-${index}`} data-gsap-brand className="brand-gsap-item">
-                <Image src={brand.image} alt={brand.name} width={300} height={130} className="max-h-24 w-auto object-contain" />
+                <Image
+                  src={brand.image}
+                  alt={brand.name}
+                  width={300}
+                  height={130}
+                  className={brand.name === "Priya's Aqua Mart" ? "max-h-20 w-auto object-contain md:max-h-24" : "max-h-24 w-auto object-contain md:max-h-28"}
+                />
               </div>
             ))}
           </div>

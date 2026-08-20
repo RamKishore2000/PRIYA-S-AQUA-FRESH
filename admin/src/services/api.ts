@@ -498,7 +498,7 @@ function mapProduct(product: ApiProduct): Product {
     sku: product.sku,
     category: product.category.name,
     categoryId: String(product.category.id),
-    images: product.images.map((image) => image.imageUrl),
+    images: product.images.map((image) => withApiUrl(image.imageUrl)),
     customerOriginalPrice: product.prices.customerOriginalPrice,
     customerSellingPrice: product.prices.customerSellingPrice,
     dealerOriginalPrice: product.prices.dealerOriginalPrice,

@@ -67,7 +67,7 @@ export default function OrdersPage() {
           {visibleOrders.map((order) => {
             const firstItem = order.items[0];
             return (
-              <Link key={order.id} href={`/profile/orders/${order.id}`} className="grid gap-4 rounded-lg border border-white/10 bg-[#111418] p-4 shadow-sm transition hover:border-[#12a8e6]/50 hover:bg-[#151a1f] sm:grid-cols-[96px_1fr_auto]">
+              <Link key={order.id} href={`/profile/orders/${order.id}`} className="group grid gap-4 rounded-lg border border-white/10 bg-[#111418] p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-[#12a8e6]/50 hover:bg-[#151a1f] sm:grid-cols-[96px_1fr_auto]">
                 <div className="relative h-24 w-24 overflow-hidden rounded-md bg-white">
                   <Image src={orderImageUrl(firstItem?.imageUrl)} alt={firstItem?.productName || order.orderNumber} fill className="object-contain p-2" unoptimized />
                 </div>
@@ -82,7 +82,12 @@ export default function OrdersPage() {
                     {order.items.length} item{order.items.length === 1 ? "" : "s"} - {new Date(order.createdAt).toLocaleDateString("en-IN")}
                   </p>
                 </div>
-                <div className="flex items-center font-bold text-white sm:justify-end">{formatPrice(order.totalAmount)}</div>
+                <div className="flex flex-col justify-center gap-3 sm:items-end">
+                  <span className="font-bold text-white">{formatPrice(order.totalAmount)}</span>
+                  <span className="inline-flex h-10 items-center justify-center rounded-full bg-[#12a8e6] px-4 text-sm font-black text-white transition group-hover:bg-[#0871cf]">
+                    Order Details
+                  </span>
+                </div>
               </Link>
             );
           })}

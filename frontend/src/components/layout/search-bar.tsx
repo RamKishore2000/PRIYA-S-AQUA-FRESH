@@ -44,12 +44,12 @@ export function SearchBar({ compact = false, panel = false }: SearchBarProps) {
 
   return (
     <div className={cn("w-full", panel ? "" : "group relative")}>
-      <label className="sr-only" htmlFor={compact ? "mobile-search" : "site-search"}>
+      <label className="sr-only" htmlFor={panel ? "panel-search" : compact ? "mobile-search" : "site-search"}>
         Search products
       </label>
       <form className="relative" onSubmit={submitSearch}>
         <input
-          id={compact ? "mobile-search" : "site-search"}
+          id={panel ? "panel-search" : compact ? "mobile-search" : "site-search"}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           className="h-12 w-full rounded-md border border-white/15 bg-white/95 pl-4 pr-14 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-200"

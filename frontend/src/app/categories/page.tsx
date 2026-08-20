@@ -32,18 +32,18 @@ export default async function CategoriesPage() {
             </div>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {categories.map((category, index) => (
               <Link
                 key={category.id}
                 href={`/products?category=${category.slug}`}
-                className="category-reveal group relative min-h-[180px] overflow-hidden rounded-[1.35rem] border border-white/10 bg-[#111a18]/88 p-5 backdrop-blur-sm transition duration-500 hover:-translate-y-1 hover:border-[#12a8e6]/55 hover:bg-[#15231f]"
+                className="category-reveal group relative min-h-[230px] overflow-hidden rounded-[1.35rem] border border-white/10 bg-[#111a18]/88 p-4 backdrop-blur-sm transition duration-500 hover:-translate-y-1 hover:border-[#12a8e6]/55 hover:bg-[#15231f] sm:min-h-[250px] sm:p-5 lg:min-h-[180px]"
                 style={{ "--category-delay": `${index * 80}ms` } as CSSProperties}
               >
                 <span className="pointer-events-none absolute -left-16 top-1/2 h-36 w-44 -translate-y-1/2 rounded-full bg-[#12a8e6]/16 blur-3xl transition duration-500 group-hover:bg-[#12a8e6]/28" />
                 <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.09),transparent_42%,rgba(18,168,230,0.045))]" />
-                <div className="relative flex h-full items-center gap-5">
-                  <div className="relative h-32 w-36 shrink-0">
+                <div className="relative flex h-full flex-col items-center justify-center gap-4 text-center lg:flex-row lg:text-left">
+                  <div className="relative h-28 w-32 shrink-0 sm:h-32 sm:w-36">
                     <span className="absolute inset-x-4 bottom-2 h-8 rounded-full bg-black/55 blur-xl transition duration-500 group-hover:bg-[#12a8e6]/25" />
                     <Image
                       src={category.image}
@@ -56,14 +56,14 @@ export default async function CategoriesPage() {
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Explore Range</p>
-                    <h2 className="mt-2 text-xl font-black leading-tight text-[#12a8e6] transition group-hover:text-[#49cfff] md:text-2xl">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400 sm:text-xs sm:tracking-[0.2em]">Explore Range</p>
+                    <h2 className="mt-2 text-xl font-black leading-tight text-[#12a8e6] transition group-hover:text-[#49cfff] sm:text-2xl">
                       {category.name}
                     </h2>
-                    <p className="mt-3 text-sm font-semibold text-slate-300">
+                    <p className="mx-auto mt-3 max-w-[18rem] text-sm font-semibold leading-6 text-slate-300 lg:mx-0">
                       {category.productCount > 0 ? `${category.productCount} products available` : "Products coming soon"}
                     </p>
-                    <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-white transition group-hover:text-[#12a8e6]">
+                    <span className="mt-5 inline-flex items-center justify-center gap-2 rounded-full border border-[#12a8e6]/35 px-4 py-2 text-xs font-black text-white transition group-hover:border-[#12a8e6] group-hover:bg-[#12a8e6]/12 group-hover:text-[#12a8e6]">
                       View Products <ArrowUpRight className="h-4 w-4" />
                     </span>
                   </div>

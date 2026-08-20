@@ -10,20 +10,20 @@ const brandItems = [
 
 export function HeroBrandStrip() {
   return (
-    <section className="relative z-20 bg-[#F8F3EC] px-4 py-6 md:px-6 md:py-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-5 md:gap-4">
-          {brandItems.map((item) => (
+    <section className="relative z-20 overflow-hidden bg-[#F8F3EC] py-5 md:py-7">
+      <div className="brand-cert-window">
+        <div className="brand-cert-track">
+          {[...brandItems, ...brandItems].map((item, index) => (
             <div
-              key={item.name}
-              className="flex h-24 items-center justify-center rounded-lg border border-[#DEC393]/55 bg-white/82 px-2 py-2 shadow-[0_14px_34px_rgba(107,84,43,0.10)]"
+              key={`${item.name}-${index}`}
+              className="flex h-20 w-44 shrink-0 items-center justify-center rounded-lg border border-[#DEC393]/55 bg-white/88 px-3 py-2 shadow-[0_14px_34px_rgba(107,84,43,0.10)] md:h-24 md:w-56"
             >
               <Image
                 src={item.image}
                 alt={item.name}
                 width={360}
                 height={144}
-                className="max-h-20 w-full object-contain"
+                className="max-h-16 w-full object-contain md:max-h-20"
               />
             </div>
           ))}

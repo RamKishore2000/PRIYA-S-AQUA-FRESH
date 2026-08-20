@@ -4,11 +4,10 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Heart, Menu, Phone, Search, ShoppingCart, User, X } from "lucide-react";
+import { Heart, Phone, Search, ShoppingCart, User, X } from "lucide-react";
 import type { SVGProps } from "react";
 import { SearchBar } from "@/components/layout/search-bar";
 import { DesktopNavigation } from "@/components/layout/desktop-navigation";
-import { MobileNavigation } from "@/components/layout/mobile-navigation";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { Button } from "@/components/ui/button";
@@ -82,7 +81,6 @@ const dealerSupportNumbers = ["+91 98765 43210", "+91 91234 56789"];
 export function Header({ overlay = false }: HeaderProps) {
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
@@ -188,7 +186,7 @@ export function Header({ overlay = false }: HeaderProps) {
 
           <div className="min-w-0">
             {searchOpen ? (
-              <div className="mx-auto w-full max-w-[620px]">
+              <div className="mx-auto hidden w-full max-w-[620px] lg:block">
                 <SearchBar compact />
               </div>
             ) : (
@@ -197,9 +195,6 @@ export function Header({ overlay = false }: HeaderProps) {
           </div>
 
           <div className="flex items-center justify-end gap-1">
-            <Button variant="ghost" size="icon" className="text-white hover:bg-white/10 lg:hidden" aria-label="Open menu" onClick={() => setMobileOpen(true)}>
-              <Menu className="h-5 w-5" />
-            </Button>
             <Button
               variant="ghost"
               size="icon"
@@ -212,7 +207,7 @@ export function Header({ overlay = false }: HeaderProps) {
             <Link
               href="/wishlist"
               aria-label="Wishlist"
-              className="relative inline-flex h-10 w-10 items-center justify-center rounded-md text-white transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d10]"
+              className="relative hidden h-10 w-10 items-center justify-center rounded-md text-white transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d10] lg:inline-flex"
             >
               <Heart className="h-5 w-5" />
               {wishlistIds.length > 0 ? <span className="absolute right-1 top-1 h-4 min-w-4 rounded-full bg-[#12a8e6] px-1 text-[10px] font-bold leading-4 text-white shadow-[0_6px_14px_rgba(18,168,230,0.35)]">{wishlistIds.length}</span> : null}
@@ -229,7 +224,7 @@ export function Header({ overlay = false }: HeaderProps) {
               {cartCount > 0 ? <span className="absolute right-1 top-1 h-4 min-w-4 rounded-full bg-[#12a8e6] px-1 text-[10px] font-bold leading-4 text-white shadow-[0_6px_14px_rgba(18,168,230,0.35)]">{cartCount}</span> : null}
             </Button>
             <div
-              className="relative"
+              className="relative hidden lg:block"
               onMouseEnter={() => {
                 if (user) setProfileOpen(true);
               }}
@@ -272,15 +267,14 @@ export function Header({ overlay = false }: HeaderProps) {
               ) : null}
             </div>
           </div>
+          {searchOpen ? (
+            <div className="col-span-3 lg:hidden">
+              <SearchBar compact panel />
+            </div>
+          ) : null}
         </div>
       </header>
 
-      <MobileNavigation
-        open={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-        onOpenAuth={() => setAuthOpen(true)}
-        hideServices={isDealer}
-      />
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} onLogin={setUser} />
     </>

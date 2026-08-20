@@ -109,6 +109,11 @@ async function findBySku(sku) {
   return rows[0] || null;
 }
 
+async function hasOrderItems(productId) {
+  const [rows] = await pool.execute("SELECT COUNT(*) AS total FROM order_items WHERE product_id = ?", [productId]);
+  return Number(rows[0]?.total || 0) > 0;
+}
+
 async function createProduct(payload) {
   const connection = await pool.getConnection();
   try {
@@ -200,6 +205,7 @@ module.exports = {
   findById,
   findBySlug,
   findBySku,
+  hasOrderItems,
   createProduct,
   updateProduct,
   deleteProduct,

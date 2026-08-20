@@ -45,6 +45,7 @@
 - Copied public assets from existing frontend into `frontend2/public` for design use.
 - `next.config.ts` allows backend-uploaded images from `http://localhost:5000/uploads/**` and `http://127.0.0.1:5000/uploads/**`.
 - Homepage hero orbit category visuals use regular `<img>` tags for API-uploaded images so the banner does not fail if the dev server has not restarted after image config changes.
+- Static catalog fallback data was removed from `frontend2`. Homepage, products listing, and product details now rely on backend/API data from admin. If API data is empty, the related section/page stays empty or shows the existing product-not-found/empty state. Cart, wishlist, and checkout remain API-only.
 
 ## Notes
 - `gsap` and `lucide-react` were installed in `frontend2`.

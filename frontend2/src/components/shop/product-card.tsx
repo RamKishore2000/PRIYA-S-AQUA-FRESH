@@ -50,9 +50,9 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <article className="group overflow-hidden rounded-[0.9rem] border border-[#E8DCCB] bg-[#FFFBF6] text-center text-[#253738] shadow-[0_8px_24px_rgba(70,50,25,0.07)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(82,60,30,0.12)]">
-      <div className="relative isolate h-56 overflow-hidden">
+      <div className="relative isolate h-40 overflow-hidden md:h-48 lg:h-56">
         <Link href={`/products/${product.slug}`} className="absolute inset-0 flex items-center justify-center" aria-label={product.name}>
-          <span data-product-image-area className="relative block aspect-square w-full max-w-[14.5rem] overflow-hidden bg-[#F7F0E7]">
+          <span data-product-image-area className="relative block aspect-square w-full max-w-[10rem] overflow-hidden bg-[#F7F0E7] md:max-w-[12rem] lg:max-w-[14.5rem]">
             {displayPrice.discount ? (
               <span className="absolute left-0 top-4 z-20 bg-[#0A3A38] px-3 py-1.5 text-[11px] font-black uppercase leading-none tracking-[0.12em] text-white shadow-[0_12px_24px_rgba(10,58,56,0.18)]">
                 {displayPrice.discount}% Off
@@ -77,10 +77,10 @@ export function ProductCard({ product }: { product: Product }) {
           </span>
         </Link>
 
-        <span className="absolute right-4 top-4 z-30 flex flex-col gap-2">
+        <span className="absolute right-2 top-2 z-30 flex flex-col gap-1.5 lg:right-4 lg:top-4 lg:gap-2">
           <button
             onClick={handleWishlist}
-            className={`relative grid h-9 w-9 place-items-center overflow-visible rounded-lg backdrop-blur transition ${wished ? "bg-[#0A3A38] text-white" : "bg-[#FFF9F1]/90 text-[#0A3A38] hover:bg-[#0A3A38] hover:text-white"}`}
+            className={`relative grid h-8 w-8 place-items-center overflow-visible rounded-lg backdrop-blur transition lg:h-9 lg:w-9 ${wished ? "bg-[#0A3A38] text-white" : "bg-[#FFF9F1]/90 text-[#0A3A38] hover:bg-[#0A3A38] hover:text-white"}`}
             aria-label="Wishlist"
           >
             {showBurst ? (
@@ -98,24 +98,24 @@ export function ProductCard({ product }: { product: Product }) {
             ) : null}
             <HeartIcon className="h-4 w-4" />
           </button>
-          <a href={shareLink} className="grid h-9 w-9 place-items-center rounded-lg bg-[#FFF9F1]/90 text-[#0A3A38] backdrop-blur transition hover:bg-[#0A3A38] hover:text-white" aria-label="Share">
+          <a href={shareLink} className="grid h-8 w-8 place-items-center rounded-lg bg-[#FFF9F1]/90 text-[#0A3A38] backdrop-blur transition hover:bg-[#0A3A38] hover:text-white lg:h-9 lg:w-9" aria-label="Share">
             <ShareIcon className="h-4 w-4" />
           </a>
         </span>
       </div>
 
-      <div className="mx-auto max-w-[18rem] px-4 pb-4 pt-2">
-        <p className="text-[0.68rem] font-black uppercase leading-none tracking-[0.18em] text-[#B68A45]">{product.category}</p>
-        <Link href={`/products/${product.slug}`} className="mx-auto mt-2 block text-base font-black leading-5 text-[#253738] transition hover:text-[#0A3A38]">
-          <span className="block truncate">{product.name}</span>
+      <div className="mx-auto max-w-[18rem] px-2.5 pb-3 pt-2 lg:px-4 lg:pb-4">
+        <p className="truncate text-[0.58rem] font-black uppercase leading-none tracking-[0.14em] text-[#B68A45] lg:text-[0.68rem] lg:tracking-[0.18em]">{product.category}</p>
+        <Link href={`/products/${product.slug}`} className="mx-auto mt-2 block text-sm font-black leading-4 text-[#253738] transition hover:text-[#0A3A38] lg:text-base lg:leading-5">
+          <span className="line-clamp-2 min-h-8 lg:min-h-0 lg:truncate">{product.name}</span>
         </Link>
-        <PriceDisplay product={product} center className="mt-2" priceClassName="text-2xl" originalClassName="pb-0.5 text-sm" />
-        <div className="mx-auto mt-3 grid max-w-[15rem] grid-cols-2 gap-2">
-          <button onClick={handleAddToCart} className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg bg-[#0A3A38] px-3 text-xs font-black text-white transition hover:bg-[#124945]">
-            <CartIcon className="h-4 w-4" />
+        <PriceDisplay product={product} center className="mt-2" priceClassName="text-lg lg:text-2xl" originalClassName="pb-0.5 text-xs lg:text-sm" />
+        <div className="mx-auto mt-3 grid max-w-[15rem] grid-cols-2 gap-1.5 lg:gap-2">
+          <button onClick={handleAddToCart} className="inline-flex h-9 items-center justify-center gap-1 rounded-lg bg-[#0A3A38] px-2 text-[0.68rem] font-black text-white transition hover:bg-[#124945] lg:h-10 lg:gap-1.5 lg:px-3 lg:text-xs">
+            <CartIcon className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
             Add
           </button>
-          <Link href={`/checkout?buyNow=${product.id}`} className="inline-flex h-10 items-center justify-center rounded-lg border border-[#C59A55] px-3 text-xs font-black text-[#9B7137] transition hover:bg-[#F5E9D8]">
+          <Link href={`/checkout?buyNow=${product.id}`} className="inline-flex h-9 items-center justify-center rounded-lg border border-[#C59A55] px-2 text-[0.68rem] font-black text-[#9B7137] transition hover:bg-[#F5E9D8] lg:h-10 lg:px-3 lg:text-xs">
             Buy Now
           </Link>
         </div>

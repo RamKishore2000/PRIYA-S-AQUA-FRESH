@@ -51,7 +51,10 @@ export default async function ProductDetailPage({ params }: PageProps<"/products
 
             <div className="mt-4 flex items-start justify-between gap-4">
               <PriceDisplay product={product} />
-              <WishlistButton product={product} />
+              <div className="flex shrink-0 items-center gap-2">
+                <WishlistButton product={product} />
+                <ProductShareButton product={product} variant="icon" />
+              </div>
             </div>
 
             <div className="mt-7 border-t border-white/10 pt-5">
@@ -62,7 +65,7 @@ export default async function ProductDetailPage({ params }: PageProps<"/products
               {product.sku ? <p className="mt-3 text-sm font-semibold text-slate-400">Product Code: {product.sku}</p> : null}
             </div>
 
-            <div className="mt-6 grid w-full grid-cols-[1fr_1fr_auto] items-center gap-4">
+            <div className="mt-6 grid w-full gap-4 sm:grid-cols-2">
               <AddToCartButton product={product} className="h-14 min-w-0 flex-1 rounded-lg text-lg" />
               <Link
                 href={`/checkout?buyNow=${product.id}`}
@@ -70,7 +73,6 @@ export default async function ProductDetailPage({ params }: PageProps<"/products
               >
                 Buy Now
               </Link>
-              <ProductShareButton product={product} variant="button" className="h-14 shrink-0 rounded-lg px-6 text-base whitespace-nowrap" />
             </div>
 
             <div className="mt-4 grid gap-3 text-sm">

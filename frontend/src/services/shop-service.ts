@@ -132,7 +132,9 @@ export async function removeWishlistItem(productId: string) {
 
 function withApiUrl(url?: string | null) {
   if (!url) return "/images/products/hero-purifier.svg";
-  if (url.startsWith("http") || url.startsWith("/images")) return url;
+  if (url.startsWith("http")) return url;
+  if (url.startsWith("/uploads")) return `${API_BASE_URL}${url}`;
+  if (url.startsWith("/")) return url;
   return `${API_BASE_URL}${url}`;
 }
 

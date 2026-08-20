@@ -121,6 +121,8 @@ export async function fetchMyOrder(id: string | number) {
 export function orderImageUrl(imageUrl?: string | null) {
   const base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
   if (!imageUrl) return "/file.svg";
-  if (imageUrl.startsWith("http") || imageUrl.startsWith("/images")) return imageUrl;
+  if (imageUrl.startsWith("http")) return imageUrl;
+  if (imageUrl.startsWith("/uploads")) return `${base}${imageUrl}`;
+  if (imageUrl.startsWith("/")) return imageUrl;
   return `${base}${imageUrl}`;
 }

@@ -37,16 +37,16 @@ export function CategoryCarousel({ categories }: { categories: Category[] }) {
       <div
         ref={scrollRef}
         className={cn(
-          "hide-scrollbar overflow-y-hidden scroll-smooth",
-          showArrows ? "overflow-x-auto" : "overflow-x-visible",
+          "hide-scrollbar -mx-4 overflow-x-auto overflow-y-hidden px-4 scroll-smooth md:-mx-8 md:px-8 lg:mx-0 lg:px-0",
+          showArrows ? "lg:overflow-x-auto" : "lg:overflow-x-visible",
         )}
       >
         <div
           className={cn(
-            "items-start px-1 py-2",
+            "flex min-w-max items-start gap-3 py-2 md:gap-4 lg:px-1",
             showArrows
-              ? "flex min-w-max justify-start gap-4 md:gap-5"
-              : "grid justify-center gap-4 sm:grid-cols-2 lg:grid-cols-4",
+              ? "lg:flex lg:justify-start lg:gap-5"
+              : "lg:grid lg:min-w-0 lg:grid-cols-4 lg:justify-center lg:gap-4",
           )}
         >
           {categories.map((category) => (

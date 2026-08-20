@@ -255,6 +255,44 @@ button {
   box-shadow: 0 16px 34px rgba(182, 138, 69, 0.12);
 }
 
+.brand-cert-window {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.brand-cert-track {
+  display: flex;
+  width: max-content;
+  gap: 0.85rem;
+  padding: 0 1rem;
+  animation: brandCertFlow 24s linear infinite;
+}
+
+.brand-cert-window:hover .brand-cert-track {
+  animation-play-state: paused;
+}
+
+.testimonial-auto-track {
+  display: flex;
+  width: max-content;
+  gap: 1rem;
+  padding: 0 1rem 0.5rem;
+  animation: testimonialFlow 26s linear infinite;
+}
+
+.testimonial-auto-track:hover {
+  animation-play-state: paused;
+}
+
+@media (min-width: 1024px) {
+  .testimonial-auto-track {
+    display: grid;
+    width: auto;
+    padding: 0;
+    animation: none;
+  }
+}
+
 .wishlist-burst {
   position: absolute;
   height: 1px;
@@ -525,6 +563,24 @@ button {
 }
 
 @keyframes brandLogoFlow {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes brandCertFlow {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes testimonialFlow {
   from {
     transform: translateX(0);
   }

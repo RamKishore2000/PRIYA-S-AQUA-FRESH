@@ -15,9 +15,14 @@ type AuthModalProps = {
 };
 
 type AuthTab = "login" | "register";
+type LoginMode = "password" | "otp";
 
 export function AuthModal({ open, onClose, onLogin }: AuthModalProps) {
   const [tab, setTab] = useState<AuthTab>("login");
+  const [loginMode, setLoginMode] = useState<LoginMode>("password");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpMobile, setOtpMobile] = useState("");
+  const [otpCode, setOtpCode] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isRegistering, setIsRegistering] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -37,7 +42,9 @@ export function AuthModal({ open, onClose, onLogin }: AuthModalProps) {
     setIsLoggingIn(true);
     try {
       const result = await loginUser({ email: identifier, password, rememberMe: Boolean(data.get("rememberMe")) });
-      onLogin?.(result.data.user);
+      if (result.data?.user) {
+        onLogin?.(result.data.user);
+      }
       toast.success("Login successful.");
       onClose();
     } catch (error) {
@@ -46,6 +53,30 @@ export function AuthModal({ open, onClose, onLogin }: AuthModalProps) {
       setIsLoggingIn(false);
     }
   };
+
+  function sendOtp(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const mobile = otpMobile.trim();
+    const nextErrors: Record<string, string> = {};
+    if (!/^[6-9][0-9]{9}$/.test(mobile)) {
+      nextErrors.otpMobile = "Enter a valid 10 digit Indian mobile number.";
+    }
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+    setOtpSent(true);
+    toast.info("OTP login design ready. Backend integration pending.");
+  }
+
+  function verifyOtp(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const nextErrors: Record<string, string> = {};
+    if (!/^[0-9]{6}$/.test(otpCode.trim())) {
+      nextErrors.otpCode = "Enter the 6 digit OTP.";
+    }
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+    toast.info("OTP verification will be enabled soon.");
+  }
 
   const submitRegister = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -120,6 +151,8 @@ export function AuthModal({ open, onClose, onLogin }: AuthModalProps) {
               type="button"
               onClick={() => {
                 setTab(item);
+                setLoginMode("password");
+                setOtpSent(false);
                 setErrors({});
               }}
               className={cn(
@@ -131,7 +164,7 @@ export function AuthModal({ open, onClose, onLogin }: AuthModalProps) {
             </button>
           ))}
         </div>
-        {tab === "login" ? (
+        {tab === "login" && loginMode === "password" ? (
           <form onSubmit={submitLogin} className="grid gap-4">
             <FieldError error={errors.identifier}>
               <Input name="identifier" placeholder="Email or Mobile Number" />
@@ -146,12 +179,76 @@ export function AuthModal({ open, onClose, onLogin }: AuthModalProps) {
               <button type="button" className="font-semibold text-teal-700">Forgot Password?</button>
             </div>
             <Button type="submit" className="w-full" disabled={isLoggingIn}>{isLoggingIn ? "Logging in..." : "Login"}</Button>
+            <button
+              type="button"
+              className="text-center text-sm font-bold text-teal-700"
+              onClick={() => {
+                setLoginMode("otp");
+                setErrors({});
+              }}
+            >
+              Login with OTP
+            </button>
             <p className="text-center text-sm text-slate-600">
               Don&apos;t have an account?{" "}
               <button type="button" className="font-bold text-teal-700" onClick={() => setTab("register")}>
                 Create Account
               </button>
             </p>
+          </form>
+        ) : tab === "login" ? (
+          <form onSubmit={otpSent ? verifyOtp : sendOtp} className="grid gap-4">
+            <div className="rounded-md border border-teal-100 bg-teal-50 px-4 py-3">
+              <p className="text-sm font-bold text-slate-950">Login with OTP</p>
+              <p className="mt-1 text-xs font-semibold text-slate-600">
+                {otpSent ? `Enter the 6 digit OTP sent to ${otpMobile}.` : "Use your registered mobile number to continue."}
+              </p>
+            </div>
+            {!otpSent ? (
+              <FieldError error={errors.otpMobile}>
+                <Input
+                  inputMode="numeric"
+                  maxLength={10}
+                  placeholder="Mobile Number"
+                  value={otpMobile}
+                  onChange={(event) => setOtpMobile(event.target.value.replace(/\D/g, "").slice(0, 10))}
+                />
+              </FieldError>
+            ) : (
+              <>
+                <FieldError error={errors.otpCode}>
+                  <OtpBoxes value={otpCode} onChange={setOtpCode} className="border-slate-200 focus:border-teal-500 focus:ring-teal-100" />
+                </FieldError>
+                <div className="flex items-center justify-between text-sm">
+                  <button type="button" className="font-bold text-teal-700" onClick={() => toast.info("OTP resend will be enabled soon.")}>
+                    Resend OTP
+                  </button>
+                  <button
+                    type="button"
+                    className="font-semibold text-slate-600"
+                    onClick={() => {
+                      setOtpSent(false);
+                      setOtpCode("");
+                      setErrors({});
+                    }}
+                  >
+                    Change mobile
+                  </button>
+                </div>
+              </>
+            )}
+            <Button type="submit" className="w-full">{otpSent ? "Verify OTP" : "Send OTP"}</Button>
+            <button
+              type="button"
+              className="text-center text-sm font-bold text-teal-700"
+              onClick={() => {
+                setLoginMode("password");
+                setOtpSent(false);
+                setErrors({});
+              }}
+            >
+              Login with password
+            </button>
           </form>
         ) : (
           <form onSubmit={submitRegister} className="grid gap-4">
@@ -195,6 +292,48 @@ function FieldError({ children, error }: { children: ReactNode; error?: string }
       {children}
       {error ? <span className="text-xs font-semibold text-rose-600">{error}</span> : null}
     </label>
+  );
+}
+
+function OtpBoxes({ value, onChange, className }: { value: string; onChange: (value: string) => void; className?: string }) {
+  const digits = value.padEnd(6, " ").slice(0, 6).split("");
+
+  function updateDigit(index: number, nextValue: string) {
+    const digit = nextValue.replace(/\D/g, "").slice(-1);
+    const nextDigits = value.padEnd(6, " ").slice(0, 6).split("");
+    nextDigits[index] = digit || " ";
+    onChange(nextDigits.join("").replace(/\s/g, "").slice(0, 6));
+    if (digit) {
+      const nextInput = document.getElementById(`frontend-otp-${index + 1}`) as HTMLInputElement | null;
+      nextInput?.focus();
+    }
+  }
+
+  return (
+    <div className="grid grid-cols-6 gap-2">
+      {digits.map((digit, index) => (
+        <input
+          key={index}
+          id={`frontend-otp-${index}`}
+          type="text"
+          inputMode="numeric"
+          maxLength={1}
+          value={digit.trim()}
+          onChange={(event) => updateDigit(index, event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Backspace" && !digit.trim() && index > 0) {
+              const previousInput = document.getElementById(`frontend-otp-${index - 1}`) as HTMLInputElement | null;
+              previousInput?.focus();
+            }
+          }}
+          className={cn(
+            "h-12 rounded-md border bg-white text-center text-lg font-black text-slate-950 outline-none transition focus:ring-2",
+            className,
+          )}
+          aria-label={`OTP digit ${index + 1}`}
+        />
+      ))}
+    </div>
   );
 }
 

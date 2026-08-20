@@ -27,7 +27,9 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5
 
 function withApiUrl(url?: string | null) {
   if (!url) return "/images/hero/ro-purifier.png";
-  if (url.startsWith("http") || url.startsWith("/images") || url.startsWith("/Untitled")) return url;
+  if (url.startsWith("http")) return url;
+  if (url.startsWith("/uploads")) return `${API_BASE_URL}${url}`;
+  if (url.startsWith("/")) return url;
   return `${API_BASE_URL}${url}`;
 }
 

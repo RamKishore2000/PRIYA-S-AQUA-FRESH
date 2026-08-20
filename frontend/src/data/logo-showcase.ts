@@ -18,7 +18,7 @@ export const brandLogos: LogoShowcaseItem[] = [
   {
     id: "priyas-aqua-mart",
     name: "Priya's Aqua Mart",
-    image: "/images/brands/priyas-aqua-mart.png",
+    image: "/images/brands/priyas-aqua-mart-transparent-hd.png",
   },
   {
     id: "priyas-smart-led-tv",

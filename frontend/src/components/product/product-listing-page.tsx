@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,11 @@ export function ProductListingPage({
   const [filters, setFilters] = useState<ProductFiltersState>(initialFilters);
   const [sort, setSort] = useState<SortOption>("featured");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [portalReady, setPortalReady] = useState(false);
+
+  useEffect(() => {
+    setPortalReady(true);
+  }, []);
 
   useEffect(() => {
     const category = normalizeSlug(searchParams.get("category"));
@@ -163,7 +169,7 @@ export function ProductListingPage({
             {filteredProducts.length === 0 ? (
               <EmptyProductsState onClear={clearFilters} />
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-3 2xl:grid-cols-4">
                 {filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
@@ -173,37 +179,42 @@ export function ProductListingPage({
         </div>
       </section>
 
-      <div
-        className={cn("fixed inset-0 z-[80] lg:hidden", mobileFiltersOpen ? "pointer-events-auto" : "pointer-events-none")}
-        aria-hidden={!mobileFiltersOpen}
-      >
-        <button
-          className={cn("absolute inset-0 bg-slate-950/40 transition", mobileFiltersOpen ? "opacity-100" : "opacity-0")}
-          aria-label="Close filters"
-          onClick={() => setMobileFiltersOpen(false)}
-        />
-        <aside
-          className={cn(
-            "absolute bottom-0 left-0 right-0 max-h-[88vh] overflow-y-auto rounded-t-lg bg-[#111a18]/95 p-4 text-slate-100 shadow-2xl backdrop-blur-xl transition duration-300",
-            mobileFiltersOpen ? "translate-y-0" : "translate-y-full",
-          )}
-          aria-label="Mobile filters"
-        >
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-white">Filters</h2>
-            <Button variant="ghost" size="icon" aria-label="Close filters" onClick={() => setMobileFiltersOpen(false)}>
-              <X className="h-5 w-5" />
-            </Button>
-          </div>
-          <ProductFilters
-            filters={filters}
-            categories={filterCategories}
-            priceBounds={priceBounds}
-            onChange={setFilters}
-            onClear={clearFilters}
-          />
-        </aside>
-      </div>
+      {portalReady
+        ? createPortal(
+            <div
+              className={cn("fixed inset-0 z-[2147483647] lg:hidden", mobileFiltersOpen ? "pointer-events-auto" : "pointer-events-none")}
+              aria-hidden={!mobileFiltersOpen}
+            >
+              <button
+                className={cn("absolute inset-0 bg-slate-950/70 backdrop-blur-[2px] transition duration-300", mobileFiltersOpen ? "opacity-100" : "opacity-0")}
+                aria-label="Close filters"
+                onClick={() => setMobileFiltersOpen(false)}
+              />
+              <aside
+                className={cn(
+                  "fixed bottom-0 left-0 right-0 m-0 max-h-[88dvh] w-screen max-w-none overflow-y-auto rounded-b-none rounded-t-2xl border-x-0 border-b-0 border-t border-[#12a8e6]/25 bg-[linear-gradient(180deg,#0b1b18_0%,#07120f_100%)] p-4 text-slate-100 shadow-[0_-24px_70px_rgba(0,0,0,0.58)] transition-transform duration-300 ease-out",
+                  mobileFiltersOpen ? "translate-y-0" : "translate-y-full",
+                )}
+                aria-label="Mobile filters"
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <h2 className="text-lg font-bold text-white">Filters</h2>
+                  <Button variant="ghost" size="icon" aria-label="Close filters" onClick={() => setMobileFiltersOpen(false)}>
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+                <ProductFilters
+                  filters={filters}
+                  categories={filterCategories}
+                  priceBounds={priceBounds}
+                  onChange={setFilters}
+                  onClear={clearFilters}
+                />
+              </aside>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

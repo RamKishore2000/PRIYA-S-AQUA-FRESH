@@ -52,6 +52,10 @@ async function updateProduct(id, payload) {
 
 async function deleteProduct(id) {
   await getProductById(id);
+  const isUsedInOrders = await productRepository.hasOrderItems(id);
+  if (isUsedInOrders) {
+    throw new ApiError(409, "This product is already used in orders. Mark it inactive instead of deleting it.");
+  }
   const deleted = await productRepository.deleteProduct(id);
   if (!deleted) {
     throw new ApiError(404, "Product not found.");

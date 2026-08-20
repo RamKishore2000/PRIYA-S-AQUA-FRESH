@@ -183,7 +183,11 @@ export function AnimatedLogoShowcase({ title, logos, direction }: AnimatedLogoSh
                       width={150}
                       height={150}
                       sizes="(max-width: 768px) 224px, (max-width: 1024px) 288px, 320px"
-                      className="h-28 w-auto object-contain drop-shadow-[0_16px_28px_rgba(0,0,0,0.32)] md:h-36 lg:h-44"
+                      className={
+                        logo.id === "priyas-aqua-mart"
+                          ? "h-20 w-auto object-contain drop-shadow-[0_16px_28px_rgba(0,0,0,0.32)] md:h-24 lg:h-28"
+                          : "h-28 w-auto object-contain drop-shadow-[0_16px_28px_rgba(0,0,0,0.32)] md:h-36 lg:h-44"
+                      }
                     />
                   </button>
                 ))}

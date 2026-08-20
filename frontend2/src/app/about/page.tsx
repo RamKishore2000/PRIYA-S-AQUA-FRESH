@@ -4,6 +4,7 @@ import { ArrowRight, Award, Droplets, ShieldCheck, Sparkles } from "lucide-react
 import { AboutGsapAnimations } from "@/components/about/about-gsap-animations";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { MobileBottomTabs } from "@/components/layout/mobile-bottom-tabs";
 
 const headingLines = ["Pure Water.", "Trusted Care.", "Built on Innovation."];
 
@@ -32,7 +33,7 @@ export default function AboutPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen overflow-x-hidden bg-[linear-gradient(135deg,#FFF9F1_0%,#F8F3EC_52%,#F1E5D6_100%)] text-[#1D2D2E]">
+      <main className="min-h-screen overflow-x-hidden bg-[linear-gradient(135deg,#FFF9F1_0%,#F8F3EC_52%,#F1E5D6_100%)] pb-20 text-[#1D2D2E] lg:pb-0">
         <AboutGsapAnimations />
 
       <section className="relative overflow-hidden px-5 py-14 md:px-8 md:py-18">
@@ -211,6 +212,7 @@ export default function AboutPage() {
 
       <Footer />
       </main>
+      <MobileBottomTabs />
     </>
   );
 }

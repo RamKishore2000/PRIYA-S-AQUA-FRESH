@@ -109,7 +109,7 @@ export function Header({ overlay = false }: HeaderProps) {
           : "sticky"
       }`}
     >
-      <div className="hidden border-b border-[#E5D8C7] bg-[#0A2426] text-[#FFF9F1] md:block">
+      <div className="hidden border-b border-[#E5D8C7] bg-[#0A2426] text-[#FFF9F1] lg:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-6 py-1.5 text-xs font-semibold">
           {isDealer ? (
             <div className="flex items-center gap-4">
@@ -140,8 +140,8 @@ export function Header({ overlay = false }: HeaderProps) {
           </div>
         </div>
       </div>
-      <div className="mx-auto grid w-full max-w-7xl grid-cols-[150px_1fr_auto] items-center gap-4 px-4 py-3 md:grid-cols-[190px_1fr_auto] md:px-6">
-        <Link href="/" className="relative flex h-12 w-36 shrink-0 items-center overflow-visible md:h-14 md:w-48" aria-label="Priya's Aqua Fresh">
+      <div className="mx-auto grid w-full max-w-7xl grid-cols-[120px_1fr_auto] items-center gap-2 px-3 py-2.5 md:grid-cols-[150px_1fr_auto] md:px-5 lg:grid-cols-[190px_1fr_auto] lg:gap-4 lg:px-6 lg:py-3">
+        <Link href="/" className="relative flex h-10 w-28 shrink-0 items-center overflow-visible md:h-12 md:w-36 lg:h-14 lg:w-48" aria-label="Priya's Aqua Fresh">
           <Image
             src="/logo-header.png"
             alt="Priya's Aqua Fresh"
@@ -174,7 +174,7 @@ export function Header({ overlay = false }: HeaderProps) {
           </nav>
         </div>
 
-        <nav className="hidden justify-self-center items-center gap-1 md:flex lg:hidden">
+        <nav className="hidden justify-self-center items-center gap-1">
           {visibleNavLinks.slice(0, 4).map((link) => {
             const active = isActiveLink(link.href);
             return (
@@ -192,7 +192,7 @@ export function Header({ overlay = false }: HeaderProps) {
           })}
         </nav>
 
-        <div className="flex items-center gap-2 text-[#1D2D2E]">
+        <div className="flex items-center justify-end gap-2 text-[#1D2D2E]">
           <form
             action="/search"
             className={`hidden items-center overflow-hidden rounded-lg border border-[#E5D8C7] bg-white shadow-[0_8px_24px_rgba(84,61,35,0.06)] transition-all duration-700 ease-out lg:flex ${searchOpen ? "w-[320px] px-3 py-1.5 opacity-100" : "w-10 px-0 py-0 opacity-100"}`}
@@ -204,14 +204,14 @@ export function Header({ overlay = false }: HeaderProps) {
             </button>
             <input name="q" placeholder="Search purifiers, filters, spare parts..." className={`min-w-0 flex-1 bg-transparent text-sm font-semibold text-[#1D2D2E] outline-none placeholder:text-[#7D7B75] transition duration-500 ${searchOpen ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`} />
           </form>
-          <button className="grid h-10 w-10 place-items-center rounded-lg border border-[#E5D8C7] bg-white shadow-sm transition hover:border-[#B68A45] hover:text-[#0A3A38] lg:hidden" aria-label="Search">
+          <button type="button" onClick={() => setSearchOpen((open) => !open)} className="grid h-10 w-10 place-items-center rounded-lg border border-[#E5D8C7] bg-white shadow-sm transition hover:border-[#B68A45] hover:text-[#0A3A38] lg:hidden" aria-label="Search">
             <SearchIcon className="h-5 w-5" />
           </button>
-          <Link href="/wishlist" className="relative grid h-10 w-10 place-items-center rounded-lg border border-[#E5D8C7] bg-white shadow-sm transition hover:border-[#B68A45] hover:text-[#0A3A38]" aria-label="Wishlist">
+          <Link href="/wishlist" className="relative hidden h-10 w-10 place-items-center rounded-lg border border-[#E5D8C7] bg-white shadow-sm transition hover:border-[#B68A45] hover:text-[#0A3A38] lg:grid" aria-label="Wishlist">
             <HeartIcon className="h-5 w-5" />
             {wishlistCount ? <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-[#B68A45] text-[0.65rem] font-black text-white">{wishlistCount}</span> : null}
           </Link>
-          <div className="group relative">
+          <div className="group relative hidden lg:block">
             <button onClick={() => (user ? undefined : openLogin())} className="grid h-10 w-10 place-items-center rounded-lg border border-[#E5D8C7] bg-white shadow-sm transition hover:border-[#B68A45] hover:text-[#0A3A38]" aria-label="Account">
               <UserIcon className="h-5 w-5" />
             </button>
@@ -235,6 +235,12 @@ export function Header({ overlay = false }: HeaderProps) {
           </button>
         </div>
       </div>
+      <form action="/search" className={`mx-3 grid overflow-hidden transition-all duration-300 md:mx-5 lg:hidden ${searchOpen ? "max-h-16 pb-3 opacity-100" : "max-h-0 pb-0 opacity-0"}`}>
+        <div className="flex items-center gap-2 rounded-xl border border-[#D9C5AB] bg-white px-3 py-2 shadow-[0_8px_22px_rgba(84,61,35,0.08)]">
+          <SearchIcon className="h-4 w-4 shrink-0 text-[#0A3A38]" />
+          <input name="q" placeholder="Search products..." className="min-w-0 flex-1 bg-transparent text-sm font-bold text-[#1D2D2E] outline-none placeholder:text-[#7D7B75]" autoComplete="off" />
+        </div>
+      </form>
     </header>
     <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </>
