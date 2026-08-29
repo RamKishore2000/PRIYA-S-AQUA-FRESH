@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Phone } from "lucide-react";
+import { Phone, X } from "lucide-react";
 import type { SVGProps } from "react";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { CartIcon, HeartIcon, SearchIcon, UserIcon } from "@/components/ui/icons";
 import { useShop } from "@/context/shop-context";
+import { defaultSiteSettings, fetchSiteSettings, getWhatsAppHref, type SiteSettings } from "@/services/settings-service";
 
 type HeaderProps = {
   overlay?: boolean;
@@ -19,6 +20,7 @@ const navLinks = [
   { label: "Shop", href: "/products" },
   { label: "About Us", href: "/about" },
   { label: "Services", href: "/services" },
+  { label: "RO Training", href: "/ro-training-institute" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -70,26 +72,33 @@ function XIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-const topSocialLinks = [
-  { label: "WhatsApp", href: "https://wa.me/919121043483", icon: WhatsAppIcon, className: "text-[#25d366]" },
-  { label: "Facebook", href: "https://www.facebook.com/priyasaquafresh", icon: FacebookIcon, className: "text-[#1877f2]" },
-  { label: "YouTube", href: "https://www.youtube.com/@priyasaquafresh", icon: YouTubeIcon, className: "text-[#ff0000]" },
-  { label: "Instagram", href: "https://www.instagram.com/priyasaquafresh", icon: InstagramIcon, className: "text-[#e4405f]" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/company/priyas-aqua-fresh", icon: LinkedInIcon, className: "text-[#0a66c2]" },
-  { label: "X", href: "https://x.com/priyasaquafresh", icon: XIcon, className: "text-[#1D2D2E]" },
-];
-
-const dealerSupportNumbers = ["+91 98765 43210", "+91 91234 56789"];
+function buildSocialLinks(settings: SiteSettings) {
+  return [
+    { label: "WhatsApp", href: getWhatsAppHref(settings.whatsapp), icon: WhatsAppIcon, className: "text-[#25d366]" },
+    { label: "Facebook", href: settings.facebook, icon: FacebookIcon, className: "text-[#1877f2]" },
+    { label: "YouTube", href: settings.youtube, icon: YouTubeIcon, className: "text-[#ff0000]" },
+    { label: "Instagram", href: settings.instagram, icon: InstagramIcon, className: "text-[#e4405f]" },
+    { label: "LinkedIn", href: settings.linkedin, icon: LinkedInIcon, className: "text-[#0a66c2]" },
+    { label: "X", href: settings.x, icon: XIcon, className: "text-[#1D2D2E]" },
+  ].filter((social) => social.href);
+}
+const dealerSupportNumbers = ["8885449044", "8498831081"];
 
 export function Header({ overlay = false }: HeaderProps) {
   const pathname = usePathname();
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [settings, setSettings] = useState<SiteSettings>(defaultSiteSettings);
   const { user, cartCount, wishlistCount, openLogin, logout } = useShop();
   const isDealer = user?.role === "DEALER";
   const visibleNavLinks = isDealer ? navLinks.filter((link) => link.href !== "/services") : navLinks;
   const isActiveLink = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
+  const dynamicSocialLinks = buildSocialLinks(settings);
+
+  useEffect(() => {
+    fetchSiteSettings().then(setSettings).catch(() => setSettings(defaultSiteSettings));
+  }, []);
 
   useEffect(() => {
     if (!overlay) return;
@@ -115,7 +124,7 @@ export function Header({ overlay = false }: HeaderProps) {
             <div className="flex items-center gap-4">
               <span className="uppercase tracking-[0.18em] text-[#D8B879]">Dealer Support</span>
               {dealerSupportNumbers.map((number) => (
-                <a key={number} href={`tel:${number.replace(/\s/g, "")}`} className="inline-flex items-center gap-1.5 text-white transition hover:text-[#D8B879]">
+                <a key={number} href={`tel:${number.replace(/\D/g, "")}`}  className="inline-flex items-center gap-1.5 text-white transition hover:text-[#D8B879]">
                   <Phone className="h-3.5 w-3.5" />
                   {number}
                 </a>
@@ -125,7 +134,7 @@ export function Header({ overlay = false }: HeaderProps) {
             <span>Follow Priya&apos;s Aqua Fresh</span>
           )}
           <div className="flex items-center gap-2">
-            {topSocialLinks.map((social) => (
+            {dynamicSocialLinks.map((social) => (
               <Link
                 key={social.label}
                 href={social.href}
@@ -207,9 +216,9 @@ export function Header({ overlay = false }: HeaderProps) {
           <button type="button" onClick={() => setSearchOpen((open) => !open)} className="grid h-10 w-10 place-items-center rounded-lg border border-[#E5D8C7] bg-white shadow-sm transition hover:border-[#B68A45] hover:text-[#0A3A38] lg:hidden" aria-label="Search">
             <SearchIcon className="h-5 w-5" />
           </button>
-          <Link href="/wishlist" className="relative hidden h-10 w-10 place-items-center rounded-lg border border-[#E5D8C7] bg-white shadow-sm transition hover:border-[#B68A45] hover:text-[#0A3A38] lg:grid" aria-label="Wishlist">
+          <Link href="/wishlist" className="relative grid h-10 w-10 place-items-center rounded-lg border border-[#E5D8C7] bg-white shadow-sm transition hover:border-[#B68A45] hover:text-[#0A3A38]" aria-label="Wishlist">
             <HeartIcon className="h-5 w-5" />
-            {wishlistCount ? <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-[#B68A45] text-[0.65rem] font-black text-white">{wishlistCount}</span> : null}
+            {user && wishlistCount ? <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-[#B68A45] text-[0.65rem] font-black text-white">{wishlistCount}</span> : null}
           </Link>
           <div className="group relative hidden lg:block">
             <button onClick={() => (user ? undefined : openLogin())} className="grid h-10 w-10 place-items-center rounded-lg border border-[#E5D8C7] bg-white shadow-sm transition hover:border-[#B68A45] hover:text-[#0A3A38]" aria-label="Account">
@@ -218,8 +227,8 @@ export function Header({ overlay = false }: HeaderProps) {
             {user ? (
               <div className="invisible absolute right-0 top-10 z-50 w-72 pt-2 opacity-0 transition group-hover:visible group-hover:opacity-100">
                 <div className="rounded-2xl border border-[#E5D8C7] bg-[#FFF9F1] p-5 shadow-[0_20px_50px_rgba(84,61,35,0.12)]">
-                  <p className="text-lg font-black text-[#1D2D2E]">{user.fullName}</p>
-                  <p className="truncate text-sm text-[#5A6362]">{user.email}</p>
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#B68A45]">Signed in</p>
+                  <p className="mt-1 text-lg font-black text-[#1D2D2E]">{user.mobile}</p>
                   <div className="mt-4 grid gap-3 border-t border-[#E5D8C7] pt-4">
                     <Link href="/profile" className="font-black text-[#1D2D2E] hover:text-[#B68A45]">My Profile</Link>
                     <Link href="/profile/orders" className="font-black text-[#1D2D2E] hover:text-[#B68A45]">Order History</Link>
@@ -235,10 +244,13 @@ export function Header({ overlay = false }: HeaderProps) {
           </button>
         </div>
       </div>
-      <form action="/search" className={`mx-3 grid overflow-hidden transition-all duration-300 md:mx-5 lg:hidden ${searchOpen ? "max-h-16 pb-3 opacity-100" : "max-h-0 pb-0 opacity-0"}`}>
+      <form action="/search" data-mobile-search-panel className={`mx-3 grid overflow-hidden transition-all duration-300 md:mx-5 lg:hidden ${searchOpen ? "max-h-20 pb-3 opacity-100" : "max-h-0 pb-0 opacity-0"}`}>
         <div className="flex items-center gap-2 rounded-xl border border-[#D9C5AB] bg-white px-3 py-2 shadow-[0_8px_22px_rgba(84,61,35,0.08)]">
           <SearchIcon className="h-4 w-4 shrink-0 text-[#0A3A38]" />
           <input name="q" placeholder="Search products..." className="min-w-0 flex-1 bg-transparent text-sm font-bold text-[#1D2D2E] outline-none placeholder:text-[#7D7B75]" autoComplete="off" />
+          <button type="button" onClick={() => setSearchOpen(false)} className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#F5E9D8] text-[#0A3A38]" aria-label="Close search">
+            <X className="h-4 w-4" />
+          </button>
         </div>
       </form>
     </header>
@@ -246,3 +258,4 @@ export function Header({ overlay = false }: HeaderProps) {
     </>
   );
 }
+

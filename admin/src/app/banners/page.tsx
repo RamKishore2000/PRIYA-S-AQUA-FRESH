@@ -90,7 +90,7 @@ export default function BannersPage() {
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-950">Banners</h1>
-          <p className="mt-1 text-sm text-slate-500">Manage homepage hero banner images, copy, colors, and display order.</p>
+          <p className="mt-1 text-sm text-slate-500">Manage homepage hero banner images, copy, and display order.</p>
         </div>
         <button type="button" onClick={openAddForm} className="inline-flex h-10 items-center justify-center rounded-md bg-teal-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700">
           Add Banner
@@ -106,9 +106,9 @@ export default function BannersPage() {
 
       <section className="mt-5 rounded-lg border border-slate-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1120px] text-left text-sm">
+          <table className="w-full min-w-[980px] text-left text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-              <tr>{["Image", "Banner", "Button", "Theme", "Sort", "Status", "Created Date", "Actions"].map((header) => <th key={header} className="px-5 py-3 font-bold">{header}</th>)}</tr>
+              <tr>{["Image", "Banner", "Button", "Sort", "Status", "Created Date", "Actions"].map((header) => <th key={header} className="px-5 py-3 font-bold">{header}</th>)}</tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {banners.map((banner) => (
@@ -129,12 +129,6 @@ export default function BannersPage() {
                   <td className="px-5 py-4">
                     <p className="font-semibold text-slate-700">{banner.buttonText}</p>
                     <p className="mt-1 max-w-[180px] truncate text-xs text-slate-500">{banner.buttonLink}</p>
-                  </td>
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-2">
-                      <span className="h-5 w-5 rounded-full border border-slate-200" style={{ backgroundColor: banner.themeColor }} />
-                      <span className="text-xs font-semibold text-slate-500">{banner.themeColor}</span>
-                    </div>
                   </td>
                   <td className="px-5 py-4 text-slate-600">{banner.sortOrder}</td>
                   <td className="px-5 py-4"><StatusBadge value={banner.status} /></td>
@@ -215,13 +209,13 @@ function BannerFormDialog({
   }
 
   return (
-    <AdminModalShell labelledBy="banner-form-title" maxWidth="xl">
+    <AdminModalShell labelledBy="banner-form-title" maxWidth="xl" onClose={onClose}>
       <form onSubmit={submitForm}>
-        <div className="border-b border-slate-100 px-6 py-5">
+        <div className="border-b border-slate-100 px-6 py-5 pr-16">
           <h2 id="banner-form-title" className="text-lg font-bold text-slate-950">
             {mode === "edit" ? "Edit Banner" : "Add Banner"}
           </h2>
-          <p className="mt-1 text-sm text-slate-500">Upload a WebP-converted banner image and configure homepage hero content.</p>
+          <p className="mt-1 text-sm text-slate-500">Upload the homepage hero image and configure the visible banner content.</p>
         </div>
 
         <div className="grid gap-5 px-6 py-5 lg:grid-cols-[380px_1fr]">
@@ -245,7 +239,7 @@ function BannerFormDialog({
                 </button>
               ) : null}
             </div>
-            <p className="mt-2 text-xs text-slate-500">Recommended: transparent product/category image. Upload converts to WebP without cropping.</p>
+            <p className="mt-2 text-xs leading-5 text-slate-500">Recommended size: 1600 x 900 px for full banner images, or transparent product PNG/WebP around 1200 x 900 px. Upload converts to WebP without cropping.</p>
           </div>
 
           <div className="grid gap-4">
@@ -269,16 +263,6 @@ function BannerFormDialog({
               <label className="grid gap-1.5">
                 <span className="text-sm font-bold text-slate-800">Button Link</span>
                 <input value={form.buttonLink} onChange={(event) => setForm((current) => ({ ...current, buttonLink: event.target.value }))} maxLength={255} className="h-10 rounded-md border border-slate-200 px-3 text-sm outline-none focus:border-teal-500" />
-              </label>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="grid gap-1.5">
-                <span className="text-sm font-bold text-slate-800">Theme Color</span>
-                <input value={form.themeColor} onChange={(event) => setForm((current) => ({ ...current, themeColor: event.target.value }))} maxLength={40} className="h-10 rounded-md border border-slate-200 px-3 text-sm outline-none focus:border-teal-500" />
-              </label>
-              <label className="grid gap-1.5">
-                <span className="text-sm font-bold text-slate-800">Glow Color</span>
-                <input value={form.glowColor} onChange={(event) => setForm((current) => ({ ...current, glowColor: event.target.value }))} maxLength={80} className="h-10 rounded-md border border-slate-200 px-3 text-sm outline-none focus:border-teal-500" />
               </label>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">

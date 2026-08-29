@@ -29,3 +29,56 @@ textarea {
 details > summary::-webkit-details-marker {
   display: none;
 }
+
+html.admin-dark {
+  --background: #0f172a;
+  --foreground: #e2e8f0;
+}
+
+html.admin-dark body,
+html.admin-dark .bg-slate-50 {
+  background: #0f172a !important;
+  color: #e2e8f0;
+}
+
+html.admin-dark .bg-white,
+html.admin-dark .bg-white\/95 {
+  background-color: #111827 !important;
+}
+
+html.admin-dark .bg-slate-50 {
+  background-color: #0b1220 !important;
+}
+
+html.admin-dark .border-slate-100,
+html.admin-dark .border-slate-200,
+html.admin-dark .border-slate-300 {
+  border-color: #334155 !important;
+}
+
+html.admin-dark .text-slate-950,
+html.admin-dark .text-slate-900,
+html.admin-dark .text-slate-800,
+html.admin-dark .text-slate-700 {
+  color: #e2e8f0 !important;
+}
+
+html.admin-dark .text-slate-600,
+html.admin-dark .text-slate-500,
+html.admin-dark .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+html.admin-dark input,
+html.admin-dark select,
+html.admin-dark textarea {
+  background-color: #0f172a !important;
+  color: #e2e8f0 !important;
+  border-color: #334155 !important;
+}
+
+html.admin-dark .shadow-sm,
+html.admin-dark .shadow-lg,
+html.admin-dark .shadow-xl {
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35) !important;
+}

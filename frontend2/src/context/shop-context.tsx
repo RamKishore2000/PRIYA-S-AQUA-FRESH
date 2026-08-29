@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
-import { getStoredUser, loginUser, logoutUser, registerCustomer, type AuthUser } from "@/services/auth-service";
+import { getStoredUser, logoutUser, resendLoginOtp, sendLoginOtp, verifyLoginOtp, type AuthUser } from "@/services/auth-service";
 import {
   addCartItem,
   addWishlistItem,
@@ -45,11 +45,12 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartState | null>(null);
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
   const [loginOpen, setLoginOpen] = useState(false);
-  const [mode, setMode] = useState<"login" | "register" | "otp">("login");
+  const [mode, setMode] = useState<"otp">("otp");
   const [otpSent, setOtpSent] = useState(false);
   const [otpMobile, setOtpMobile] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [message, setMessage] = useState("");
+  const [otpBusy, setOtpBusy] = useState(false);
   const [toast, setToast] = useState<ToastState>(null);
 
   function showToast(title: string, tone: "success" | "error" | "info" = "success") {
@@ -61,13 +62,26 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
+    if (!loginOpen) return;
+    const handleNativeBack = (event: Event) => {
+      event.preventDefault();
+      setLoginOpen(false);
+    };
+    window.addEventListener("priyas-native-back", handleNativeBack);
+    return () => window.removeEventListener("priyas-native-back", handleNativeBack);
+  }, [loginOpen]);
+
+  useEffect(() => {
     const sync = () => {
       const storedUser = getStoredUser();
       setUser(storedUser);
       if (storedUser) {
         fetchCart().then(setCart).catch(() => undefined);
         fetchWishlist().then((wishlist) => setWishlistIds(wishlist.productIds.map(String))).catch(() => undefined);
+        return;
       }
+      setCart(null);
+      setWishlistIds([]);
     };
     sync();
     window.addEventListener("priyas-auth-changed", sync);
@@ -79,57 +93,51 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     setCart(await fetchCart());
   }, [user]);
 
-  async function submitLogin(formData: FormData) {
+  async function submitLogin() {
     setMessage("");
     try {
-      if (mode === "otp") {
-        if (!otpSent) {
-          const mobile = otpMobile.trim();
-          if (!/^[6-9][0-9]{9}$/.test(mobile)) {
-            setMessage("Enter a valid 10 digit Indian mobile number.");
-            showToast("Enter a valid 10 digit Indian mobile number.", "error");
-            return;
-          }
+      if (!otpSent) {
+        const mobile = otpMobile.trim();
+        if (!/^[6-9][0-9]{9}$/.test(mobile)) {
+          setMessage("Enter a valid 10 digit Indian mobile number.");
+          showToast("Enter a valid 10 digit Indian mobile number.", "error");
+          return;
+        }
+        setOtpBusy(true);
+        try {
+          await sendLoginOtp(mobile);
           setOtpSent(true);
-          setMessage("");
-          return;
+          setOtpCode("");
+          setMessage("OTP sent successfully.");
+          showToast("OTP sent successfully.", "success");
+        } finally {
+          setOtpBusy(false);
         }
-        if (!/^[0-9]{6}$/.test(otpCode.trim())) {
-          setMessage("Enter the 6 digit OTP.");
-          showToast("Enter the 6 digit OTP.", "error");
-          return;
-        }
-        setMessage("OTP verification will be enabled soon.");
-        showToast("OTP verification will be enabled soon.", "info");
         return;
       }
-      if (mode === "register") {
-        await registerCustomer({
-          fullName: String(formData.get("fullName") || ""),
-          mobile: String(formData.get("mobile") || ""),
-          email: String(formData.get("email") || ""),
-          password: String(formData.get("password") || ""),
-          confirmPassword: String(formData.get("password") || ""),
-        });
-        setMode("login");
-        setMessage("Account created. Please login now.");
-        showToast("Account created. Please login now.", "success");
+
+      if (!/^[0-9]{6}$/.test(otpCode.trim())) {
+        setMessage("Enter the 6 digit OTP.");
+        showToast("Enter the 6 digit OTP.", "error");
         return;
       }
-      const loggedInUser = await loginUser({
-        email: String(formData.get("email") || ""),
-        password: String(formData.get("password") || ""),
-      });
-      setUser(loggedInUser);
-      setLoginOpen(false);
-      showToast("Login successful", "success");
+      setOtpBusy(true);
+      try {
+        const loggedInUser = await verifyLoginOtp({ mobile: otpMobile.trim(), otp: otpCode.trim() });
+        setUser(loggedInUser);
+        setLoginOpen(false);
+        setOtpSent(false);
+        setOtpCode("");
+        showToast("Login successful", "success");
+      } finally {
+        setOtpBusy(false);
+      }
     } catch (error) {
       const nextMessage = error instanceof Error ? error.message : "Login failed.";
       setMessage(nextMessage);
       showToast(nextMessage, "error");
     }
   }
-
   const addToCart = useCallback(async (productId: string, quantity = 1) => {
     if (!user) {
       setLoginOpen(true);
@@ -190,12 +198,18 @@ export function ShopProvider({ children }: { children: ReactNode }) {
 
   const value: ShopContextValue = {
     user,
-    cartItems: cart?.items || [],
-    cartCount: cart?.count || 0,
-    subtotal: cart?.subtotal || 0,
-    wishlistCount: wishlistIds.length,
+    cartItems: user ? cart?.items || [] : [],
+    cartCount: user ? cart?.count || 0 : 0,
+    subtotal: user ? cart?.subtotal || 0 : 0,
+    wishlistCount: user ? wishlistIds.length : 0,
     wishlistIds,
-    openLogin: () => setLoginOpen(true),
+    openLogin: () => {
+      setMode("otp");
+      setOtpSent(false);
+      setOtpCode("");
+      setMessage("");
+      setLoginOpen(true);
+    },
     logout: () => {
       logoutUser();
       setUser(null);
@@ -215,86 +229,53 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     <ShopContext.Provider value={value}>
       {children}
       {loginOpen ? (
-        <div className="fixed inset-0 z-[100] grid place-items-center bg-[#071624]/70 px-5 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[1600] grid place-items-center bg-[#071624]/70 px-5 backdrop-blur-sm">
           <div className="w-full max-w-md overflow-hidden rounded-[1.35rem] border border-[#E5D8C7] bg-[#FFF9F1] text-[#1D2D2E] shadow-[0_40px_120px_rgba(43,35,22,0.24)]">
             <div className="h-2 bg-[linear-gradient(90deg,#0A3A38,#12a8e6,#D8B879)]" />
             <div className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.24em] text-[#B68A45]">{mode === "otp" ? "OTP Login" : mode === "login" ? "Login" : "Register"}</p>
+                <p className="text-xs font-black uppercase tracking-[0.24em] text-[#B68A45]">OTP Login</p>
                 <h2 className="mt-2 font-serif text-3xl font-semibold text-[#1D2D2E]">Welcome to Priya&apos;s</h2>
               </div>
               <button onClick={() => setLoginOpen(false)} className="h-10 w-10 rounded-full border border-[#E5D8C7] bg-white text-[#0A3A38] transition hover:bg-[#F5E9D8]">x</button>
             </div>
             <form action={submitLogin} className="mt-6 grid gap-3">
-              {mode === "otp" ? (
-                <>
-                  <div className="rounded-xl border border-[#E5D8C7] bg-white/70 px-4 py-3">
-                    <p className="text-sm font-black text-[#1D2D2E]">Login with OTP</p>
-                    <p className="mt-1 text-xs font-semibold text-[#5A6362]">
-                      {otpSent ? `Enter the 6 digit OTP sent to ${otpMobile}.` : "Use your registered mobile number to continue."}
-                    </p>
-                  </div>
-                  {!otpSent ? (
-                    <input
-                      name="otpMobile"
-                      inputMode="numeric"
-                      maxLength={10}
-                      placeholder="Mobile number"
-                      value={otpMobile}
-                      onChange={(event) => setOtpMobile(event.target.value.replace(/\D/g, "").slice(0, 10))}
-                      className="rounded-xl border border-[#E5D8C7] bg-white px-4 py-3 font-semibold text-[#1D2D2E] outline-none placeholder:text-[#7D7B75]"
-                    />
-                  ) : (
-                    <>
-                      <OtpBoxes value={otpCode} onChange={setOtpCode} />
-                      <div className="flex items-center justify-between text-sm">
-                        <button type="button" className="font-black text-[#0A3A38]" onClick={() => showToast("OTP resend will be enabled soon.", "info")}>Resend OTP</button>
-                        <button type="button" className="font-bold text-[#7D7B75]" onClick={() => { setOtpSent(false); setOtpCode(""); setMessage(""); }}>Change mobile</button>
-                      </div>
-                    </>
-                  )}
-                </>
+              <div className="rounded-xl border border-[#E5D8C7] bg-white/70 px-4 py-3">
+                <p className="text-sm font-black text-[#1D2D2E]">Login with OTP</p>
+                <p className="mt-1 text-xs font-semibold text-[#5A6362]">
+                  {otpSent ? `Enter the 6 digit OTP sent to ${otpMobile}.` : "Enter your mobile number to continue."}
+                </p>
+              </div>
+              {!otpSent ? (
+                <input
+                  name="otpMobile"
+                  inputMode="numeric"
+                  maxLength={10}
+                  placeholder="Mobile number"
+                  value={otpMobile}
+                  onChange={(event) => setOtpMobile(event.target.value.replace(/\D/g, "").slice(0, 10))}
+                  className="rounded-xl border border-[#E5D8C7] bg-white px-4 py-3 font-semibold text-[#1D2D2E] outline-none placeholder:text-[#7D7B75]"
+                />
               ) : (
                 <>
-                  {mode === "register" ? <input name="fullName" placeholder="Full name" className="rounded-xl border border-[#E5D8C7] bg-white px-4 py-3 font-semibold text-[#1D2D2E] outline-none placeholder:text-[#7D7B75]" /> : null}
-                  {mode === "register" ? <input name="mobile" placeholder="Mobile" className="rounded-xl border border-[#E5D8C7] bg-white px-4 py-3 font-semibold text-[#1D2D2E] outline-none placeholder:text-[#7D7B75]" /> : null}
-                  <input name="email" placeholder="Email or mobile" className="rounded-xl border border-[#E5D8C7] bg-white px-4 py-3 font-semibold text-[#1D2D2E] outline-none placeholder:text-[#7D7B75]" />
-                  <input name="password" type="password" placeholder="Password" className="rounded-xl border border-[#E5D8C7] bg-white px-4 py-3 font-semibold text-[#1D2D2E] outline-none placeholder:text-[#7D7B75]" />
+                  <OtpBoxes value={otpCode} onChange={setOtpCode} />
+                  <div className="flex items-center justify-between text-sm">
+                    <button type="button" className="font-black text-[#0A3A38]" onClick={async () => { if (otpBusy) return; setOtpBusy(true); try { await resendLoginOtp(otpMobile.trim()); setOtpCode(""); setMessage("OTP resent successfully."); showToast("OTP resent successfully.", "success"); } catch (error) { const nextMessage = error instanceof Error ? error.message : "Unable to resend OTP."; setMessage(nextMessage); showToast(nextMessage, "error"); } finally { setOtpBusy(false); } }}>Resend OTP</button>
+                    <button type="button" className="font-bold text-[#7D7B75]" onClick={() => { setOtpSent(false); setOtpCode(""); setMessage(""); }}>Change mobile</button>
+                  </div>
                 </>
               )}
-              <button className="mt-2 rounded-full bg-[#0A3A38] px-5 py-3 font-black text-white transition hover:bg-[#12383A]">{mode === "otp" ? (otpSent ? "Verify OTP" : "Send OTP") : mode === "login" ? "Login" : "Create Account"}</button>
+              <button disabled={otpBusy} className="mt-2 rounded-full bg-[#0A3A38] px-5 py-3 font-black text-white transition hover:bg-[#12383A] disabled:opacity-60">{otpBusy ? "Please wait..." : otpSent ? "Verify OTP" : "Send OTP"}</button>
             </form>
             {message ? <p className="mt-4 rounded-lg bg-[#F5E9D8] px-3 py-2 text-sm font-semibold text-[#8A5F23]">{message}</p> : null}
-            <div className="mt-5 grid gap-3 text-sm font-black text-[#0A3A38]">
-              {mode === "login" ? (
-                <button
-                  onClick={() => {
-                    setMode("otp");
-                    setOtpSent(false);
-                    setMessage("");
-                  }}
-                  className="rounded-full border border-[#D8B879] bg-white px-4 py-2 text-center transition hover:bg-[#F5E9D8]"
-                >
-                  Login with OTP
-                </button>
-              ) : null}
-              <button
-                onClick={() => {
-                  setMode(mode === "register" || mode === "otp" ? "login" : "register");
-                  setOtpSent(false);
-                  setMessage("");
-                }}
-              >
-                {mode === "login" ? "Create new account" : "Back to login"}
-              </button>
-            </div>
-            </div>
+
           </div>
+        </div>
         </div>
       ) : null}
       {toast ? (
-        <div className="fixed bottom-5 left-1/2 z-[120] w-[min(340px,calc(100vw-2rem))] -translate-x-1/2">
+        <div className="fixed bottom-5 left-1/2 z-[1700] w-[min(340px,calc(100vw-2rem))] -translate-x-1/2">
           <div className={`rounded-xl border bg-white px-4 py-3 text-sm font-black text-[#1D2D2E] shadow-[0_18px_48px_rgba(43,35,22,0.2)] ${toast.tone === "error" ? "border-red-200 border-l-red-500" : toast.tone === "info" ? "border-[#D8B879] border-l-[#B68A45]" : "border-emerald-200 border-l-emerald-500"} border-l-4`}>
             {toast.title}
           </div>
@@ -348,3 +329,5 @@ function OtpBoxes({ value, onChange }: { value: string; onChange: (value: string
     </div>
   );
 }
+
+

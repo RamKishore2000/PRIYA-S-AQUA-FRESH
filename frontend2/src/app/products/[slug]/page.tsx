@@ -1,12 +1,20 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, MapPin, Truck } from "lucide-react";
 import { SitePage } from "@/components/layout/site-page";
 import { PriceDisplay } from "@/components/shop/price-display";
-import { ProductDetailActions } from "@/components/shop/product-detail-actions";
-import { ProductGrid } from "@/components/shop/product-grid";
+import { ProductDetailActions, ProductDetailIconActions } from "@/components/shop/product-detail-actions";
+import { ProductCard } from "@/components/shop/product-card";
 import { StarIcon } from "@/components/shop/star-icon";
 import { getProductBySlug, getProducts } from "@/services/catalog-service";
+
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const products = await getProducts().catch(() => []);
+  return products.map((product) => ({ slug: product.slug }));
+}
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -15,7 +23,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   if (!product) {
     return (
       <SitePage eyebrow="Product" title="Product not found" description="The product you are looking for is not available.">
-        <section className="px-5 pb-20 md:px-8">
+        <section data-native-screen="product-detail" className="px-4 pb-20 md:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <Link href="/products" className="font-black text-[#0A3A38]">Browse products</Link>
           </div>
@@ -35,9 +43,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   return (
     <SitePage eyebrow={product.category} title={product.name} description="Review product details, pricing and support options before checkout." compactHero>
-      <section className="px-5 pb-20 md:px-8">
+      <section data-native-screen="product-detail" className="px-4 pb-20 md:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <nav className="mb-6 flex flex-wrap items-center gap-2 text-xs font-bold text-[#7D7B75]">
+          <nav className="mb-4 hidden flex-wrap items-center gap-2 text-xs font-bold text-[#7D7B75] md:flex lg:mb-6">
             <Link href="/" className="hover:text-[#0A3A38]">Home</Link>
             <span>/</span>
             <Link href="/products" className="hover:text-[#0A3A38]">Products</Link>
@@ -47,9 +55,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <span className="max-w-[280px] truncate text-[#1D2D2E]">{product.name}</span>
           </nav>
 
-          <div className="grid gap-8 lg:grid-cols-[1.12fr_0.88fr] lg:items-start">
-            <div className="grid gap-5">
-              <div className="grid gap-4 md:grid-cols-[5.5rem_1fr]">
+          <div className="grid gap-5 lg:grid-cols-[1.12fr_0.88fr] lg:items-start lg:gap-8">
+            <div className="grid gap-4 lg:gap-5">
+              <div className="grid gap-3 md:grid-cols-[5.5rem_1fr] lg:gap-4">
                 <div className="flex gap-3 overflow-x-auto pb-1 md:flex-col md:pb-0">
                   {product.images.map((image) => (
                     <span key={image} className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-[#E5D8C7] bg-[#FFF9F1] shadow-[0_8px_24px_rgba(84,61,35,0.06)]">
@@ -57,20 +65,23 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                     </span>
                   ))}
                 </div>
-                <div data-product-detail-image className="relative min-h-[28rem] overflow-hidden rounded-[2rem] border border-[#E5D8C7] bg-[#FFF9F1] shadow-[0_24px_70px_rgba(84,61,35,0.12)]">
+                <div data-product-detail-image className="relative min-h-[20rem] overflow-hidden rounded-2xl border-0 bg-transparent shadow-none md:min-h-[24rem] lg:min-h-[28rem] lg:border lg:border-[#E5D8C7] lg:bg-[#FFF9F1] lg:rounded-[2rem] lg:shadow-[0_24px_70px_rgba(84,61,35,0.12)]">
                   <span className="absolute inset-x-16 bottom-10 h-16 rounded-full bg-[#0A3A38]/12 blur-2xl" />
-                  <Image src={product.image} alt={product.name} fill sizes="620px" className="object-contain p-8" unoptimized />
+                  <Image src={product.image} alt={product.name} fill sizes="620px" className="object-contain p-5 md:p-6 lg:p-8" unoptimized />
+                  <div className="absolute right-3 top-3 z-20 lg:hidden">
+                    <ProductDetailIconActions product={product} />
+                  </div>
                 </div>
               </div>
-              <div className="rounded-2xl border border-[#E5D8C7] bg-[#FFF9F1] p-5 shadow-[0_14px_42px_rgba(84,61,35,0.08)]">
+              <div className="rounded-none border-0 bg-transparent p-0 shadow-none lg:rounded-2xl lg:border lg:border-[#E5D8C7] lg:bg-[#FFF9F1] lg:p-5 lg:shadow-[0_14px_42px_rgba(84,61,35,0.08)]">
                 <h2 className="text-sm font-black uppercase tracking-[0.2em] text-[#B68A45]">Product Details</h2>
                 <ProductDescription description={product.description} />
               </div>
             </div>
 
-            <div className="rounded-2xl border border-[#E5D8C7] bg-[#FFF9F1] p-5 shadow-[0_18px_60px_rgba(84,61,35,0.08)] lg:sticky lg:top-28 md:p-6">
+            <div className="rounded-none border-0 bg-transparent p-0 shadow-none md:p-0 lg:sticky lg:top-28 lg:rounded-2xl lg:border lg:border-[#E5D8C7] lg:bg-[#FFF9F1] lg:p-6 lg:shadow-[0_18px_60px_rgba(84,61,35,0.08)]">
               <p className="text-xs font-black uppercase tracking-[0.22em] text-[#B68A45]">{product.category}</p>
-              <h1 className="mt-3 font-serif text-3xl font-semibold leading-tight text-[#1D2D2E] md:text-4xl">{product.name}</h1>
+              <h1 className="mt-2 font-serif text-2xl font-semibold leading-tight text-[#1D2D2E] md:text-3xl lg:mt-3 lg:text-4xl">{product.name}</h1>
               <div className="mt-3 flex flex-wrap items-center gap-2 text-sm font-bold text-[#5A6362]">
                 <span className="inline-flex items-center gap-1 rounded-full bg-[#0A3A38] px-3 py-1 text-white">
                   <StarIcon className="h-4 w-4 fill-[#D8B879] text-[#D8B879]" />
@@ -79,25 +90,25 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <span>({product.reviewCount || 0} reviews)</span>
               </div>
 
-              <PriceDisplay product={product} className="mt-5" priceClassName="text-4xl" originalClassName="pb-1 text-xl" />
+              <PriceDisplay product={product} className="mt-4 lg:mt-5" priceClassName="text-2xl md:text-3xl lg:text-4xl" originalClassName="pb-1 text-sm md:text-base lg:text-xl" />
 
-              <div className="mt-7 border-y border-[#E5D8C7] py-5">
+              <div className="mt-5 border-y border-[#E5D8C7] py-4 lg:mt-7 lg:py-5">
                 <p className="font-black text-[#1D2D2E]">Category: <span className="text-[#0A3A38]">{product.category}</span></p>
                 {product.sku ? <p className="mt-3 font-black text-[#5A6362]">Product Code: {product.sku}</p> : null}
               </div>
 
               <ProductDetailActions product={product} />
 
-              <div className="mt-6 grid gap-3 text-sm">
-                <div className="flex items-start gap-3 rounded-xl border border-[#E5D8C7] bg-white p-3 font-semibold text-[#5A6362]">
+              <div className="mt-5 grid gap-2 text-sm pb-16 lg:mt-6 lg:gap-3 lg:pb-0">
+                <div className="flex items-start gap-3 rounded-none border-0 bg-transparent p-0 font-semibold text-[#5A6362] lg:rounded-xl lg:border lg:border-[#E5D8C7] lg:bg-white lg:p-3">
                   <Truck className="mt-0.5 h-4 w-4 shrink-0 text-[#B68A45]" />
                   <p>Enjoy free delivery and free returns on selected orders.</p>
                 </div>
-                <div className="flex items-start gap-3 rounded-xl border border-[#E5D8C7] bg-white p-3 font-semibold text-[#5A6362]">
+                <div className="flex items-start gap-3 rounded-none border-0 bg-transparent p-0 font-semibold text-[#5A6362] lg:rounded-xl lg:border lg:border-[#E5D8C7] lg:bg-white lg:p-3">
                   <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#B68A45]" />
                   <p>Installation support available for eligible purifier models.</p>
                 </div>
-                <div className="flex items-start gap-3 rounded-xl border border-[#E5D8C7] bg-white p-3 font-semibold text-[#5A6362]">
+                <div className="flex items-start gap-3 rounded-none border-0 bg-transparent p-0 font-semibold text-[#5A6362] lg:rounded-xl lg:border lg:border-[#E5D8C7] lg:bg-white lg:p-3">
                   <Heart className="mt-0.5 h-4 w-4 shrink-0 text-[#B68A45]" />
                   <p>Genuine Priya&apos;s Aqua Fresh products and spare parts.</p>
                 </div>
@@ -107,11 +118,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           </div>
 
           {related.length > 0 ? (
-            <section className="mt-16 border-t border-[#E5D8C7] pt-10">
-              <div className="mb-7 flex flex-col justify-between gap-3 md:flex-row md:items-end">
+            <section data-related-products-section className="mt-12 border-t border-[#E5D8C7] pt-8 lg:mt-16 lg:pt-10">
+              <div className="mb-5 flex flex-col justify-between gap-3 md:mb-7 md:flex-row md:items-end">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.22em] text-[#B68A45]">Recommended</p>
-                  <h2 className="mt-2 font-serif text-3xl font-semibold tracking-tight text-[#1D2D2E] md:text-5xl">
+                  <h2 className="mt-2 font-serif text-2xl font-semibold tracking-tight text-[#1D2D2E] md:text-5xl">
                     You May Also Like This Product
                   </h2>
                   <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-[#5A6362]">
@@ -122,7 +133,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   View All Products
                 </Link>
               </div>
-              <ProductGrid products={related} />
+              <div data-related-product-rail data-native-home-product-row className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-3 [scrollbar-width:none] md:-mx-6 md:px-6 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0">
+                {related.map((item) => (
+                  <div key={item.id} data-related-product-card data-native-home-product-card className="w-[var(--home-product-card-width)] max-w-none shrink-0 snap-start sm:max-w-[18rem] md:w-[31vw] lg:w-auto lg:max-w-none" style={{ "--home-product-card-width": "calc((100vw - 3.1rem) / 2)" } as CSSProperties}>
+                    <ProductCard product={item} />
+                  </div>
+                ))}
+              </div>
             </section>
           ) : null}
         </div>
@@ -262,7 +279,7 @@ function parseProductDescription(description: string): { details: DetailItem[]; 
 }
 
 function normalizeProductDescription(value: string) {
-  let text = String(value || "").replace(/\r\n?/g, "\n").replace(/\u2022/g, "\n• ");
+  let text = String(value || "").replace(/\r\n?/g, "\n").replace(/\u2022/g, "\nâ€¢ ");
   text = text.replace(/\s*SPECIFICATIONS\s*:/gi, "\nSPECIFICATIONS:\n");
 
   for (const heading of detailHeadings) {
@@ -289,9 +306,9 @@ function parseDetails(value: string): DetailItem[] {
     .map((line) => line.replace(/^[-?]\s+/, "\u00e2\u20ac\u00a2 "))
     .filter(Boolean)
     .map((line) => {
-      const cleanLine = line.replace(/^•\s*/, "").trim();
+      const cleanLine = line.replace(/^â€¢\s*/, "").trim();
       const labelMatch = cleanLine.match(/^([A-Z][A-Z0-9\s&/-]{2,}):\s*(.+)$/);
-      if (line.startsWith("•") || labelMatch) {
+      if (line.startsWith("â€¢") || labelMatch) {
         return {
           kind: "point" as const,
           label: labelMatch?.[1]?.trim(),
@@ -307,7 +324,7 @@ function parseSpecifications(value: string): SpecItem[] {
   return value
     .split("\n")
     .map((line) => line.replace(/^[-?]\s+/, "\u00e2\u20ac\u00a2 "))
-    .map((line) => line.replace(/^•\s*/, "").trim())
+    .map((line) => line.replace(/^â€¢\s*/, "").trim())
     .filter(Boolean)
     .map((line) => {
       const [label, ...rest] = line.split(":");

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { loginUser, registerCustomer, type AuthUser } from "@/services/auth-service";
+import { loginUser, registerCustomer, resendLoginOtp, sendLoginOtp, verifyLoginOtp, type AuthUser } from "@/services/auth-service";
 
 type AuthModalProps = {
   open: boolean;
@@ -54,7 +54,7 @@ export function AuthModal({ open, onClose, onLogin }: AuthModalProps) {
     }
   };
 
-  function sendOtp(event: FormEvent<HTMLFormElement>) {
+  async function sendOtp(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const mobile = otpMobile.trim();
     const nextErrors: Record<string, string> = {};
@@ -63,11 +63,20 @@ export function AuthModal({ open, onClose, onLogin }: AuthModalProps) {
     }
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
-    setOtpSent(true);
-    toast.info("OTP login design ready. Backend integration pending.");
+    setIsLoggingIn(true);
+    try {
+      const result = await sendLoginOtp(mobile);
+      setOtpSent(true);
+      setOtpCode("");
+      toast.success(result.devOtp ? `OTP sent. Dev OTP: ${result.devOtp}` : "OTP sent successfully.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to send OTP.");
+    } finally {
+      setIsLoggingIn(false);
+    }
   }
 
-  function verifyOtp(event: FormEvent<HTMLFormElement>) {
+  async function verifyOtp(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextErrors: Record<string, string> = {};
     if (!/^[0-9]{6}$/.test(otpCode.trim())) {
@@ -75,7 +84,31 @@ export function AuthModal({ open, onClose, onLogin }: AuthModalProps) {
     }
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
-    toast.info("OTP verification will be enabled soon.");
+    setIsLoggingIn(true);
+    try {
+      const user = await verifyLoginOtp({ mobile: otpMobile.trim(), otp: otpCode.trim() });
+      onLogin?.(user);
+      toast.success("Login successful.");
+      onClose();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "OTP verification failed.");
+    } finally {
+      setIsLoggingIn(false);
+    }
+  }
+
+  async function resendOtp() {
+    if (isLoggingIn) return;
+    setIsLoggingIn(true);
+    try {
+      const result = await resendLoginOtp(otpMobile.trim());
+      setOtpCode("");
+      toast.success(result.devOtp ? `OTP resent. Dev OTP: ${result.devOtp}` : "OTP resent successfully.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to resend OTP.");
+    } finally {
+      setIsLoggingIn(false);
+    }
   }
 
   const submitRegister = async (event: FormEvent<HTMLFormElement>) => {
@@ -220,7 +253,7 @@ export function AuthModal({ open, onClose, onLogin }: AuthModalProps) {
                   <OtpBoxes value={otpCode} onChange={setOtpCode} className="border-slate-200 focus:border-teal-500 focus:ring-teal-100" />
                 </FieldError>
                 <div className="flex items-center justify-between text-sm">
-                  <button type="button" className="font-bold text-teal-700" onClick={() => toast.info("OTP resend will be enabled soon.")}>
+                  <button type="button" className="font-bold text-teal-700" onClick={resendOtp}>
                     Resend OTP
                   </button>
                   <button
@@ -237,7 +270,7 @@ export function AuthModal({ open, onClose, onLogin }: AuthModalProps) {
                 </div>
               </>
             )}
-            <Button type="submit" className="w-full">{otpSent ? "Verify OTP" : "Send OTP"}</Button>
+            <Button type="submit" className="w-full" disabled={isLoggingIn}>{isLoggingIn ? "Please wait..." : otpSent ? "Verify OTP" : "Send OTP"}</Button>
             <button
               type="button"
               className="text-center text-sm font-bold text-teal-700"
@@ -364,3 +397,4 @@ function PasswordInput({
     </div>
   );
 }
+

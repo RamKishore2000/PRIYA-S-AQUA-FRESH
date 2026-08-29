@@ -1,0 +1,79 @@
+# BEGIN cPanel-generated php ini directives, do not edit
+<IfModule php8_module>
+  php_value error_log "/home/priyasaquafresh/logs/php.error.log"
+  php_flag log_errors On
+</IfModule>
+<IfModule lsapi_module>
+  php_value error_log "/home/priyasaquafresh/logs/php.error.log"
+  php_flag log_errors On
+</IfModule>
+# END cPanel-generated php ini directives, do not edit
+
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION BEGIN
+<IfModule Litespeed>
+</IfModule>
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION END
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Do not touch admin panel
+  RewriteRule ^admin(/.*)?$ - [L]
+
+  # Let real files load directly
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule ^ - [L]
+
+  # Redirect old dynamic order detail URLs to static-safe query route
+  RewriteRule ^profile/orders/([0-9]+)/?$ /profile/orders/detail?id=$1 [R=302,L,QSA]
+
+  # Fix nested profile orders RSC txt requests
+  RewriteRule ^profile/orders/__next\.profile\.orders\.__PAGE__\.txt$ /profile/orders.txt [L,QSA]
+  RewriteRule ^profile/orders/__next\._tree\.txt$ /profile/orders/__next._tree.txt [L,QSA]
+  RewriteRule ^profile/orders/__next\._full\.txt$ /profile/orders/__next._full.txt [L,QSA]
+  RewriteRule ^profile/orders/detail/__next\.profile\.orders\.detail\.__PAGE__\.txt$ /profile/orders/detail/__next.profile.orders.detail/__PAGE__.txt [L,QSA]
+  RewriteRule ^profile/orders/detail/__next\._tree\.txt$ /profile/orders/detail/__next._tree.txt [L,QSA]
+  RewriteRule ^profile/orders/detail/__next\._full\.txt$ /profile/orders/detail/__next._full.txt [L,QSA]
+
+  # Fix Next static export RSC txt requests
+  RewriteRule ^([^/]+)/__next\.([A-Za-z0-9_-]+)\.__PAGE__\.txt$ /$1/__next.$2/__PAGE__.txt [L,QSA]
+  RewriteRule ^commercial/__next\._tree\.txt$ /products/__next._tree.txt [L,QSA]
+  RewriteRule ^commercial/__next\._full\.txt$ /products/__next._full.txt [L,QSA]
+
+  # Normal static pages
+  RewriteRule ^$ /index.html [L,QSA]
+  RewriteRule ^about/?$ /about.html [L,QSA]
+  RewriteRule ^services/?$ /services.html [L,QSA]
+  RewriteRule ^products/?$ /products.html [L,QSA]
+  RewriteRule ^categories/?$ /categories.html [L,QSA]
+  RewriteRule ^contact/?$ /contact.html [L,QSA]
+  RewriteRule ^cart/?$ /cart.html [L,QSA]
+  RewriteRule ^wishlist/?$ /wishlist.html [L,QSA]
+  RewriteRule ^checkout/?$ /checkout.html [L,QSA]
+  RewriteRule ^profile/?$ /profile.html [L,QSA]
+  RewriteRule ^profile/orders/?$ /profile/orders.html [L,QSA]
+  RewriteRule ^profile/orders/detail/?$ /profile/orders/detail.html [L,QSA]
+  RewriteRule ^search/?$ /search.html [L,QSA]
+  RewriteRule ^faqs/?$ /faqs.html [L,QSA]
+  RewriteRule ^privacy-policy/?$ /privacy-policy.html [L,QSA]
+  RewriteRule ^refund-policy/?$ /refund-policy.html [L,QSA]
+  RewriteRule ^shipping-policy/?$ /shipping-policy.html [L,QSA]
+  RewriteRule ^terms/?$ /terms.html [L,QSA]
+  RewriteRule ^warranty/?$ /warranty.html [L,QSA]
+
+  # Product details
+  RewriteRule ^product-detail/?$ /product-detail.html [L,QSA]
+  RewriteRule ^products/([^/]+)/?$ /product-detail.html?slug=$1 [L,QSA]
+
+  # Old commercial route
+  RewriteRule ^commercial/?$ /products.html?category=commercial-water-purifiers [L,QSA]
+</IfModule>
+
+# Prevent browsers from keeping old HTML pages
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|htm)$">
+    Header always set Cache-Control "no-cache, no-store, must-revalidate"
+    Header always set Pragma "no-cache"
+    Header always set Expires "0"
+  </FilesMatch>
+</IfModule>

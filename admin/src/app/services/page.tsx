@@ -17,7 +17,7 @@ function ServiceDetails({ request, onClose, onSave }: { request: ServiceRequest;
   const [technicianName, setTechnicianName] = useState("");
 
   return (
-    <AdminModalShell labelledBy="service-details-title" maxWidth="lg">
+    <AdminModalShell labelledBy="service-details-title" maxWidth="lg" onClose={onClose}>
         <div className="flex items-center justify-between border-b border-slate-200 p-5">
           <div>
             <h2 id="service-details-title" className="text-lg font-bold text-slate-950">{request.id}</h2>

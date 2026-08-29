@@ -9,6 +9,7 @@ type ApiProduct = {
   description: string;
   rating?: number;
   reviewCount?: number;
+  sortOrder?: number;
   status: "ACTIVE" | "INACTIVE";
   category: { name: string; slug: string };
   prices: {
@@ -56,6 +57,7 @@ function mapProduct(product: ApiProduct): Product {
     image,
     images: product.images.length ? product.images.map((item) => withApiUrl(item.imageUrl)) : [image],
     stock: product.status === "ACTIVE" ? "in-stock" : "out-of-stock",
+    sortOrder: Number(product.sortOrder ?? 999),
   };
 }
 

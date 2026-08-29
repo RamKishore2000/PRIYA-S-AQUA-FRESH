@@ -47,6 +47,31 @@ const refreshValidator = [
   body("refreshToken").trim().notEmpty().withMessage("Refresh token is required."),
 ];
 
+
+const otpSendValidator = [
+  body("mobile")
+    .trim()
+    .notEmpty()
+    .withMessage("Mobile number is required.")
+    .matches(/^[6-9]\d{9}$/)
+    .withMessage("Enter a valid 10 digit Indian mobile number."),
+];
+
+const otpVerifyValidator = [
+  body("mobile")
+    .trim()
+    .notEmpty()
+    .withMessage("Mobile number is required.")
+    .matches(/^[6-9]\d{9}$/)
+    .withMessage("Enter a valid 10 digit Indian mobile number."),
+  body("otp")
+    .trim()
+    .notEmpty()
+    .withMessage("OTP is required.")
+    .matches(/^\d{6}$/)
+    .withMessage("Enter the 6 digit OTP."),
+  body("rememberMe").optional().isBoolean().withMessage("Remember me must be true or false."),
+];
 const logoutValidator = [
   body("refreshToken").optional({ nullable: true, checkFalsy: true }).isString().withMessage("Refresh token is invalid."),
 ];
@@ -55,5 +80,10 @@ module.exports = {
   registerValidator,
   loginValidator,
   refreshValidator,
+  otpSendValidator,
+  otpVerifyValidator,
   logoutValidator,
 };
+
+
+

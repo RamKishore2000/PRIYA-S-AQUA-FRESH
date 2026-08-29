@@ -35,6 +35,19 @@ export type Customer = {
   createdDate: string;
 };
 
+export type Subcategory = {
+  id: string;
+  categoryId: string;
+  categoryName: string;
+  name: string;
+  slug: string;
+  image: string;
+  description: string;
+  productsCount: number;
+  status: Extract<Status, "Active" | "Inactive">;
+  createdDate: string;
+};
+
 export type Category = {
   id: string;
   name: string;
@@ -42,6 +55,7 @@ export type Category = {
   image: string;
   description: string;
   productsCount: number;
+  subcategories?: Subcategory[];
   status: Extract<Status, "Active" | "Inactive">;
   createdDate: string;
 };
@@ -88,6 +102,8 @@ export type Product = {
   sku: string;
   category: string;
   categoryId?: string;
+  subcategory?: string;
+  subcategoryId?: string;
   images: string[];
   customerSellingPrice: number;
   dealerSellingPrice: number;
@@ -95,8 +111,9 @@ export type Product = {
   dealerOriginalPrice: number;
   rating: number;
   reviewCount: number;
+  sortOrder: number;
   description: string;
-  status: Status;
+  status: Extract<Status, "Active" | "Inactive">;
   createdDate: string;
   updatedDate?: string;
 };
@@ -119,7 +136,9 @@ export type Order = {
   discountAmount: number;
   shippingAmount: number;
   paymentMethod?: "Online" | "COD";
+  paymentType?: "Full Payment" | "Advance Payment";
   advanceAmount?: number;
+  paidAmount?: number;
   balanceAmount?: number;
   shippingAddress?: {
     fullName: string;
@@ -178,5 +197,42 @@ export type Review = {
   rating: number;
   message: string;
   status: "Visible" | "Hidden";
+  createdDate: string;
+};
+
+export type SiteSettings = {
+  phone: string;
+  whatsapp: string;
+  email: string;
+  address: string;
+  facebook: string;
+  instagram: string;
+  youtube: string;
+  linkedin: string;
+  x: string;
+  trainingAmount: number;
+  orderAdvanceAmount: number;
+};
+
+export type ContactMessage = {
+  id: string;
+  fullName: string;
+  email: string;
+  mobile: string;
+  subject: string;
+  message: string;
+  status: "New" | "Read" | "Replied";
+  createdDate: string;
+};
+export type TrainingEnquiry = {
+  id: string;
+  enquiryNumber: string;
+  fullName: string;
+  mobile: string;
+  city: string;
+  message: string;
+  actionType: "Interested" | "Payment";
+  amount: number;
+  paymentStatus: "Not Required" | "Pending" | "Paid" | "Failed";
   createdDate: string;
 };

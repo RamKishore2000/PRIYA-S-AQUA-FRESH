@@ -22,7 +22,9 @@ export type Order = {
   totalAmount: number;
   paymentStatus: "PENDING" | "PARTIAL" | "PAID" | "FAILED" | "REFUNDED";
   paymentMethod?: "ONLINE" | "COD";
+  paymentType?: "FULL_PAYMENT" | "ADVANCE_PAYMENT";
   advanceAmount?: number;
+  paidAmount?: number;
   balanceAmount?: number;
   orderStatus: "PENDING" | "CONFIRMED" | "PACKED" | "SHIPPED" | "DELIVERED" | "CANCELLED";
   createdAt: string;
@@ -108,6 +110,14 @@ export async function verifyRazorpayPayment(payload: {
   return data.order;
 }
 
+
+export async function markOrderPaymentFailed(orderId: string | number, reason = "checkout_dismissed") {
+  const data = await apiRequest<{ order: Order }>(`/api/orders/${orderId}/payment-failed`, {
+    method: "POST",
+    body: JSON.stringify({ reason }),
+  });
+  return data.order;
+}
 export async function fetchMyOrders() {
   const data = await apiRequest<{ orders: Order[] }>("/api/orders/my");
   return data.orders;

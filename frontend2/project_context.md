@@ -46,7 +46,13 @@
 - `next.config.ts` allows backend-uploaded images from `http://localhost:5000/uploads/**` and `http://127.0.0.1:5000/uploads/**`.
 - Homepage hero orbit category visuals use regular `<img>` tags for API-uploaded images so the banner does not fail if the dev server has not restarted after image config changes.
 - Static catalog fallback data was removed from `frontend2`. Homepage, products listing, and product details now rely on backend/API data from admin. If API data is empty, the related section/page stays empty or shows the existing product-not-found/empty state. Cart, wishlist, and checkout remain API-only.
+- Auth service includes refresh-on-401 retry support so expired 15-minute access tokens can be refreshed with the stored refresh token before failing the request.
+- Login modal includes a login-with-OTP design and is wired to the backend OTP endpoints: `POST /api/auth/otp/send`, `POST /api/auth/otp/resend`, and `POST /api/auth/otp/verify`.
+- OTP login is for existing active users by mobile number only. Backend SMS provider integration is still pending real provider keys/API details; development mode can show/log a test OTP.
 
 ## Notes
 - `gsap` and `lucide-react` were installed in `frontend2`.
 - No existing `frontend` source files should be modified for `frontend2` design work.
+- For Vercel/design preview, `frontend2` can be deployed independently by setting Vercel root directory to `frontend2`.
+- `NEXT_PUBLIC_API_BASE_URL` should point to the backend API when a hosted backend is available. Without a backend, API-bound sections may render empty states because static catalog fallback was intentionally removed.
+

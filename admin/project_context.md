@@ -71,7 +71,14 @@
 - Backend customer APIs were added and targeted admin ESLint passed after Customers management was implemented.
 - Backend-bound Orders list/detail pages with product images and status update passed targeted admin ESLint.
 - Admin order detail route now reads the dynamic id with `useParams()` in the client component so View Order opens the correct `/orders/[id]` detail record.
+- Admin API client includes refresh-on-401 retry support so expired 15-minute access tokens can be refreshed using the stored refresh token before forcing re-login.
+- Admin product delete may return `409 Conflict` when a product is already used in orders. This is intentional backend protection; such products should be marked inactive instead of deleted so order history remains valid.
+- Dashboard is intended to show five primary business cards: total customers, total dealers, total orders, total services, and total revenue. The previous active-card direction is not desired.
+- Dashboard graph direction is two dynamic report areas: monthly product orders and monthly service requests, with hover detail overlays and status distribution summaries.
+- Header search/notification controls are not required if unused; profile dropdown should show useful admin/account information.
 
 ## Explicit Non-Goals
 - Do not run build or dev server when the user explicitly says not to.
 - Do not overwrite uploaded runtime files; they live outside Git-tracked source files.
+- Do not expose or commit real `.env` secrets. Keep `.env.example` as placeholders only.
+

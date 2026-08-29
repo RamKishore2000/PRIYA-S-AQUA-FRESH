@@ -27,6 +27,26 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
   CONSTRAINT fk_refresh_tokens_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+
+CREATE TABLE IF NOT EXISTS otp_verifications (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id BIGINT UNSIGNED NOT NULL,
+  mobile VARCHAR(10) NOT NULL,
+  purpose ENUM('LOGIN') NOT NULL DEFAULT 'LOGIN',
+  otp_hash VARCHAR(255) NOT NULL,
+  expires_at DATETIME NOT NULL,
+  verified_at DATETIME NULL,
+  attempts TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  resend_count TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  last_sent_at DATETIME NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_otp_mobile_purpose_created (mobile, purpose, created_at),
+  KEY idx_otp_user_id (user_id),
+  CONSTRAINT chk_otp_mobile_digits CHECK (mobile REGEXP '^[6-9][0-9]{9}$'),
+  CONSTRAINT fk_otp_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 CREATE TABLE IF NOT EXISTS dealers (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id BIGINT UNSIGNED NOT NULL,
@@ -83,9 +103,26 @@ CREATE TABLE IF NOT EXISTS categories (
   UNIQUE KEY uq_categories_slug (slug)
 );
 
+
+CREATE TABLE IF NOT EXISTS subcategories (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  category_id BIGINT UNSIGNED NOT NULL,
+  name VARCHAR(120) NOT NULL,
+  slug VARCHAR(150) NOT NULL,
+  image_url VARCHAR(500) NULL,
+  description TEXT NULL,
+  status ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_subcategories_category_slug (category_id, slug),
+  KEY idx_subcategories_category_id (category_id),
+  CONSTRAINT fk_subcategories_category_id FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
+);
 CREATE TABLE IF NOT EXISTS products (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   category_id BIGINT UNSIGNED NOT NULL,
+  subcategory_id BIGINT UNSIGNED NULL,
   name VARCHAR(180) NOT NULL,
   slug VARCHAR(220) NOT NULL,
   sku VARCHAR(80) NOT NULL,
@@ -93,14 +130,18 @@ CREATE TABLE IF NOT EXISTS products (
   rating DECIMAL(2,1) NOT NULL DEFAULT 0.0,
   review_count INT UNSIGNED NOT NULL DEFAULT 0,
   status ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
+  sort_order INT UNSIGNED NOT NULL DEFAULT 999,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY uq_products_slug (slug),
   UNIQUE KEY uq_products_sku (sku),
   KEY idx_products_category_id (category_id),
+  KEY idx_products_subcategory_id (subcategory_id),
+  KEY idx_products_sort_order (sort_order),
   CONSTRAINT chk_products_rating CHECK (rating >= 0 AND rating <= 5),
-  CONSTRAINT fk_products_category_id FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
+  CONSTRAINT fk_products_category_id FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT,
+  CONSTRAINT fk_products_subcategory_id FOREIGN KEY (subcategory_id) REFERENCES subcategories(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS product_images (
@@ -268,6 +309,24 @@ CREATE TABLE IF NOT EXISTS payments (
   CONSTRAINT fk_payments_order_id FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
+
+CREATE TABLE IF NOT EXISTS webhook_events (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  provider VARCHAR(60) NOT NULL,
+  event_id VARCHAR(160) NOT NULL,
+  event_type VARCHAR(120) NOT NULL,
+  status ENUM('RECEIVED', 'PROCESSED', 'FAILED') NOT NULL DEFAULT 'RECEIVED',
+  order_id BIGINT UNSIGNED NULL,
+  raw_payload JSON NULL,
+  error_message TEXT NULL,
+  received_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  processed_at DATETIME NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_webhook_events_provider_event (provider, event_id),
+  KEY idx_webhook_events_order_id (order_id),
+  KEY idx_webhook_events_status_received (status, received_at),
+  CONSTRAINT fk_webhook_events_order_id FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE SET NULL
+);
 CREATE TABLE IF NOT EXISTS coupon_usages (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   coupon_id BIGINT UNSIGNED NOT NULL,
@@ -380,3 +439,5 @@ CREATE TABLE IF NOT EXISTS settings (
   PRIMARY KEY (id),
   UNIQUE KEY uq_settings_key (setting_key)
 );
+
+

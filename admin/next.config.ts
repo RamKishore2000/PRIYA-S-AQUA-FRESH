@@ -1,8 +1,21 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    staticGenerationMaxConcurrency: 1,
+  },
+  output: "export",
+  basePath: "/admin",
+  assetPrefix: "/admin",
+  trailingSlash: true,
   images: {
+    unoptimized: true,
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "api.priyasaquafresh.com",
+        pathname: "/uploads/**",
+      },
       {
         protocol: "http",
         hostname: "localhost",

@@ -12,19 +12,27 @@ import { adminApi } from "@/services/api";
 import type { Coupon, CouponComputedStatus } from "@/types/admin";
 import { formatCurrency } from "@/utils/format-currency";
 
+function getCouponDate(coupon: Coupon, type: "start" | "end") {
+  const dateValue = type === "start" ? coupon.startDate : coupon.endDate;
+  const timeValue = type === "start" ? coupon.startTime : coupon.endTime;
+  const fallback = new Date();
+  if (type === "end") fallback.setFullYear(fallback.getFullYear() + 1);
+  const date = dateValue && timeValue ? new Date(`${dateValue}T${timeValue}`) : fallback;
+  return Number.isNaN(date.getTime()) ? fallback : date;
+}
 function getCouponStatus(coupon: Coupon): CouponComputedStatus {
   if (coupon.manualStatus === "Inactive") return "Inactive";
   const now = new Date();
-  const start = new Date(`${coupon.startDate}T${coupon.startTime}`);
-  const end = new Date(`${coupon.endDate}T${coupon.endTime}`);
+  const start = getCouponDate(coupon, "start");
+  const end = getCouponDate(coupon, "end");
   if (now < start) return "Upcoming";
   if (now > end) return "Expired";
   return "Active";
 }
 
 function formatValidity(coupon: Coupon) {
-  const start = new Date(`${coupon.startDate}T${coupon.startTime}`);
-  const end = new Date(`${coupon.endDate}T${coupon.endTime}`);
+  const start = getCouponDate(coupon, "start");
+  const end = getCouponDate(coupon, "end");
   const formatter = new Intl.DateTimeFormat("en-IN", {
     day: "2-digit",
     month: "short",

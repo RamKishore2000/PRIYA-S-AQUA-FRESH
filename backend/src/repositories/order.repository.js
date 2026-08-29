@@ -4,17 +4,28 @@ function mapOrderRows(rows) {
   const orders = new Map();
   for (const row of rows) {
     if (!orders.has(row.id)) {
+      const paymentMethod = row.payment_method || "ONLINE";
+      const totalAmount = Number(row.total_amount || 0);
+      const advanceAmount = Number(row.advance_amount || 0);
+      const balanceAmount = Number(row.balance_amount || 0);
+      const paidAmount = row.payment_status === "PAID"
+        ? totalAmount
+        : row.payment_status === "PARTIAL"
+          ? advanceAmount
+          : 0;
       orders.set(row.id, {
         id: row.id,
         orderNumber: row.order_number,
         subtotalAmount: Number(row.subtotal_amount),
         discountAmount: Number(row.discount_amount),
         shippingAmount: Number(row.shipping_amount),
-        totalAmount: Number(row.total_amount),
+        totalAmount,
         paymentStatus: row.payment_status,
-        paymentMethod: row.payment_method || "ONLINE",
-        advanceAmount: Number(row.advance_amount || 0),
-        balanceAmount: Number(row.balance_amount || 0),
+        paymentMethod,
+        paymentType: paymentMethod === "COD" ? "ADVANCE_PAYMENT" : "FULL_PAYMENT",
+        advanceAmount,
+        paidAmount,
+        balanceAmount,
         orderStatus: row.order_status,
         customer: row.customer_id
           ? {
@@ -109,10 +120,28 @@ async function updateStatus(orderId, status) {
   return findById(orderId);
 }
 
+async function paymentExists(providerPaymentId) {
+  if (!providerPaymentId) return false;
+  const [rows] = await pool.execute(
+    "SELECT id FROM payments WHERE provider = 'RAZORPAY' AND provider_payment_id = ? LIMIT 1",
+    [providerPaymentId],
+  );
+  return rows.length > 0;
+}
+
 async function markPaid(orderId, paymentId, rawResponse) {
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
+    const [existingPayments] = await connection.execute(
+      "SELECT id FROM payments WHERE provider = 'RAZORPAY' AND provider_payment_id = ? LIMIT 1",
+      [paymentId],
+    );
+    if (existingPayments.length) {
+      await connection.commit();
+      return;
+    }
+
     const [orders] = await connection.execute(
       "SELECT payment_method, total_amount, advance_amount, balance_amount FROM orders WHERE id = ? LIMIT 1",
       [orderId],
@@ -139,6 +168,32 @@ async function markPaid(orderId, paymentId, rawResponse) {
   }
 }
 
+async function markPaymentFailed(orderId, paymentId, rawResponse) {
+  if (await paymentExists(paymentId)) return;
+  await pool.execute(
+    "UPDATE orders SET payment_status = 'FAILED' WHERE id = ? AND payment_status = 'PENDING'",
+    [orderId],
+  );
+  await pool.execute(
+    `INSERT INTO payments (order_id, provider, provider_payment_id, amount, status, raw_response)
+     SELECT id, 'RAZORPAY', ?, 0, 'FAILED', ?
+     FROM orders WHERE id = ?`,
+    [paymentId, JSON.stringify(rawResponse), orderId],
+  );
+}
+
+async function markPaymentFailedWithoutProviderId(orderId, rawResponse) {
+  await pool.execute(
+    "UPDATE orders SET payment_status = 'FAILED' WHERE id = ? AND payment_status = 'PENDING'",
+    [orderId],
+  );
+  await pool.execute(
+    `INSERT INTO payments (order_id, provider, provider_payment_id, amount, status, raw_response)
+     SELECT id, 'RAZORPAY', NULL, 0, 'FAILED', ?
+     FROM orders WHERE id = ?`,
+    [JSON.stringify(rawResponse || { reason: "checkout_dismissed" }), orderId],
+  );
+}
 async function findCouponIdByOrderId(orderId) {
   const [rows] = await pool.execute("SELECT coupon_id, user_id, discount_amount FROM orders WHERE id = ? LIMIT 1", [orderId]);
   return rows[0] || null;
@@ -151,6 +206,10 @@ module.exports = {
   findByIdForUser,
   updateStatus,
   markPaid,
+  markPaymentFailed,
+  markPaymentFailedWithoutProviderId,
   findCouponIdByOrderId,
   pool,
 };
+
+

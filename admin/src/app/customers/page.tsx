@@ -42,7 +42,7 @@ export default function CustomersPage() {
     const term = search.trim().toLowerCase();
     if (!term) return customers;
     return customers.filter((customer) =>
-      [customer.fullName, customer.mobile, customer.email, customer.status].some((value) => value.toLowerCase().includes(term)),
+      [customer.fullName, customer.mobile, customer.email, customer.status].some((value) => String(value || "").toLowerCase().includes(term)),
     );
   }, [customers, search]);
 

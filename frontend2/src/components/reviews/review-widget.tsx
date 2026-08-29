@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useShop } from "@/context/shop-context";
 import { submitReview } from "@/services/review-service";
 
@@ -12,15 +12,22 @@ export function ReviewWidget() {
   const [notice, setNotice] = useState("");
   const [saving, setSaving] = useState(false);
 
+  useEffect(() => {
+    if (!notice) return;
+    const timer = window.setTimeout(() => setNotice(""), 4500);
+    return () => window.clearTimeout(timer);
+  }, [notice]);
+
   function openReview() {
     if (!user) {
       openLogin();
       return;
     }
-    if (!["CUSTOMER", "DEALER"].includes(user.role)) {
-      setNotice("Only customers and dealers can add reviews.");
+    if (user.role === "ADMIN") {
+      setNotice("Only signed-in customers can add reviews.");
       return;
     }
+    setNotice("");
     setOpen(true);
   }
 
@@ -51,13 +58,13 @@ export function ReviewWidget() {
         onClick={openReview}
         aria-label="Add review"
         title="Add review"
-        className="fixed bottom-5 right-5 z-[90] grid h-14 w-14 place-items-center rounded-full border border-[#D8B879] bg-[#0A3A38] text-white shadow-[0_18px_42px_rgba(10,58,56,0.28)] transition hover:-translate-y-0.5 hover:bg-[#12383A]"
+        className="fixed bottom-[5.6rem] right-4 z-[55] grid h-12 w-12 place-items-center rounded-full border border-[#D8B879] bg-[#0A3A38] text-white shadow-[0_10px_24px_rgba(10,58,56,0.18)] transition hover:-translate-y-0.5 hover:bg-[#12383A] md:bottom-[6rem] md:right-5 md:h-14 md:w-14 lg:bottom-5 lg:z-[90]"
       >
         <ReviewIcon className="h-6 w-6" />
       </button>
 
       {notice && !open ? (
-        <div className="fixed bottom-20 right-5 z-[91] max-w-xs rounded-xl border border-[#E5D8C7] bg-white px-4 py-3 text-sm font-bold text-[#1D2D2E] shadow-[0_18px_48px_rgba(43,35,22,0.2)]">
+        <div className="fixed bottom-[9rem] right-4 z-[91] max-w-xs rounded-xl border border-[#E5D8C7] border-l-4 border-l-emerald-500 bg-white px-4 py-3 text-sm font-bold text-[#1D2D2E] shadow-[0_18px_48px_rgba(43,35,22,0.2)] md:bottom-[9.5rem] md:right-5 lg:bottom-20">
           {notice}
         </div>
       ) : null}

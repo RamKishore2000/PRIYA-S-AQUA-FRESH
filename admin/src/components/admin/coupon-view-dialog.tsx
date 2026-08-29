@@ -21,7 +21,7 @@ export function CouponViewDialog({ coupon, status, onClose }: { coupon: Coupon; 
   ];
 
   return (
-    <AdminModalShell labelledBy="coupon-view-title" maxWidth="lg">
+    <AdminModalShell labelledBy="coupon-view-title" maxWidth="lg" onClose={onClose}>
       <div className="flex items-center justify-between border-b border-slate-200 p-5">
         <div>
           <h2 id="coupon-view-title" className="text-lg font-bold text-slate-950">{coupon.code}</h2>

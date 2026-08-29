@@ -1,12 +1,8 @@
+import { apiRequest, getAccessToken } from "@/services/auth-service";
 import type { Product } from "@/types/product";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
-type ApiResponse<T> = {
-  success: boolean;
-  message: string;
-  data?: T;
-};
 
 type ApiProduct = {
   id: number;
@@ -43,33 +39,8 @@ type ApiWishlist = {
   productIds: string[];
 };
 
-function getAccessToken() {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("priyas-access-token");
-}
-
 export function hasAccessToken() {
   return Boolean(getAccessToken());
-}
-
-async function apiRequest<T>(path: string, init?: RequestInit) {
-  const token = getAccessToken();
-  if (!token) throw new Error("Please login to continue.");
-
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-      ...(init?.headers || {}),
-    },
-    cache: "no-store",
-  });
-  const result = (await response.json()) as ApiResponse<T>;
-  if (!response.ok || !result.success || !result.data) {
-    throw new Error(result.message || "Request failed.");
-  }
-  return result.data;
 }
 
 export async function fetchCart() {
@@ -174,3 +145,4 @@ function mapProduct(product: ApiProduct): Product {
     stock: product.status === "ACTIVE" ? "in-stock" : "out-of-stock",
   };
 }
+

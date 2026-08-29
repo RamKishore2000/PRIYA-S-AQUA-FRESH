@@ -1,11 +1,6 @@
+import { apiRequest } from "@/services/auth-service";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
-type ApiResponse<T> = {
-  success: boolean;
-  message: string;
-  data?: T;
-  errors?: Record<string, string>;
-};
 
 export type Order = {
   id: number;
@@ -74,30 +69,6 @@ export type RazorpayOrderResponse = {
   order: Order;
 };
 
-function getAccessToken() {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("priyas-access-token");
-}
-
-async function apiRequest<T>(path: string, init?: RequestInit) {
-  const token = getAccessToken();
-  if (!token) throw new Error("Please login to continue.");
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-      ...(init?.headers || {}),
-    },
-  });
-  const result = (await response.json()) as ApiResponse<T>;
-  if (!response.ok || !result.success || !result.data) {
-    const error = new Error(result.message || "Request failed.") as Error & { fieldErrors?: Record<string, string> };
-    error.fieldErrors = result.errors;
-    throw error;
-  }
-  return result.data;
-}
 
 type CreateOrderPayload = (ShippingAddress | { addressId: number }) & {
   paymentMethod?: "ONLINE" | "COD";
@@ -161,3 +132,4 @@ export function orderImageUrl(imageUrl?: string | null) {
   if (imageUrl.startsWith("/")) return imageUrl;
   return `${API_BASE_URL}${imageUrl}`;
 }
+

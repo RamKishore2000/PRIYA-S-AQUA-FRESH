@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import { CartFlyProvider } from "@/context/cart-fly-context";
 import { ShopProvider } from "@/context/shop-context";
 import { ReviewWidget } from "@/components/reviews/review-widget";
+import { CapacitorAppRuntime } from "@/components/app/capacitor-app-runtime";
 import "./globals.css";
 
 const display = Cormorant_Garamond({
@@ -14,8 +15,13 @@ const display = Cormorant_Garamond({
 const sans = Manrope({
   variable: "--font-manrope",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["500", "600", "700", "800"],
 });
+
+export const viewport: Viewport = {
+  themeColor: "#F8F3EC",
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   title: "Priya's Aqua Fresh | Premium Water Purification",
@@ -25,9 +31,19 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${display.variable} ${sans.variable}`}>
-      <body>
+      <head>
+        <link rel="preload" href="/images/brand/priyas-aqua-fresh-logo-cropped.png" as="image" />
+      </head>
+      <body suppressHydrationWarning>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(location.hostname==='localhost'||location.protocol==='capacitor:'){document.body.classList.add('priyas-native-app')}}catch(e){}`,
+          }}
+        />
         <ShopProvider>
           <CartFlyProvider>
+            <CapacitorAppRuntime />
+
             {children}
             <ReviewWidget />
           </CartFlyProvider>

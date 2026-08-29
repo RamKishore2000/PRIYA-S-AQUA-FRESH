@@ -1,6 +1,12 @@
-import type { Banner, Category, Coupon, Customer, Dealer, Order, OrderStatus, Product, Review, ServiceRequest, Status, Testimonial } from "@/types/admin";
+import type { Banner, Category, Coupon, Customer, Dealer, Order, OrderStatus, Product, Subcategory, ContactMessage, Review, ServiceRequest, SiteSettings, Status, Testimonial, TrainingEnquiry } from "@/types/admin";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+
+type ProductPayload = Omit<Product, "id" | "createdDate" | "updatedDate"> & {
+  id?: string;
+  categoryId?: string;
+  subcategoryId?: string;
+};
 
 type ApiResponse<T> = {
   success: boolean;
@@ -17,9 +23,23 @@ type ApiCategory = {
   description: string | null;
   status: "ACTIVE" | "INACTIVE";
   productsCount: number;
+  subcategories?: ApiSubcategory[];
   createdAt: string;
 };
 
+
+type ApiSubcategory = {
+  id: number;
+  categoryId: number;
+  category?: { id: number; name: string; slug: string };
+  name: string;
+  slug: string;
+  imageUrl: string | null;
+  description: string | null;
+  status: "ACTIVE" | "INACTIVE";
+  productsCount: number;
+  createdAt: string;
+};
 type ApiBanner = {
   id: number;
   title: string;
@@ -43,8 +63,10 @@ type ApiProduct = {
   description: string;
   rating: number;
   reviewCount: number;
+  sortOrder: number;
   status: "ACTIVE" | "INACTIVE";
   category: { id: number; name: string; slug: string };
+  subcategory?: { id: number; name: string; slug: string } | null;
   prices: {
     customerOriginalPrice: number;
     customerSellingPrice: number;
@@ -95,8 +117,10 @@ type ApiCoupon = {
   discountValue: number;
   minimumOrderAmount: number;
   maximumDiscountAmount: number | null;
-  startAt: string;
-  endAt: string;
+  startAt?: string;
+  endAt?: string;
+  start_at?: string;
+  end_at?: string;
   usageLimit: number;
   sortOrder: number;
   status: "ACTIVE" | "INACTIVE";
@@ -129,6 +153,34 @@ type ApiTestimonial = {
   createdAt: string;
 };
 
+
+type ApiSiteSettings = SiteSettings;
+
+type ApiContactMessage = {
+  id: number;
+  full_name?: string;
+  fullName?: string;
+  email: string | null;
+  mobile: string | null;
+  subject: string | null;
+  message: string;
+  status: "NEW" | "READ" | "REPLIED";
+  created_at?: string;
+  createdAt?: string;
+};
+type ApiTrainingEnquiry = {
+  id: number;
+  enquiryNumber: string;
+  fullName: string;
+  mobile: string;
+  city: string;
+  message: string | null;
+  actionType: "INTERESTED" | "PAYMENT";
+  amount: number;
+  paymentStatus: "NOT_REQUIRED" | "PENDING" | "PAID" | "FAILED";
+  createdAt: string;
+};
+
 type ApiReview = {
   id: number;
   userId: number;
@@ -149,7 +201,9 @@ type ApiOrder = {
   totalAmount: number;
   paymentStatus: "PENDING" | "PARTIAL" | "PAID" | "FAILED" | "REFUNDED";
   paymentMethod?: "ONLINE" | "COD";
+  paymentType?: "FULL_PAYMENT" | "ADVANCE_PAYMENT";
   advanceAmount?: number;
+  paidAmount?: number;
   balanceAmount?: number;
   orderStatus: "PENDING" | "CONFIRMED" | "PACKED" | "SHIPPED" | "DELIVERED" | "CANCELLED";
   customer: {
@@ -174,8 +228,33 @@ type ApiOrder = {
   }[];
 };
 
-export async function apiRequest<T>(path: string, init?: RequestInit) {
-  const token = typeof window === "undefined" ? null : sessionStorage.getItem("priyas-admin-access-token");
+async function refreshAdminSession() {
+  if (typeof window === "undefined") return null;
+  const refreshToken = sessionStorage.getItem("priyas-admin-refresh-token");
+  if (!refreshToken) return null;
+
+  const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refreshToken }),
+    cache: "no-store",
+  });
+  const result = (await response.json()) as ApiResponse<{ user: { role: string }; tokens: { accessToken: string; refreshToken: string } }>;
+  if (!response.ok || !result.success || !result.data || result.data.user.role !== "ADMIN") {
+    sessionStorage.removeItem("priyas-admin-auth");
+    sessionStorage.removeItem("priyas-admin-user");
+    sessionStorage.removeItem("priyas-admin-access-token");
+    sessionStorage.removeItem("priyas-admin-refresh-token");
+    return null;
+  }
+
+  sessionStorage.setItem("priyas-admin-user", JSON.stringify(result.data.user));
+  sessionStorage.setItem("priyas-admin-access-token", result.data.tokens.accessToken);
+  sessionStorage.setItem("priyas-admin-refresh-token", result.data.tokens.refreshToken);
+  return result.data.tokens.accessToken;
+}
+
+async function fetchApi<T>(path: string, init: RequestInit | undefined, token: string | null) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
     headers: {
@@ -186,6 +265,20 @@ export async function apiRequest<T>(path: string, init?: RequestInit) {
     cache: "no-store",
   });
   const result = (await response.json()) as ApiResponse<T>;
+  return { response, result };
+}
+
+export async function apiRequest<T>(path: string, init?: RequestInit) {
+  const token = typeof window === "undefined" ? null : sessionStorage.getItem("priyas-admin-access-token");
+  let { response, result } = await fetchApi<T>(path, init, token);
+
+  if (response.status === 401) {
+    const nextToken = await refreshAdminSession();
+    if (nextToken) {
+      ({ response, result } = await fetchApi<T>(path, init, nextToken));
+    }
+  }
+
   if (!response.ok || !result.success) {
     const error = new Error(result.message || "API request failed.") as Error & { fieldErrors?: Record<string, string> };
     error.fieldErrors = result.errors;
@@ -213,12 +306,48 @@ export async function uploadImage(file: File, folder: string, width?: number, he
 }
 
 export const adminApi = {
+  async getSiteSettings() {
+    const data = await apiRequest<{ settings: ApiSiteSettings }>("/api/settings/site");
+    return data.settings;
+  },
+  async updateSiteSettings(settings: SiteSettings) {
+    const data = await apiRequest<{ settings: ApiSiteSettings }>("/api/settings/site", {
+      method: "PUT",
+      body: JSON.stringify(settings),
+    });
+    return data.settings;
+  },
+  async listContactMessages() {
+    const data = await apiRequest<{ messages: ApiContactMessage[] }>("/api/contact-messages");
+    return data.messages.map(mapContactMessage);
+  },
   async getDashboard() {
     return apiRequest<{ stats: { totalUsers: number; totalDealers: number; totalOrders: number; totalServices: number; activeProducts: number; totalRevenue: number } }>("/api/dashboard");
   },
   async listCategories() {
     const data = await apiRequest<{ categories: ApiCategory[] }>("/api/categories?includeInactive=true");
     return data.categories.map(mapCategory);
+  },
+  async listSubcategories() {
+    const data = await apiRequest<{ subcategories: ApiSubcategory[] }>("/api/subcategories?includeInactive=true");
+    return data.subcategories.map(mapSubcategory);
+  },
+  async createSubcategory(subcategory: Subcategory) {
+    const data = await apiRequest<{ subcategory: ApiSubcategory }>("/api/subcategories", {
+      method: "POST",
+      body: JSON.stringify(toSubcategoryPayload(subcategory)),
+    });
+    return mapSubcategory(data.subcategory);
+  },
+  async updateSubcategory(subcategory: Subcategory) {
+    const data = await apiRequest<{ subcategory: ApiSubcategory }>(`/api/subcategories/${subcategory.id}`, {
+      method: "PUT",
+      body: JSON.stringify(toSubcategoryPayload(subcategory)),
+    });
+    return mapSubcategory(data.subcategory);
+  },
+  async deleteSubcategory(id: string) {
+    await apiRequest(`/api/subcategories/${id}`, { method: "DELETE" });
   },
   async createCategory(category: Category) {
     const data = await apiRequest<{ category: ApiCategory }>("/api/categories", {
@@ -269,7 +398,7 @@ export const adminApi = {
     const data = await apiRequest<{ products: ApiProduct[] }>("/api/products?includeInactive=true");
     return data.products.map(mapProduct);
   },
-  async createProduct(product: Product) {
+  async createProduct(product: ProductPayload) {
     const data = await apiRequest<{ product: ApiProduct }>("/api/products", {
       method: "POST",
       body: JSON.stringify(toProductPayload(product)),
@@ -280,7 +409,7 @@ export const adminApi = {
     const data = await apiRequest<{ product: ApiProduct }>(`/api/products/${id}`);
     return mapProduct(data.product);
   },
-  async updateProduct(product: Product) {
+  async updateProduct(product: ProductPayload & { id: string }) {
     const data = await apiRequest<{ product: ApiProduct }>(`/api/products/${product.id}`, {
       method: "PUT",
       body: JSON.stringify(toProductPayload(product)),
@@ -358,6 +487,10 @@ export const adminApi = {
     const data = await apiRequest<{ orders: ApiOrder[] }>("/api/orders");
     return data.orders.map(mapOrder);
   },
+  async listTrainingEnquiries() {
+    const data = await apiRequest<{ enquiries: ApiTrainingEnquiry[] }>("/api/training-enquiries");
+    return data.enquiries.map(mapTrainingEnquiry);
+  },
   async getOrder(id: string) {
     const data = await apiRequest<{ order: ApiOrder }>(`/api/orders/${id}/admin`);
     return mapOrder(data.order);
@@ -413,6 +546,51 @@ export const adminApi = {
   },
 };
 
+
+function mapTrainingAction(action: ApiTrainingEnquiry["actionType"]): TrainingEnquiry["actionType"] {
+  return action === "PAYMENT" ? "Payment" : "Interested";
+}
+
+function mapTrainingPaymentStatus(status: ApiTrainingEnquiry["paymentStatus"]): TrainingEnquiry["paymentStatus"] {
+  if (status === "PAID") return "Paid";
+  if (status === "PENDING") return "Pending";
+  if (status === "FAILED") return "Failed";
+  return "Not Required";
+}
+
+function mapTrainingEnquiry(enquiry: ApiTrainingEnquiry): TrainingEnquiry {
+  return {
+    id: String(enquiry.id),
+    enquiryNumber: enquiry.enquiryNumber,
+    fullName: enquiry.fullName,
+    mobile: enquiry.mobile,
+    city: enquiry.city,
+    message: enquiry.message || "",
+    actionType: mapTrainingAction(enquiry.actionType),
+    amount: Number(enquiry.amount || 0),
+    paymentStatus: mapTrainingPaymentStatus(enquiry.paymentStatus),
+    createdDate: formatDate(enquiry.createdAt),
+  };
+}
+
+function mapContactStatus(status: ApiContactMessage["status"]): ContactMessage["status"] {
+  if (status === "READ") return "Read";
+  if (status === "REPLIED") return "Replied";
+  return "New";
+}
+
+function mapContactMessage(message: ApiContactMessage): ContactMessage {
+  return {
+    id: String(message.id),
+    fullName: message.fullName || message.full_name || "Customer",
+    email: message.email || "",
+    mobile: message.mobile || "",
+    subject: message.subject || "Contact Message",
+    message: message.message,
+    status: mapContactStatus(message.status),
+    createdDate: formatDate(message.createdAt || message.created_at || new Date().toISOString()),
+  };
+}
 function mapStatus(status: string): Status {
   if (status === "BLOCKED") return "Blocked";
   return status === "ACTIVE" ? "Active" : "Inactive";
@@ -428,11 +606,14 @@ function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-IN", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value));
 }
 
-function splitDateTime(value: string) {
-  const date = new Date(value);
+function splitDateTime(value?: string | null, fallbackDays = 0) {
+  const fallback = new Date();
+  fallback.setDate(fallback.getDate() + fallbackDays);
+  const date = value ? new Date(value) : fallback;
+  const safeDate = Number.isNaN(date.getTime()) ? fallback : date;
   return {
-    date: date.toISOString().slice(0, 10),
-    time: date.toTimeString().slice(0, 5),
+    date: safeDate.toISOString().slice(0, 10),
+    time: safeDate.toTimeString().slice(0, 5),
   };
 }
 
@@ -441,11 +622,37 @@ function mapCategory(category: ApiCategory): Category {
     id: String(category.id),
     name: category.name,
     slug: category.slug,
-    image: category.imageUrl || "/file.svg",
+    image: category.imageUrl ? withApiUrl(category.imageUrl) : "/admin/file.svg",
     description: category.description || "",
     productsCount: category.productsCount,
-    status: mapStatus(category.status),
+    subcategories: category.subcategories?.map(mapSubcategory) || [],
+    status: mapStatus(category.status) as Category["status"],
     createdDate: formatDate(category.createdAt),
+  };
+}
+
+function mapSubcategory(subcategory: ApiSubcategory): Subcategory {
+  return {
+    id: String(subcategory.id),
+    categoryId: String(subcategory.categoryId),
+    categoryName: subcategory.category?.name || "",
+    name: subcategory.name,
+    slug: subcategory.slug,
+    image: subcategory.imageUrl ? withApiUrl(subcategory.imageUrl) : "/admin/file.svg",
+    description: subcategory.description || "",
+    productsCount: Number(subcategory.productsCount || 0),
+    status: mapStatus(subcategory.status) as Subcategory["status"],
+    createdDate: formatDate(subcategory.createdAt),
+  };
+}
+
+function toSubcategoryPayload(subcategory: Subcategory) {
+  return {
+    categoryId: Number(subcategory.categoryId),
+    name: subcategory.name,
+    imageUrl: subcategory.image,
+    description: subcategory.description,
+    status: subcategory.status === "Active" ? "ACTIVE" : "INACTIVE",
   };
 }
 
@@ -498,6 +705,8 @@ function mapProduct(product: ApiProduct): Product {
     sku: product.sku,
     category: product.category.name,
     categoryId: String(product.category.id),
+    subcategory: product.subcategory?.name,
+    subcategoryId: product.subcategory?.id ? String(product.subcategory.id) : undefined,
     images: product.images.map((image) => withApiUrl(image.imageUrl)),
     customerOriginalPrice: product.prices.customerOriginalPrice,
     customerSellingPrice: product.prices.customerSellingPrice,
@@ -505,16 +714,18 @@ function mapProduct(product: ApiProduct): Product {
     dealerSellingPrice: product.prices.dealerSellingPrice,
     rating: Number(product.rating || 0),
     reviewCount: Number(product.reviewCount || 0),
+    sortOrder: Number(product.sortOrder ?? 999),
     description: product.description,
-    status: mapStatus(product.status),
+    status: mapStatus(product.status) as Product["status"],
     createdDate: formatDate(product.createdAt),
     updatedDate: product.updatedAt ? formatDate(product.updatedAt) : undefined,
   } as Product;
 }
 
-function toProductPayload(product: Product) {
+function toProductPayload(product: ProductPayload) {
   const payload: {
     categoryId: number;
+    subcategoryId?: number | null;
     name: string;
     sku?: string;
     description: string;
@@ -525,9 +736,11 @@ function toProductPayload(product: Product) {
     dealerSellingPrice: number;
     rating: number;
     reviewCount: number;
+    sortOrder: number;
     images: { imageUrl: string }[];
   } = {
     categoryId: Number((product as Product & { categoryId?: string }).categoryId),
+    subcategoryId: product.subcategoryId ? Number(product.subcategoryId) : null,
     name: product.name,
     description: product.description,
     status: product.status === "Active" ? "ACTIVE" : "INACTIVE",
@@ -537,6 +750,7 @@ function toProductPayload(product: Product) {
     dealerSellingPrice: product.dealerSellingPrice,
     rating: Number(product.rating || 0),
     reviewCount: Number(product.reviewCount || 0),
+    sortOrder: Number(product.sortOrder ?? 999),
     images: product.images.map((imageUrl) => ({ imageUrl })),
   };
   if (product.sku?.trim()) {
@@ -579,8 +793,8 @@ function mapCustomer(customer: ApiCustomer): Customer {
 }
 
 function mapCoupon(coupon: ApiCoupon): Coupon {
-  const start = splitDateTime(coupon.startAt);
-  const end = splitDateTime(coupon.endAt);
+  const start = splitDateTime(coupon.startAt || coupon.start_at);
+  const end = splitDateTime(coupon.endAt || coupon.end_at, 365);
   return {
     id: String(coupon.id),
     code: coupon.code,
@@ -713,7 +927,9 @@ function mapOrder(order: ApiOrder): Order {
     discountAmount: Number(order.discountAmount || 0),
     shippingAmount: Number(order.shippingAmount || 0),
     paymentMethod: order.paymentMethod === "COD" ? "COD" : "Online",
+    paymentType: order.paymentType === "ADVANCE_PAYMENT" || order.paymentMethod === "COD" ? "Advance Payment" : "Full Payment",
     advanceAmount: Number(order.advanceAmount || 0),
+    paidAmount: Number(order.paidAmount ?? (order.paymentStatus === "PARTIAL" ? order.advanceAmount : order.paymentStatus === "PAID" ? order.totalAmount : 0) ?? 0),
     balanceAmount: Number(order.balanceAmount || 0),
     shippingAddress: order.shippingAddress,
     products: order.items.map((item) => ({
@@ -768,3 +984,4 @@ function mapReview(review: ApiReview): Review {
     createdDate: formatDate(review.createdAt),
   };
 }
+

@@ -9,7 +9,7 @@ export type AuthUser = {
   status: string;
 };
 
-type ApiResponse<T> = {
+export type ApiResponse<T> = {
   success: boolean;
   message: string;
   data?: T;
@@ -47,6 +47,43 @@ export async function loginUser(payload: { email: string; password: string; reme
   return result.data.user;
 }
 
+
+export async function sendLoginOtp(mobile: string) {
+  const response = await fetch(`${API_BASE_URL}/api/auth/otp/send`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ mobile }),
+  });
+  const result = (await response.json()) as ApiResponse<{ otp: { mobile: string; expiresInSeconds: number; resendAfterSeconds: number } }>;
+  if (!response.ok || !result.success || !result.data) throw new Error(result.message || "Unable to send OTP.");
+  return result.data.otp;
+}
+
+export async function resendLoginOtp(mobile: string) {
+  const response = await fetch(`${API_BASE_URL}/api/auth/otp/resend`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ mobile }),
+  });
+  const result = (await response.json()) as ApiResponse<{ otp: { mobile: string; expiresInSeconds: number; resendAfterSeconds: number } }>;
+  if (!response.ok || !result.success || !result.data) throw new Error(result.message || "Unable to resend OTP.");
+  return result.data.otp;
+}
+
+export async function verifyLoginOtp(payload: { mobile: string; otp: string; rememberMe?: boolean }) {
+  const response = await fetch(`${API_BASE_URL}/api/auth/otp/verify`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const result = (await response.json()) as ApiResponse<{ user: AuthUser; tokens: { accessToken: string; refreshToken: string } }>;
+  if (!response.ok || !result.success || !result.data) throw new Error(result.message || "OTP verification failed.");
+  localStorage.setItem("priyas-auth-user", JSON.stringify(result.data.user));
+  localStorage.setItem("priyas-access-token", result.data.tokens.accessToken);
+  localStorage.setItem("priyas-refresh-token", result.data.tokens.refreshToken);
+  window.dispatchEvent(new Event("priyas-auth-changed"));
+  return result.data.user;
+}
 export async function registerCustomer(payload: {
   fullName: string;
   mobile: string;
@@ -65,15 +102,40 @@ export async function registerCustomer(payload: {
 }
 
 export function logoutUser() {
+  clearStoredSession();
+}
+
+function clearStoredSession() {
   localStorage.removeItem("priyas-auth-user");
   localStorage.removeItem("priyas-access-token");
   localStorage.removeItem("priyas-refresh-token");
   window.dispatchEvent(new Event("priyas-auth-changed"));
 }
 
-export async function apiRequest<T>(path: string, init?: RequestInit) {
-  const token = getAccessToken();
-  if (!token) throw new Error("Please login to continue.");
+async function refreshSession() {
+  const refreshToken = localStorage.getItem("priyas-refresh-token");
+  if (!refreshToken) return null;
+
+  const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refreshToken }),
+    cache: "no-store",
+  });
+  const result = (await response.json()) as ApiResponse<{ user: AuthUser; tokens: { accessToken: string; refreshToken: string } }>;
+  if (!response.ok || !result.success || !result.data) {
+    clearStoredSession();
+    return null;
+  }
+
+  localStorage.setItem("priyas-auth-user", JSON.stringify(result.data.user));
+  localStorage.setItem("priyas-access-token", result.data.tokens.accessToken);
+  localStorage.setItem("priyas-refresh-token", result.data.tokens.refreshToken);
+  window.dispatchEvent(new Event("priyas-auth-changed"));
+  return result.data.tokens.accessToken;
+}
+
+async function fetchWithToken<T>(path: string, init: RequestInit | undefined, token: string) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
     headers: {
@@ -84,6 +146,24 @@ export async function apiRequest<T>(path: string, init?: RequestInit) {
     cache: "no-store",
   });
   const result = (await response.json()) as ApiResponse<T>;
+  return { response, result };
+}
+
+export async function apiRequest<T>(path: string, init?: RequestInit) {
+  const token = getAccessToken();
+  if (!token) throw new Error("Please login to continue.");
+
+  let { response, result } = await fetchWithToken<T>(path, init, token);
+  if (response.status === 401) {
+    const nextToken = await refreshSession();
+    if (nextToken) {
+      ({ response, result } = await fetchWithToken<T>(path, init, nextToken));
+    }
+  }
+
   if (!response.ok || !result.success || !result.data) throw new Error(result.message || "Request failed.");
   return result.data;
 }
+
+
+

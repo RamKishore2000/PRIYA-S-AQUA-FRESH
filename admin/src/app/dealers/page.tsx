@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { AdminToast } from "@/components/admin/admin-toast";
 import { PageHeader } from "@/components/admin/page-header";
@@ -17,10 +17,20 @@ export default function DealersPage() {
   const router = useRouter();
   const [dealers, setDealers] = useState<Dealer[]>([]);
   const [resetDealer, setResetDealer] = useState<Dealer | null>(null);
+  const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const activeDealers = dealers.filter((dealer) => dealer.status === "Active").length;
   const inactiveDealers = dealers.filter((dealer) => dealer.status === "Inactive").length;
+  const filteredDealers = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return dealers;
+    return dealers.filter((dealer) =>
+      [dealer.name, dealer.businessName, dealer.dealerCode, dealer.mobile, dealer.email, dealer.gstNumber, dealer.status].some((value) =>
+        String(value || "").toLowerCase().includes(term),
+      ),
+    );
+  }, [dealers, search]);
 
   useEffect(() => {
     adminApi.listDealers()
@@ -57,7 +67,7 @@ export default function DealersPage() {
             <h2 className="text-base font-bold text-slate-950">Dealer List</h2>
             <p className="text-sm text-slate-500">Dealer accounts are created by admin. Dealers do not self-register.</p>
           </div>
-          <input placeholder="Search dealers" className="h-10 rounded-md border border-slate-200 px-3 text-sm outline-none focus:border-teal-500 lg:w-72" />
+          <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search name, business, mobile, email" className="h-10 rounded-md border border-slate-200 px-3 text-sm outline-none focus:border-teal-500 lg:w-80" />
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1120px] text-left text-sm">
@@ -65,7 +75,7 @@ export default function DealersPage() {
               <tr>{["Dealer Name", "Business Name", "Dealer Code", "Mobile", "Email", "GST Number", "Total Orders", "Status", "Created Date", "Actions"].map((header) => <th key={header} className="px-5 py-3 font-bold">{header}</th>)}</tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {dealers.map((dealer) => (
+              {filteredDealers.map((dealer) => (
                 <tr key={dealer.id}>
                   <td className="px-5 py-4 font-bold text-slate-950">{dealer.name}</td>
                   <td className="px-5 py-4 text-slate-600">{dealer.businessName}</td>
@@ -82,8 +92,8 @@ export default function DealersPage() {
                   <td className="px-5 py-4">
                     <RowActionsDropdown
                       actions={[
-                        { label: "View Dealer", icon: "view", onClick: () => router.push(`/dealers/${dealer.id}`) },
-                        { label: "Edit Dealer", icon: "edit", onClick: () => router.push(`/dealers/${dealer.id}/edit`) },
+                        { label: "View Dealer", icon: "view", onClick: () => router.push(`/dealers/detail?id=${dealer.id}`) },
+                        { label: "Edit Dealer", icon: "edit", onClick: () => router.push(`/dealers/edit?id=${dealer.id}`) },
                         { label: "View Orders", icon: "orders", onClick: () => router.push(`/orders?dealer=${dealer.id}`) },
                         { label: "Reset Password", icon: "settings", onClick: () => setResetDealer(dealer) },
                         { label: dealer.status === "Active" ? "Deactivate Dealer" : "Activate Dealer", icon: "settings", onClick: () => toggleDealerStatus(dealer) },
@@ -95,6 +105,7 @@ export default function DealersPage() {
             </tbody>
           </table>
           {!loading && dealers.length === 0 ? <p className="p-5 text-sm font-semibold text-slate-500">No dealers found. Add your first dealer.</p> : null}
+          {!loading && dealers.length > 0 && filteredDealers.length === 0 ? <p className="p-5 text-sm font-semibold text-slate-500">No dealers match your search.</p> : null}
         </div>
       </section>
 

@@ -1,0 +1,47 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /admin/
+
+  # Let real files and folders load directly
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Fix Next static export RSC txt requests
+  RewriteRule ^([^/]+)/__next\.([A-Za-z0-9_-]+)\.__PAGE__\.txt$ $1/__next.$2/__PAGE__.txt [L,QSA]
+  RewriteRule ^([^/]+)/([^/]+)/__next\.([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)\.__PAGE__\.txt$ $1/$2/__next.$3/$4/__PAGE__.txt [L,QSA]
+
+  # Static admin pages
+  RewriteRule ^$ index.html [L,QSA]
+  RewriteRule ^login/?$ login/index.html [L,QSA]
+  RewriteRule ^dashboard/?$ dashboard/index.html [L,QSA]
+  RewriteRule ^products/?$ products/index.html [L,QSA]
+  RewriteRule ^products/new/?$ products/new/index.html [L,QSA]
+  RewriteRule ^products/edit/?$ products/edit/index.html [L,QSA]
+  RewriteRule ^categories/?$ categories/index.html [L,QSA]
+  RewriteRule ^subcategories/?$ subcategories/index.html [L,QSA]
+  RewriteRule ^banners/?$ banners/index.html [L,QSA]
+  RewriteRule ^coupons/?$ coupons/index.html [L,QSA]
+  RewriteRule ^orders/?$ orders/index.html [L,QSA]
+  RewriteRule ^orders/detail/?$ orders/detail/index.html [L,QSA]
+  RewriteRule ^dealers/?$ dealers/index.html [L,QSA]
+  RewriteRule ^dealers/new/?$ dealers/new/index.html [L,QSA]
+  RewriteRule ^dealers/edit/?$ dealers/edit/index.html [L,QSA]
+  RewriteRule ^dealers/detail/?$ dealers/detail/index.html [L,QSA]
+  RewriteRule ^customers/?$ customers/index.html [L,QSA]
+  RewriteRule ^services/?$ services/index.html [L,QSA]
+  RewriteRule ^settings/?$ settings/index.html [L,QSA]
+  RewriteRule ^reports/?$ reports/index.html [L,QSA]
+  RewriteRule ^reviews/?$ reviews/index.html [L,QSA]
+  RewriteRule ^testimonials/?$ testimonials/index.html [L,QSA]
+  RewriteRule ^contact-messages/?$ contact-messages/index.html [L,QSA]
+  RewriteRule ^training-enquiries/?$ training-enquiries/index.html [L,QSA]
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|htm)$">
+    Header always set Cache-Control "no-cache, no-store, must-revalidate"
+    Header always set Pragma "no-cache"
+    Header always set Expires "0"
+  </FilesMatch>
+</IfModule>

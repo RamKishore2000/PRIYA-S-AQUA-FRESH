@@ -131,7 +131,7 @@ export function CouponFormDialog({ mode, open, initialCoupon, onClose, onSave }:
   }
 
   return (
-    <AdminModalShell labelledBy="coupon-form-title" maxWidth="xl">
+    <AdminModalShell labelledBy="coupon-form-title" maxWidth="xl" onClose={onClose}>
       <form onSubmit={submitForm}>
         <div className="flex items-center justify-between border-b border-slate-200 p-5">
           <div>

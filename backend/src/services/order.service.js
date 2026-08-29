@@ -4,7 +4,9 @@ const addressRepository = require("../repositories/address.repository");
 const couponRepository = require("../repositories/coupon.repository");
 const couponService = require("./coupon.service");
 const orderRepository = require("../repositories/order.repository");
+const webhookEventRepository = require("../repositories/webhookEvent.repository");
 const productRepository = require("../repositories/product.repository");
+const settingsRepository = require("../repositories/settings.repository");
 const env = require("../config/env");
 const { ApiError } = require("../utils/apiError");
 
@@ -31,7 +33,9 @@ async function createOrder(userId, payload, role) {
   const shippingAmount = 0;
   const totalAmount = subtotalAmount - discountAmount + shippingAmount;
   const paymentMethod = payload.paymentMethod === "COD" ? "COD" : "ONLINE";
-  const advanceAmount = paymentMethod === "COD" ? Math.min(500, totalAmount) : totalAmount;
+  const settings = await settingsRepository.getSiteSettings();
+  const configuredAdvanceAmount = Math.max(1, Number(settings.orderAdvanceAmount || settingsRepository.defaultSiteSettings.orderAdvanceAmount));
+  const advanceAmount = paymentMethod === "COD" ? Math.min(configuredAdvanceAmount, totalAmount) : totalAmount;
   const balanceAmount = Math.max(totalAmount - advanceAmount, 0);
   const orderNumber = `PAF${Date.now()}`;
   const connection = await orderRepository.pool.getConnection();
@@ -181,21 +185,96 @@ async function verifyRazorpayPayment(userId, payload) {
   }
 
   await orderRepository.markPaid(payload.orderId, payload.razorpayPaymentId, payload);
-  const couponRow = await orderRepository.findCouponIdByOrderId(payload.orderId);
-  if (couponRow?.coupon_id && Number(couponRow.discount_amount) > 0) {
-    await couponRepository.createUsage(orderRepository.pool, {
-      couponId: couponRow.coupon_id,
-      userId: couponRow.user_id,
-      orderId: payload.orderId,
-      discountAmount: Number(couponRow.discount_amount),
-    });
-  }
+  await recordCouponUsageIfNeeded(payload.orderId);
+
   if (payload.checkoutMode !== "BUY_NOW") {
     await cartRepository.clearCart(userId);
   }
   return getOrder(userId, payload.orderId);
 }
 
+
+async function markPaymentFailedByUser(userId, orderId, payload = {}) {
+  const order = await getOrder(userId, orderId);
+  if (order.paymentStatus !== "PENDING") return order;
+  await orderRepository.markPaymentFailedWithoutProviderId(orderId, {
+    reason: payload.reason || "checkout_dismissed",
+    source: "frontend",
+  });
+  return getOrder(userId, orderId);
+}
+async function recordCouponUsageIfNeeded(orderId) {
+  const couponRow = await orderRepository.findCouponIdByOrderId(orderId);
+  if (!couponRow?.coupon_id || Number(couponRow.discount_amount) <= 0) return;
+  try {
+    await couponRepository.createUsage(orderRepository.pool, {
+      couponId: couponRow.coupon_id,
+      userId: couponRow.user_id,
+      orderId,
+      discountAmount: Number(couponRow.discount_amount),
+    });
+  } catch (error) {
+    if (error && error.code === "ER_DUP_ENTRY") return;
+    throw error;
+  }
+}
+
+async function handleRazorpayWebhook(rawBody, signature) {
+  if (!env.razorpay.webhookSecret) {
+    throw new ApiError(503, "Razorpay webhook secret is not configured.");
+  }
+  if (!signature) {
+    throw new ApiError(400, "Razorpay webhook signature is required.");
+  }
+
+  const expected = crypto.createHmac("sha256", env.razorpay.webhookSecret).update(rawBody).digest("hex");
+  if (expected !== signature) {
+    throw new ApiError(400, "Invalid Razorpay webhook signature.");
+  }
+
+  const event = JSON.parse(rawBody.toString("utf8"));
+  const payment = event.payload?.payment?.entity;
+  const orderId = Number(payment?.notes?.orderId || 0);
+  const eventType = event.event || "unknown";
+  const eventId = event.id || `${eventType}:${payment?.id || crypto.createHash("sha256").update(rawBody).digest("hex")}`;
+  const webhookEvent = await webhookEventRepository.createEvent({
+    provider: "RAZORPAY",
+    eventId,
+    eventType,
+    orderId: orderId || null,
+    rawPayload: event,
+  });
+
+  if (webhookEvent.duplicate) {
+    return { handled: false, duplicate: true, event: eventType, orderId: orderId || null };
+  }
+
+  try {
+    if (!orderId || !payment?.id) {
+      await webhookEventRepository.markProcessed("RAZORPAY", eventId, orderId || null);
+      return { handled: false, event: eventType };
+    }
+
+    if (eventType === "payment.captured" || eventType === "order.paid") {
+      await orderRepository.markPaid(orderId, payment.id, event);
+      await recordCouponUsageIfNeeded(orderId);
+      await webhookEventRepository.markProcessed("RAZORPAY", eventId, orderId);
+      return { handled: true, event: eventType, orderId };
+    }
+
+    if (eventType === "payment.failed") {
+      await orderRepository.markPaymentFailed(orderId, payment.id, event);
+      await webhookEventRepository.markProcessed("RAZORPAY", eventId, orderId);
+      return { handled: true, event: eventType, orderId };
+    }
+
+    await webhookEventRepository.markProcessed("RAZORPAY", eventId, orderId);
+    return { handled: false, event: eventType, orderId };
+  } catch (error) {
+    await webhookEventRepository.markFailed("RAZORPAY", eventId, error instanceof Error ? error.message : "Webhook processing failed.", orderId || null);
+    throw error;
+  }
+}
 async function resolveShippingAddress(userId, payload) {
   if (payload.addressId) {
     const savedAddress = await addressRepository.findByIdForUser(payload.addressId, userId);
@@ -240,4 +319,10 @@ module.exports = {
   updateAdminOrderStatus,
   createRazorpayOrder,
   verifyRazorpayPayment,
+  markPaymentFailedByUser,
+  handleRazorpayWebhook,
 };
+
+
+
+

@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import type { SVGProps } from "react";
+import { useEffect, useState, type SVGProps } from "react";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { useShop } from "@/context/shop-context";
+import { defaultSiteSettings, fetchSiteSettings, getWhatsAppHref, type SiteSettings } from "@/services/settings-service";
 
 function WhatsAppIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -62,6 +63,7 @@ const footerColumns = [
       { label: "Categories", href: "/categories" },
       { label: "Contact Us", href: "/contact" },
       { label: "Services", href: "/services" },
+      { label: "RO Training", href: "/ro-training-institute" },
     ],
   },
   {
@@ -77,28 +79,35 @@ const footerColumns = [
   },
 ];
 
-const socialLinks = [
-  { label: "WhatsApp", href: "https://wa.me/919121043483", icon: WhatsAppIcon, colorClass: "text-[#25d366]" },
-  { label: "Facebook", href: "https://www.facebook.com/priyasaquafresh", icon: FacebookIcon, colorClass: "text-[#1877f2]" },
-  { label: "YouTube", href: "https://www.youtube.com/@priyasaquafresh", icon: YouTubeIcon, colorClass: "text-[#ff0000]" },
-  { label: "Instagram", href: "https://www.instagram.com/priyasaquafresh", icon: InstagramIcon, colorClass: "text-[#e4405f]" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/company/priyas-aqua-fresh", icon: LinkedInIcon, colorClass: "text-[#0a66c2]" },
-  { label: "X", href: "https://x.com/priyasaquafresh", icon: XIcon, colorClass: "text-[#1D2D2E]" },
-];
-
+function buildSocialLinks(settings: SiteSettings) {
+  return [
+    { label: "WhatsApp", href: getWhatsAppHref(settings.whatsapp), icon: WhatsAppIcon, colorClass: "text-[#25d366]" },
+    { label: "Facebook", href: settings.facebook, icon: FacebookIcon, colorClass: "text-[#1877f2]" },
+    { label: "YouTube", href: settings.youtube, icon: YouTubeIcon, colorClass: "text-[#ff0000]" },
+    { label: "Instagram", href: settings.instagram, icon: InstagramIcon, colorClass: "text-[#e4405f]" },
+    { label: "LinkedIn", href: settings.linkedin, icon: LinkedInIcon, colorClass: "text-[#0a66c2]" },
+    { label: "X", href: settings.x, icon: XIcon, colorClass: "text-[#1D2D2E]" },
+  ].filter((social) => social.href);
+}
 export function Footer() {
   const { user } = useShop();
+  const [settings, setSettings] = useState<SiteSettings>(defaultSiteSettings);
   const isDealer = user?.role === "DEALER";
   const visibleFooterColumns = footerColumns.map((column) => ({
     ...column,
     links: isDealer ? column.links.filter((link) => link.href !== "/services") : column.links,
   }));
+  const dynamicSocialLinks = buildSocialLinks(settings);
+
+  useEffect(() => {
+    fetchSiteSettings().then(setSettings).catch(() => setSettings(defaultSiteSettings));
+  }, []);
 
   return (
     <footer className="relative z-20 border-t border-[#DFCEB9] bg-[linear-gradient(180deg,#F7EFE5,#EFE2D2)] text-[#243A3B] shadow-[0_-18px_60px_rgba(84,61,35,0.08)]">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_50%_0%,rgba(182,138,69,0.16),transparent_42%)]" />
       <div className="relative mx-auto max-w-[96rem] overflow-hidden px-5 pt-10 md:px-8">
-        <p className="footer-video-text select-none text-center font-serif text-[clamp(3rem,10vw,9.5rem)] font-black uppercase leading-none tracking-[0.04em] lg:whitespace-nowrap lg:text-[clamp(4.6rem,7.4vw,8.6rem)] lg:tracking-[0.015em]">
+        <p className="footer-video-text select-none text-center font-serif text-[clamp(2.4rem,8.6vw,7.4rem)] font-black uppercase leading-none tracking-[0.04em] lg:whitespace-nowrap lg:text-[clamp(3.8rem,6.3vw,7.2rem)] lg:tracking-[0.015em]">
           Priya&apos;s Aqua Fresh
         </p>
       </div>
@@ -111,14 +120,14 @@ export function Footer() {
             Premium water purification solutions for homes, businesses, and everyday healthy living.
           </p>
           <div className="mt-5 space-y-2 text-sm font-semibold text-[#5D6766]">
-            <p className="flex items-center gap-2"><Phone className="h-4 w-4 text-[#B68A45]" /> +919951078699</p>
-            <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-[#B68A45]" /> priyasaquafreshsales@gmail.com</p>
-            <p className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#B68A45]" /> India</p>
+            <p className="flex items-center gap-2"><Phone className="h-4 w-4 text-[#B68A45]" /> {settings.phone}</p>
+            <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-[#B68A45]" /> {settings.email}</p>
+            <p className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#B68A45]" /> {settings.address}</p>
           </div>
           <div className="mt-6">
             <p className="text-xs font-black uppercase tracking-[0.18em] text-[#B68A45]">Follow Us</p>
             <div className="mt-3 flex flex-wrap gap-2">
-              {socialLinks.map((social) => (
+              {dynamicSocialLinks.map((social) => (
                 <Link
                   key={social.label}
                   href={social.href}

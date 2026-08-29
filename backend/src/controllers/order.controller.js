@@ -36,6 +36,15 @@ async function createRazorpayOrder(req, res) {
   return sendSuccess(res, 200, "Razorpay order created successfully.", data);
 }
 
+
+async function markPaymentFailed(req, res) {
+  const order = await orderService.markPaymentFailedByUser(req.user.id, req.params.id, req.body);
+  return sendSuccess(res, 200, "Payment marked as failed.", { order });
+}
+async function razorpayWebhook(req, res) {
+  const result = await orderService.handleRazorpayWebhook(req.body, req.headers["x-razorpay-signature"]);
+  return sendSuccess(res, 200, "Webhook processed successfully.", result);
+}
 async function verifyRazorpayPayment(req, res) {
   const order = await orderService.verifyRazorpayPayment(req.user.id, req.body);
   return sendSuccess(res, 200, "Payment verified successfully.", { order });
@@ -48,6 +57,10 @@ module.exports = {
   getOrder,
   getAdminOrder,
   updateOrderStatus,
+  markPaymentFailed,
   createRazorpayOrder,
   verifyRazorpayPayment,
+  razorpayWebhook,
 };
+
+

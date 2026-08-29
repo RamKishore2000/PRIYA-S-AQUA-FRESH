@@ -1,4 +1,4 @@
-import type { Banner, Category, CouponOffer, Product, Review, Testimonial } from "@/types/product";
+import type { Banner, Category, CouponOffer, Product, Review, Subcategory, Testimonial } from "@/types/product";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
@@ -14,8 +14,18 @@ type ApiCategory = {
   slug: string;
   imageUrl: string | null;
   productsCount: number;
+  subcategories?: ApiSubcategory[];
 };
 
+
+type ApiSubcategory = {
+  id: number;
+  categoryId: number;
+  name: string;
+  slug: string;
+  imageUrl: string | null;
+  productsCount: number;
+};
 type ApiBanner = {
   id: number;
   title: string;
@@ -52,7 +62,9 @@ type ApiProduct = {
   description: string;
   rating?: number;
   reviewCount?: number;
-  category: { name: string; slug: string };
+  sortOrder?: number;
+  category: { id?: number; name: string; slug: string };
+  subcategory?: { id?: number; name: string; slug: string } | null;
   prices: {
     customerOriginalPrice: number;
     customerSellingPrice: number;
@@ -60,6 +72,7 @@ type ApiProduct = {
     dealerSellingPrice: number;
   };
   images: { imageUrl: string }[];
+  createdAt?: string;
 };
 
 type ApiTestimonial = {
@@ -161,6 +174,18 @@ function mapCategory(category: ApiCategory): Category {
     slug: category.slug,
     productCount: category.productsCount,
     image: withApiUrl(category.imageUrl),
+    subcategories: category.subcategories?.map(mapSubcategory) || [],
+  };
+}
+
+function mapSubcategory(subcategory: ApiSubcategory): Subcategory {
+  return {
+    id: String(subcategory.id),
+    categoryId: String(subcategory.categoryId),
+    name: subcategory.name,
+    slug: subcategory.slug,
+    image: withApiUrl(subcategory.imageUrl),
+    productCount: Number(subcategory.productsCount || 0),
   };
 }
 
@@ -214,6 +239,9 @@ function mapProduct(product: ApiProduct): Product {
     sku: product.sku,
     name: product.name,
     category: product.category.name,
+    categorySlug: product.category.slug,
+    subcategory: product.subcategory?.name,
+    subcategorySlug: product.subcategory?.slug,
     description: product.description,
     price,
     originalPrice,
@@ -227,6 +255,8 @@ function mapProduct(product: ApiProduct): Product {
     image,
     images: product.images.length ? product.images.map((item) => withApiUrl(item.imageUrl)) : [image],
     stock: "in-stock",
+    createdAt: product.createdAt,
+    sortOrder: Number(product.sortOrder ?? 999),
   };
 }
 

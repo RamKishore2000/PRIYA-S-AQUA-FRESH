@@ -47,3 +47,11 @@ Thumbs.db
 backend/public/uploads/**
 !backend/public/uploads/**/
 !backend/public/uploads/**/.gitkeep
+
+# deployment packages and generated local artifacts
+deploy/
+admin/out-cpanel/
+frontend2/android-cap8-backup-*/
+*.apk
+*.zip
+*-check.png

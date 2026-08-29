@@ -83,14 +83,13 @@ export function CategoryFormDialog({ mode, open, initialCategory, onClose, onSav
   }
 
   return (
-    <AdminModalShell labelledBy="category-form-title" maxWidth="lg">
+    <AdminModalShell labelledBy="category-form-title" maxWidth="lg" onClose={onClose}>
       <form onSubmit={submitForm}>
-        <div className="flex items-center justify-between border-b border-slate-200 p-5">
+        <div className="flex items-center justify-between border-b border-slate-200 p-5 pr-16">
           <div>
             <h2 id="category-form-title" className="text-lg font-bold text-slate-950">{mode === "edit" ? "Edit Category" : "Add Category"}</h2>
             <p className="text-sm text-slate-500">Slug is generated automatically from category name.</p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700">Close</button>
         </div>
         <div className="grid gap-4 p-5 md:grid-cols-2">
           <label className="block">
@@ -118,6 +117,7 @@ export function CategoryFormDialog({ mode, open, initialCategory, onClose, onSav
                   <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => selectImage(event.target.files?.[0])} />
                 </label>
                 {form.image ? <button type="button" onClick={() => updateField("image", "")} className="w-fit rounded-md border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">Remove</button> : null}
+                <p className="text-xs leading-5 text-slate-500">Recommended size: 800 x 800 px square image. Use PNG/WebP with transparent background where possible.</p>
                 {errors.image ? <span className="text-xs font-semibold text-red-600">{errors.image}</span> : null}
               </div>
             </div>

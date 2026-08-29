@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { TrashIcon } from "@/components/ui/icons";
@@ -9,8 +10,18 @@ import { getProductDisplayPrice } from "@/lib/pricing";
 export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { user, cartItems, subtotal, removeFromCart, increaseQuantity, decreaseQuantity } = useShop();
 
+  useEffect(() => {
+    if (!open) return;
+    const handleNativeBack = (event: Event) => {
+      event.preventDefault();
+      onClose();
+    };
+    window.addEventListener("priyas-native-back", handleNativeBack);
+    return () => window.removeEventListener("priyas-native-back", handleNativeBack);
+  }, [onClose, open]);
+
   return (
-    <div className={`fixed inset-0 z-[90] ${open ? "pointer-events-auto" : "pointer-events-none"}`} aria-hidden={!open}>
+    <div className={`fixed inset-0 z-[1500] ${open ? "pointer-events-auto" : "pointer-events-none"}`} aria-hidden={!open}>
       <button
         type="button"
         className={`absolute inset-0 bg-black/45 backdrop-blur-sm transition duration-300 ${open ? "opacity-100" : "opacity-0"}`}
@@ -55,7 +66,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                         <TrashIcon className="h-4 w-4" />
                       </button>
                     </div>
-                    <p className="mt-1 text-sm font-black text-[#0A3A38]">Rs. {display.price.toLocaleString("en-IN")}</p>
+                    <p data-current-price className="mt-1 text-sm font-black text-[#0A3A38]">Rs. {display.price.toLocaleString("en-IN")}</p>
                     <div className="mt-3 inline-flex items-center overflow-hidden rounded-lg border border-[#E5D8C7] bg-white">
                       <button type="button" onClick={() => void decreaseQuantity(item.product.id)} className="grid h-8 w-8 place-items-center font-black text-[#0A3A38]">-</button>
                       <span className="grid h-8 w-9 place-items-center border-x border-[#E5D8C7] text-sm font-black">{item.quantity}</span>
@@ -87,3 +98,4 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
     </div>
   );
 }
+

@@ -10,9 +10,48 @@ function mapCategory(row) {
     description: row.description,
     status: row.status,
     productsCount: row.products_count ?? 0,
+    subcategories: [],
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
+}
+
+function mapSubcategory(row) {
+  return {
+    id: row.id,
+    categoryId: row.category_id,
+    name: row.name,
+    slug: row.slug,
+    description: row.description,
+    status: row.status,
+    productsCount: row.products_count ?? 0,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+async function attachSubcategories(categories, { includeInactive = false } = {}) {
+  if (!categories.length) return categories;
+  const categoryIds = categories.map((category) => category.id);
+  const placeholders = categoryIds.map(() => "?").join(", ");
+  const statusWhere = includeInactive ? "" : "AND sc.status = 'ACTIVE'";
+  const [rows] = await pool.execute(
+    `SELECT sc.id, sc.category_id, sc.name, sc.slug, sc.image_url, sc.description, sc.status, sc.created_at, sc.updated_at,
+            COUNT(p.id) AS products_count
+     FROM subcategories sc
+     LEFT JOIN products p ON p.subcategory_id = sc.id
+     WHERE sc.category_id IN (${placeholders}) ${statusWhere}
+     GROUP BY sc.id
+     ORDER BY sc.created_at DESC`,
+    categoryIds,
+  );
+  const byCategory = new Map();
+  for (const row of rows) {
+    const list = byCategory.get(row.category_id) || [];
+    list.push(mapSubcategory(row));
+    byCategory.set(row.category_id, list);
+  }
+  return categories.map((category) => ({ ...category, subcategories: byCategory.get(category.id) || [] }));
 }
 
 async function findAll({ includeInactive = false } = {}) {
@@ -26,7 +65,7 @@ async function findAll({ includeInactive = false } = {}) {
      GROUP BY c.id
      ORDER BY c.created_at DESC`,
   );
-  return rows.map(mapCategory);
+  return attachSubcategories(rows.map(mapCategory), { includeInactive });
 }
 
 async function findById(id) {
@@ -40,7 +79,8 @@ async function findById(id) {
      LIMIT 1`,
     [id],
   );
-  return mapCategory(rows[0]);
+  const categories = await attachSubcategories(rows.map(mapCategory), { includeInactive: true });
+  return categories[0] || null;
 }
 
 async function findBySlug(slug) {
@@ -54,7 +94,8 @@ async function findBySlug(slug) {
      LIMIT 1`,
     [slug],
   );
-  return mapCategory(rows[0]);
+  const categories = await attachSubcategories(rows.map(mapCategory), { includeInactive: true });
+  return categories[0] || null;
 }
 
 async function createCategory({ name, slug, imageUrl, description, status }) {

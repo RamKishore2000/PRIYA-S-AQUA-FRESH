@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ImageUploader } from "@/components/admin/image-uploader";
 import { AdminToast } from "@/components/admin/admin-toast";
 import { adminApi } from "@/services/api";
-import type { Category, Product } from "@/types/admin";
+import type { Category, Product, Subcategory } from "@/types/admin";
 import { generateSlug } from "@/utils/slug";
 
 type ProductFormMode = "add" | "edit";
@@ -20,6 +20,7 @@ type ProductFormState = {
   name: string;
   category: string;
   categoryId: string;
+  subcategoryId: string;
   sku: string;
   customerOriginalPrice: string;
   customerSellingPrice: string;
@@ -27,6 +28,7 @@ type ProductFormState = {
   dealerSellingPrice: string;
   rating: string;
   reviewCount: string;
+  sortOrder: string;
   images: string[];
   description: string;
   status: "Active" | "Inactive";
@@ -71,6 +73,7 @@ function getInitialState(initialProduct?: Product): ProductFormState {
     name: initialProduct?.name ?? "",
     category: initialProduct?.category ?? "",
     categoryId: initialProduct?.categoryId ?? "",
+    subcategoryId: initialProduct?.subcategoryId ?? "",
     sku: initialProduct?.sku ?? "",
     customerOriginalPrice: initialProduct ? String(initialProduct.customerOriginalPrice) : "",
     customerSellingPrice: initialProduct ? String(initialProduct.customerSellingPrice) : "",
@@ -78,6 +81,7 @@ function getInitialState(initialProduct?: Product): ProductFormState {
     dealerSellingPrice: initialProduct ? String(initialProduct.dealerSellingPrice) : "",
     rating: initialProduct ? String(initialProduct.rating) : "0",
     reviewCount: initialProduct ? String(initialProduct.reviewCount) : "0",
+    sortOrder: initialProduct ? String(initialProduct.sortOrder ?? 999) : "999",
     images: initialProduct?.images ?? [],
     description: initialProduct?.description ?? "",
     status: initialProduct?.status ?? "Active",
@@ -95,8 +99,10 @@ export function ProductForm({ mode = "add", initialProduct }: ProductFormProps) 
   const [errors, setErrors] = useState<ProductFormErrors>({});
   const [message, setMessage] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [saving, setSaving] = useState(false);
   const generatedSlug = useMemo(() => generateSlug(form.name), [form.name]);
+  const categorySubcategories = useMemo(() => subcategories.filter((item) => item.categoryId === form.categoryId), [form.categoryId, subcategories]);
 
   useEffect(() => {
     adminApi.listCategories()
@@ -117,6 +123,7 @@ export function ProductForm({ mode = "add", initialProduct }: ProductFormProps) 
     const dealerSelling = Number(form.dealerSellingPrice);
     const rating = Number(form.rating);
     const reviewCount = Number(form.reviewCount);
+    const sortOrder = Number(form.sortOrder);
 
     if (!form.name.trim()) nextErrors.name = "Product name is required.";
     if (!form.categoryId) nextErrors.category = "Category is required.";
@@ -133,6 +140,7 @@ export function ProductForm({ mode = "add", initialProduct }: ProductFormProps) 
     if (form.images.length < 1) nextErrors.images = "Upload at least one product image.";
     if (!Number.isFinite(rating) || rating < 0 || rating > 5) nextErrors.rating = "Rating must be between 0 and 5.";
     if (!Number.isInteger(reviewCount) || reviewCount < 0) nextErrors.reviewCount = "Review count must be 0 or more.";
+    if (!Number.isInteger(sortOrder) || sortOrder < 0) nextErrors.sortOrder = "Display order must be 0 or more.";
     if (!form.description.trim()) nextErrors.description = "Description is required.";
     if (!form.status) nextErrors.status = "Status is required.";
 
@@ -154,6 +162,7 @@ export function ProductForm({ mode = "add", initialProduct }: ProductFormProps) 
       dealerSellingPrice: Number(form.dealerSellingPrice),
       rating: Number(form.rating),
       reviewCount: Number(form.reviewCount),
+      sortOrder: Number(form.sortOrder),
     };
 
     setSaving(true);
@@ -171,7 +180,7 @@ export function ProductForm({ mode = "add", initialProduct }: ProductFormProps) 
     } catch (error) {
       const apiError = error as Error & { fieldErrors?: Record<string, string> };
       if (apiError.fieldErrors) {
-        const fieldErrors: ProductFormErrors & { categoryId?: string } = { ...apiError.fieldErrors };
+        const fieldErrors: ProductFormErrors & { categoryId?: string; subcategoryId?: string } = { ...apiError.fieldErrors };
         if ("categoryId" in fieldErrors) {
           fieldErrors.category = fieldErrors.categoryId;
           delete fieldErrors.categoryId;
@@ -207,8 +216,22 @@ export function ProductForm({ mode = "add", initialProduct }: ProductFormProps) 
               {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
             </select>
           </Field>
+          <Field label="Subcategory" error={errors.subcategoryId} helper={categorySubcategories.length ? "Optional. Select only if this product belongs to a subcategory." : "No active subcategories for selected category."}>
+            <select
+              className={inputClass}
+              value={form.subcategoryId}
+              onChange={(event) => updateField("subcategoryId", event.target.value)}
+              disabled={!form.categoryId || categorySubcategories.length === 0}
+            >
+              <option value="">No subcategory</option>
+              {categorySubcategories.map((subcategory) => <option key={subcategory.id} value={subcategory.id}>{subcategory.name}</option>)}
+            </select>
+          </Field>
           <Field label="Product Code" helper="Optional unique code used to identify this product.">
             <input className={inputClass} value={form.sku} onChange={(event) => updateField("sku", event.target.value)} placeholder="PAF-RO-ERA-001" />
+          </Field>
+          <Field label="Display Order" error={errors.sortOrder} helper="Lower number shows first on website and app. Use 1 for first product.">
+            <input className={inputClass} type="number" min="0" step="1" value={form.sortOrder} onChange={(event) => updateField("sortOrder", event.target.value)} placeholder="999" />
           </Field>
         </div>
       </FormSection>

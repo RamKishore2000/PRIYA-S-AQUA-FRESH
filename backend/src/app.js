@@ -16,8 +16,12 @@ const healthRoutes = require("./routes/health.routes");
 const orderRoutes = require("./routes/order.routes");
 const productRoutes = require("./routes/product.routes");
 const reviewRoutes = require("./routes/review.routes");
+const razorpayWebhookRoutes = require("./routes/razorpayWebhook.routes");
 const serviceRequestRoutes = require("./routes/serviceRequest.routes");
+const settingsRoutes = require("./routes/settings.routes");
+const subcategoryRoutes = require("./routes/subcategory.routes");
 const testimonialRoutes = require("./routes/testimonial.routes");
+const trainingEnquiryRoutes = require("./routes/trainingEnquiry.routes");
 const uploadRoutes = require("./routes/upload.routes");
 const wishlistRoutes = require("./routes/wishlist.routes");
 const errorHandler = require("./middleware/errorHandler");
@@ -32,6 +36,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
+app.use("/api/orders/razorpay/webhook", express.raw({ type: "application/json", limit: "1mb" }), razorpayWebhookRoutes);
 app.use(express.json({ limit: "1mb" }));
 app.use("/uploads", express.static(path.resolve(__dirname, "../public/uploads")));
 
@@ -50,7 +55,10 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/service-requests", serviceRequestRoutes);
+app.use("/api/settings", settingsRoutes);
+app.use("/api/subcategories", subcategoryRoutes);
 app.use("/api/testimonials", testimonialRoutes);
+app.use("/api/training-enquiries", trainingEnquiryRoutes);
 app.use("/api/uploads", uploadRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 
@@ -64,3 +72,6 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 module.exports = app;
+
+
+

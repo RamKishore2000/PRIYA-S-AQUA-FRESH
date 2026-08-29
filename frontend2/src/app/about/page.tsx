@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Award, Droplets, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Award, Droplets, MapPin, Navigation, Phone, ShieldCheck, Sparkles } from "lucide-react";
 import { AboutGsapAnimations } from "@/components/about/about-gsap-animations";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
@@ -180,17 +180,38 @@ export default function AboutPage() {
       </section>
 
       <section className="px-5 pb-14 md:px-8">
-        <div className="mx-auto max-w-7xl rounded-2xl border border-[#E5D8C7] bg-[#FFF9F1] p-6 shadow-[0_18px_60px_rgba(84,61,35,0.08)] md:p-8">
+        <div className="mx-auto grid max-w-7xl gap-6 overflow-hidden rounded-2xl border border-[#E5D8C7] bg-[#FFF9F1] p-5 shadow-[0_18px_60px_rgba(84,61,35,0.08)] md:p-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
           <div data-about-reveal className="max-w-3xl">
             <p className="text-sm font-black uppercase tracking-[0.22em] text-[#B68A45]">Leadership</p>
             <h2 className="mt-3 font-serif text-3xl font-semibold text-[#1D2D2E] md:text-5xl">The Mind Behind the Mission</h2>
             <h3 className="mt-4 text-xl font-black text-[#0A3A38]">Mr. K Anand & Mrs. K Priya</h3>
             <p className="mt-5 font-semibold leading-8 text-[#5A6362]">
-              Mr. K Anand, Managing Director of Priya&apos;s Aqua Fresh, is associated with the company&apos;s growth across water purification and home electronics by understanding customer needs and driving innovation.
+              Priya&apos;s Aqua Fresh is guided by focused leadership, practical customer understanding and a strong commitment to reliable water purification solutions.
             </p>
             <p className="mt-4 font-semibold leading-8 text-[#5A6362]">
-              His work spans alkaline and RO water purifiers, water softeners, geysers, home electronics, and active participation in seminars, conferences and industry forums.
+              Their work supports the brand&apos;s growth across alkaline and RO water purifiers, water softeners, geysers, home electronics, service support and customer care.
             </p>
+          </div>
+
+          <div data-about-mask className="grid gap-4 sm:grid-cols-2">
+            <div className="group relative overflow-hidden rounded-2xl border border-[#E5D8C7] bg-[#F5E9D8] shadow-[0_18px_45px_rgba(84,61,35,0.12)]">
+              <div className="relative aspect-[4/5]">
+                <Image src="/WhatsApp Image 2026-08-28 at 5.03.19 PM.jpeg" alt="Priya's Aqua Fresh leadership" fill sizes="(min-width: 1024px) 280px, (min-width: 640px) 45vw, 100vw" className="object-cover object-center transition duration-500 group-hover:scale-[1.03]" />
+              </div>
+              <div className="absolute inset-x-0 bottom-0 bg-[linear-gradient(180deg,transparent,rgba(10,36,38,0.82))] px-4 pb-4 pt-16 text-white">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#D8B879]">Founder Vision</p>
+                <p className="mt-1 text-sm font-bold">Quality products, trusted support.</p>
+              </div>
+            </div>
+            <div className="group relative overflow-hidden rounded-2xl border border-[#E5D8C7] bg-[#F5E9D8] shadow-[0_18px_45px_rgba(84,61,35,0.12)] sm:mt-8">
+              <div className="relative aspect-[4/5]">
+                <Image src="/WhatsApp Image 2026-08-28 at 5.04.41 PM.jpeg" alt="Priya's Aqua Fresh leadership team" fill sizes="(min-width: 1024px) 280px, (min-width: 640px) 45vw, 100vw" className="object-cover object-center transition duration-500 group-hover:scale-[1.03]" />
+              </div>
+              <div className="absolute inset-x-0 bottom-0 bg-[linear-gradient(180deg,transparent,rgba(10,36,38,0.82))] px-4 pb-4 pt-16 text-white">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#D8B879]">Customer Trust</p>
+                <p className="mt-1 text-sm font-bold">Built through care and consistency.</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -210,6 +231,38 @@ export default function AboutPage() {
         </div>
       </section>
 
+
+      <section className="px-5 pb-16 md:px-8">
+        <div className="mx-auto grid max-w-7xl gap-7 overflow-hidden rounded-2xl border border-[#E5D8C7] bg-[#FFF9F1] p-5 shadow-[0_18px_60px_rgba(84,61,35,0.08)] md:p-8 lg:grid-cols-[0.86fr_1.14fr] lg:items-stretch">
+          <div data-about-reveal className="flex flex-col justify-center">
+            <p className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.22em] text-[#B68A45]">
+              <MapPin className="h-4 w-4" /> Company Location
+            </p>
+            <h2 className="mt-3 font-serif text-3xl font-semibold text-[#1D2D2E] md:text-5xl">Visit Priya&apos;s Aqua Fresh</h2>
+            <p className="mt-5 font-semibold leading-8 text-[#5A6362]">
+              Reach our team for product enquiries, service support, RO training and water purification solutions.
+            </p>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <a href="https://www.google.com/maps/search/?api=1&query=Priya%27s%20Aqua%20Fresh" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0A3A38] px-5 py-3 text-sm font-black text-white transition hover:bg-[#B68A45]">
+                <Navigation className="h-4 w-4" /> Open Directions
+              </a>
+              <a href="tel:9063606360" className="inline-flex items-center justify-center gap-2 rounded-full border border-[#C59A55] bg-white px-5 py-3 text-sm font-black text-[#9B7137] transition hover:bg-[#F5E9D8]">
+                <Phone className="h-4 w-4" /> Call Support
+              </a>
+            </div>
+          </div>
+          <div data-about-mask className="min-h-[320px] overflow-hidden rounded-2xl border border-[#E5D8C7] bg-[#F5E9D8] shadow-[0_18px_45px_rgba(84,61,35,0.10)] md:min-h-[420px]">
+            <iframe
+              title="Priya's Aqua Fresh location map"
+              src="https://www.google.com/maps?q=Priya%27s%20Aqua%20Fresh&output=embed"
+              className="h-full min-h-[320px] w-full border-0 md:min-h-[420px]"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      </section>
       <Footer />
       </main>
       <MobileBottomTabs />

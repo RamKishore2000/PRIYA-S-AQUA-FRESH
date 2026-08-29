@@ -4,6 +4,9 @@ export type Product = {
   sku?: string;
   name: string;
   category: string;
+  categorySlug?: string;
+  subcategory?: string;
+  subcategorySlug?: string;
   description: string;
   price: number;
   originalPrice?: number;
@@ -17,14 +20,26 @@ export type Product = {
   image: string;
   images: string[];
   stock: "in-stock" | "low-stock" | "out-of-stock";
+  createdAt?: string;
+  sortOrder: number;
+};
+
+export type Subcategory = {
+  id: string;
+  categoryId: string;
+  name: string;
+  slug: string;
+  image: string;
+  productCount: number;
 };
 
 export type Category = {
   id: string;
   name: string;
   slug: string;
-  productCount: number;
   image: string;
+  productCount: number;
+  subcategories?: Subcategory[];
 };
 
 export type Banner = {

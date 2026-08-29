@@ -22,7 +22,7 @@ export function ResetPasswordDialog({ dealerName, onClose, onSuccess }: { dealer
   }
 
   return (
-    <AdminModalShell labelledBy="reset-password-title" maxWidth="sm">
+    <AdminModalShell labelledBy="reset-password-title" maxWidth="sm" onClose={onClose}>
       <form onSubmit={submitForm}>
         <div className="border-b border-slate-200 p-5">
           <h2 id="reset-password-title" className="text-lg font-bold text-slate-950">Reset Password</h2>

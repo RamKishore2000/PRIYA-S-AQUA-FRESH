@@ -209,7 +209,7 @@ function TestimonialFormDialog({
   }
 
   return (
-    <AdminModalShell labelledBy="testimonial-form-title" maxWidth="lg">
+    <AdminModalShell labelledBy="testimonial-form-title" maxWidth="lg" onClose={onClose}>
       <form onSubmit={submitForm}>
         <div className="border-b border-slate-100 px-6 py-5">
           <h2 id="testimonial-form-title" className="text-lg font-bold text-slate-950">

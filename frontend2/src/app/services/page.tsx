@@ -30,7 +30,7 @@ const serviceSteps = [
 export default function ServicesPage() {
   return (
     <SitePage eyebrow="Services" title="Expert Care for Pure Water" description="From installation and maintenance to filter replacement and commercial RO support, Priya's Aqua Fresh helps keep your purification system performing at its best.">
-      <section className="px-5 pb-20 md:px-8">
+      <section data-native-screen="services" className="px-5 pb-24 md:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">
             <div>
@@ -102,3 +102,4 @@ export default function ServicesPage() {
     </SitePage>
   );
 }
+

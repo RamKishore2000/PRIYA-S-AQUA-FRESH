@@ -1,5 +1,6 @@
 const categoryRepository = require("../repositories/category.repository");
 const productRepository = require("../repositories/product.repository");
+const subcategoryRepository = require("../repositories/subcategory.repository");
 const { ApiError } = require("../utils/apiError");
 const { generateSlug } = require("../utils/slug");
 
@@ -68,6 +69,17 @@ async function normalizeProductPayload(payload) {
     throw new ApiError(422, "Selected category does not exist.", { categoryId: "Selected category does not exist." });
   }
 
+  let subcategory = null;
+  if (payload.subcategoryId) {
+    subcategory = await subcategoryRepository.findById(payload.subcategoryId);
+    if (!subcategory) {
+      throw new ApiError(422, "Selected subcategory does not exist.", { subcategoryId: "Selected subcategory does not exist." });
+    }
+    if (String(subcategory.categoryId) !== String(payload.categoryId)) {
+      throw new ApiError(422, "Selected subcategory does not belong to this category.", { subcategoryId: "Selected subcategory does not belong to this category." });
+    }
+  }
+
   const images = Array.isArray(payload.images) ? payload.images : [];
   if (images.length === 0 || images.length > 4) {
     throw new ApiError(422, "Product must have 1 to 4 images.", { images: "Product must have 1 to 4 images." });
@@ -79,12 +91,14 @@ async function normalizeProductPayload(payload) {
 
   return {
     categoryId: payload.categoryId,
+    subcategoryId: subcategory ? payload.subcategoryId : null,
     name: payload.name.trim(),
     slug: generateSlug(payload.name),
     sku: productSku,
     description: payload.description.trim(),
     rating: payload.rating === undefined || payload.rating === "" ? 0 : Number(payload.rating),
     reviewCount: payload.reviewCount === undefined || payload.reviewCount === "" ? 0 : Number(payload.reviewCount),
+    sortOrder: payload.sortOrder === undefined || payload.sortOrder === "" || payload.sortOrder === null ? 999 : Number(payload.sortOrder),
     status: payload.status || "ACTIVE",
     customerOriginalPrice: Number(payload.customerOriginalPrice),
     customerSellingPrice: Number(payload.customerSellingPrice),

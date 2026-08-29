@@ -274,5 +274,10 @@
 - Product discount badge changed from a circle/glass tag to a compact Priya's/logo blue ribbon with a pointed edge and folded corner detail.
 - Frontend header now includes a desktop top social strip matching the footer social set: WhatsApp, Facebook, YouTube, Instagram, LinkedIn, and X. The strip is visible in both normal and sticky desktop header states. This was applied only in `frontend`, leaving `frontend2` untouched.
 
+- Auth service includes refresh-on-401 retry support so expired 15-minute access tokens can be refreshed with the stored refresh token before showing an authentication error.
+- Protected customer services such as shop/cart, orders, addresses, and reviews use the refresh-aware API helper.
+- Login modal includes a login-with-OTP design and is wired to backend OTP endpoints for existing active users by mobile number: `POST /api/auth/otp/send`, `POST /api/auth/otp/resend`, and `POST /api/auth/otp/verify`.
+- OTP SMS provider integration is pending real provider keys/API details; development mode can show/log a test OTP from the backend.
 ## Explicit Non-Goals
-- No Razorpay/payment integration.
+- Do not expose or commit real `.env` secrets. Keep `.env.example` as placeholders only.
+

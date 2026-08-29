@@ -44,7 +44,7 @@ function initialState(dealer?: Dealer): DealerFormState {
     pincode: dealer?.pincode ?? "",
     password: "",
     confirmPassword: "",
-    status: dealer?.status ?? "Active",
+    status: dealer?.status === "Inactive" ? "Inactive" : "Active",
   };
 }
 

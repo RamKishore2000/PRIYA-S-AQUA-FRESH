@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { SlidersHorizontal, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import { ChevronDown, ChevronRight, SlidersHorizontal, X } from "lucide-react";
 import { StarIcon } from "@/components/shop/star-icon";
 import { ProductGrid } from "@/components/shop/product-grid";
 import { useShop } from "@/context/shop-context";
@@ -37,25 +38,47 @@ export function ProductListingPage({ products, categories, selectedCategory = ""
     ];
   }, [products, user?.role]);
   const [category, setCategory] = useState(selectedCategory);
+  const [subcategory, setSubcategory] = useState("");
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
+  const [activeQuery, setActiveQuery] = useState(query);
   const [priceRange, setPriceRange] = useState<[number, number]>(priceBounds);
   const [availability, setAvailability] = useState<AvailabilityFilter[]>([]);
   const [rating, setRating] = useState<number | null>(null);
   const [sort, setSort] = useState<SortOption>("featured");
   const [filterOpen, setFilterOpen] = useState(false);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const nextCategory = params.get("category") || selectedCategory;
+    const nextSubcategory = params.get("subcategory") || "";
+    const nextSort = params.get("sort");
+    setCategory(nextCategory);
+    setSubcategory(nextSubcategory);
+    setActiveQuery((params.get("q") || query).toLowerCase());
+    if (isSortOption(nextSort)) setSort(nextSort);
+    if (nextCategory) setExpandedCategories((current) => current.includes(nextCategory) ? current : [...current, nextCategory]);
+  }, [selectedCategory, query]);
+
   const categoryCounts = useMemo(() => {
     return categories.map((item) => ({
       ...item,
-      count: products.filter((product) => normalizeSlug(product.category) === item.slug).length,
+      count: products.filter((product) => product.categorySlug === item.slug || normalizeSlug(product.category) === item.slug).length,
+      subcategories: (item.subcategories || []).map((child) => ({
+        ...child,
+        count: products.filter((product) => product.subcategorySlug === child.slug).length,
+      })),
     }));
   }, [categories, products]);
 
   const filteredProducts = useMemo(() => {
-    const normalizedQuery = query.toLowerCase();
+    const normalizedQuery = activeQuery.toLowerCase();
     const nextProducts = products.filter((product) => {
-      const categoryMatch = category ? normalizeSlug(product.category) === category : true;
+      const productCategorySlug = product.categorySlug || normalizeSlug(product.category);
+      const productSubcategorySlug = product.subcategorySlug || "";
+      const categoryMatch = category ? productCategorySlug === category : true;
+      const subcategoryMatch = subcategory ? productSubcategorySlug === subcategory : true;
       const queryMatch = normalizedQuery
-        ? [product.name, product.category, product.description].some((value) => value.toLowerCase().includes(normalizedQuery))
+        ? [product.name, product.category, product.subcategory || "", product.description].some((value) => value.toLowerCase().includes(normalizedQuery))
         : true;
       const productPrice = getProductDisplayPrice(product, user?.role).price;
       const priceMatch = productPrice >= priceRange[0] && productPrice <= priceRange[1];
@@ -66,18 +89,34 @@ export function ProductListingPage({ products, categories, selectedCategory = ""
           : availability.includes("in-stock"));
       const ratingMatch = rating === null || product.rating >= rating;
 
-      return categoryMatch && queryMatch && priceMatch && availabilityMatch && ratingMatch;
+      return categoryMatch && subcategoryMatch && queryMatch && priceMatch && availabilityMatch && ratingMatch;
     });
 
     return sortProducts(nextProducts, sort, user?.role);
-  }, [availability, category, priceRange, products, query, rating, sort, user?.role]);
+  }, [activeQuery, availability, category, priceRange, products, rating, sort, subcategory, user?.role]);
 
   function clearFilters() {
     setCategory("");
+    setSubcategory("");
     setPriceRange(priceBounds);
     setAvailability([]);
     setRating(null);
     setSort("featured");
+  }
+
+  function selectCategory(slug: string) {
+    setCategory(slug);
+    setSubcategory("");
+  }
+
+  function selectSubcategory(categorySlug: string, subcategorySlug: string) {
+    setCategory(categorySlug);
+    setSubcategory(subcategorySlug);
+    setExpandedCategories((current) => current.includes(categorySlug) ? current : [...current, categorySlug]);
+  }
+
+  function toggleCategory(slug: string) {
+    setExpandedCategories((current) => current.includes(slug) ? current.filter((item) => item !== slug) : [...current, slug]);
   }
 
   function toggleAvailability(value: AvailabilityFilter) {
@@ -95,16 +134,44 @@ export function ProductListingPage({ products, categories, selectedCategory = ""
 
       <FilterSection title="Categories">
         <div className="grid gap-2">
-          <button type="button" onClick={() => setCategory("")} className={filterButtonClass(!category)}>
+          <button type="button" onClick={() => { setCategory(""); setSubcategory(""); }} className={filterButtonClass(!category && !subcategory)}>
             <span>All Products</span>
             <span>{products.length}</span>
           </button>
-          {categoryCounts.map((item) => (
-            <button key={item.id} type="button" onClick={() => setCategory(item.slug)} className={filterButtonClass(category === item.slug)}>
-              <span>{item.name}</span>
-              <span>{item.count}</span>
-            </button>
-          ))}
+          {categoryCounts.map((item) => {
+            const hasSubcategories = item.subcategories.length > 0;
+            const expanded = expandedCategories.includes(item.slug);
+            return (
+              <div key={item.id} className="rounded-xl">
+                <div className="flex items-center gap-1">
+                  <button type="button" onClick={() => selectCategory(item.slug)} className={filterButtonClass(category === item.slug && !subcategory, "min-w-0 flex-1 justify-between")}>
+                    <span className="truncate">{item.name}</span>
+                    <span>{item.count}</span>
+                  </button>
+                  {hasSubcategories ? (
+                    <button type="button" onClick={() => toggleCategory(item.slug)} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-[#526161] transition hover:bg-[#F5E9D8]" aria-label={`${expanded ? "Hide" : "Show"} ${item.name} subcategories`}>
+                      {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                    </button>
+                  ) : null}
+                </div>
+                {hasSubcategories && expanded ? (
+                  <div className="ml-3 mt-1 grid gap-1 border-l border-[#E5D8C7] pl-3">
+                    {item.subcategories.map((child) => (
+                      <button key={child.id} type="button" onClick={() => selectSubcategory(item.slug, child.slug)} className={`flex items-center justify-between rounded-lg px-3 py-2 text-left text-xs font-black transition ${subcategory === child.slug ? "bg-[#D6B47A] text-white" : "text-[#526161] hover:bg-[#F5E9D8]"}`}>
+                        <span className="flex min-w-0 items-center gap-2">
+                          <span className="relative h-6 w-6 shrink-0 overflow-hidden rounded-md bg-white/70">
+                            <Image src={child.image} alt={child.name} fill className="object-contain p-1" unoptimized />
+                          </span>
+                          <span className="truncate">{child.name}</span>
+                        </span>
+                        <span>{child.count}</span>
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
         </div>
       </FilterSection>
 
@@ -144,7 +211,7 @@ export function ProductListingPage({ products, categories, selectedCategory = ""
   );
 
   return (
-    <section className="px-5 pb-20 md:px-8">
+    <section data-product-listing-section className="px-4 pb-20 md:px-8">
       <div className="mx-auto grid max-w-7xl items-start gap-8 lg:grid-cols-[18rem_1fr]">
         <aside className="hidden h-max self-start rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-5 shadow-[0_10px_30px_rgba(84,61,35,0.06)] lg:sticky lg:top-24 lg:block">
           {filterContent}
@@ -154,18 +221,18 @@ export function ProductListingPage({ products, categories, selectedCategory = ""
           <button
             type="button"
             onClick={() => setFilterOpen(true)}
-            className="fixed left-0 top-1/2 z-40 grid -translate-y-1/2 place-items-center gap-1 rounded-r-2xl border border-l-0 border-[#D9C5AB] bg-[#0A3A38] px-2.5 py-4 text-[0.65rem] font-black uppercase tracking-[0.12em] text-white shadow-[0_12px_30px_rgba(10,36,38,0.22)] lg:hidden"
+            className="fixed left-0 top-1/2 z-40 inline-flex -translate-y-1/2 items-center gap-2 rounded-r-full border border-l-0 border-[#D9C5AB] bg-[#0A3A38] px-3.5 py-2.5 text-[0.68rem] font-black uppercase tracking-[0.12em] text-white shadow-[0_10px_24px_rgba(10,36,38,0.18)] lg:hidden"
             aria-label="Open filters"
           >
             <SlidersHorizontal className="h-4 w-4" />
-            <span className="[writing-mode:vertical-rl]">Filter</span>
+            <span>Filter</span>
           </button>
 
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1]/95 p-4 shadow-[0_10px_30px_rgba(84,61,35,0.06)] backdrop-blur lg:mb-8 lg:gap-4 lg:p-5">
-            <p className="font-black text-[#1D2D2E]">Showing {filteredProducts.length} products</p>
-            <label className="flex items-center gap-2 text-sm font-black text-[#526161]">
+          <div className="mb-4 flex items-center justify-between gap-3 bg-transparent p-0 lg:mb-8 lg:flex-wrap lg:rounded-2xl lg:border lg:border-[#E8DCCB] lg:bg-[#FFF9F1]/95 lg:p-5 lg:shadow-[0_10px_30px_rgba(84,61,35,0.06)] lg:backdrop-blur">
+            <p className="text-sm font-black text-[#1D2D2E] lg:text-base">{filteredProducts.length} products</p>
+            <label className="flex items-center gap-2 text-xs font-black text-[#526161] lg:text-sm">
               Sort By
-              <select value={sort} onChange={(event) => setSort(event.target.value as SortOption)} className="rounded-xl border border-[#E5D8C7] bg-white px-4 py-3 font-black text-[#1D2D2E]">
+              <select value={sort} onChange={(event) => setSort(event.target.value as SortOption)} className="rounded-lg border border-[#D9C5AB] bg-[#FFF9F1] px-3 py-2 text-xs font-black text-[#1D2D2E] outline-none lg:rounded-xl lg:border-[#E5D8C7] lg:bg-white lg:px-4 lg:py-3 lg:text-sm">
                 {sortOptions.map((option) => (
                   <option key={option.value} value={option.value}>{option.label}</option>
                 ))}
@@ -176,24 +243,39 @@ export function ProductListingPage({ products, categories, selectedCategory = ""
         </div>
       </div>
 
-      <div className={`fixed inset-0 z-[70] lg:hidden ${filterOpen ? "pointer-events-auto" : "pointer-events-none"}`}>
+      <div data-mobile-filter-overlay className={`fixed inset-0 z-[1300] lg:hidden ${filterOpen ? "pointer-events-auto" : "pointer-events-none"}`}>
         <button
           type="button"
           aria-label="Close filters"
           onClick={() => setFilterOpen(false)}
           className={`absolute inset-0 bg-[#061415]/45 transition-opacity duration-300 ${filterOpen ? "opacity-100" : "opacity-0"}`}
         />
-        <aside className={`absolute bottom-0 left-0 top-0 w-[88vw] max-w-[420px] overflow-y-auto border-r border-[#D9C5AB] bg-[#FFF9F1] p-5 shadow-[18px_0_46px_rgba(10,36,38,0.22)] transition-transform duration-300 md:w-[420px] ${filterOpen ? "translate-x-0" : "-translate-x-full"}`}>
-          <div className="mb-2 flex justify-end">
+        <aside data-mobile-filter-drawer className={`absolute bottom-0 left-0 top-0 flex w-[88vw] max-w-[420px] flex-col border-r border-[#D9C5AB] bg-[#FFF9F1] shadow-[18px_0_46px_rgba(10,36,38,0.22)] transition-transform duration-300 md:w-[420px] ${filterOpen ? "translate-x-0" : "-translate-x-full"}`}>
+          <div className="flex items-center justify-between border-b border-[#E5D8C7] px-5 py-4">
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#B68A45]">Filters</p>
             <button type="button" onClick={() => setFilterOpen(false)} className="grid h-10 w-10 place-items-center rounded-full bg-[#0A3A38] text-white" aria-label="Close filters">
               <X className="h-5 w-5" />
             </button>
           </div>
-          {filterContent}
+          <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-2">
+            {filterContent}
+          </div>
+          <div data-mobile-filter-actions className="grid grid-cols-2 gap-3 border-t border-[#E5D8C7] bg-[#FFF9F1] px-5 py-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+            <button type="button" onClick={clearFilters} className="h-11 rounded-full border border-[#C59A55] bg-white text-sm font-black text-[#9B7137]">
+              Clear Filters
+            </button>
+            <button type="button" onClick={() => setFilterOpen(false)} className="h-11 rounded-full bg-[#0A3A38] text-sm font-black text-white shadow-[0_10px_24px_rgba(10,58,56,0.18)]">
+              Apply Filters
+            </button>
+          </div>
         </aside>
       </div>
     </section>
   );
+}
+
+function isSortOption(value: string | null): value is SortOption {
+  return value === "featured" || value === "price-asc" || value === "price-desc" || value === "top-rated" || value === "newest";
 }
 
 function FilterSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -265,7 +347,11 @@ function sortProducts(items: Product[], sort: SortOption, role?: string | null) 
 
   if (sort === "price-asc") return sorted.sort((a, b) => getProductDisplayPrice(a, role).price - getProductDisplayPrice(b, role).price);
   if (sort === "price-desc") return sorted.sort((a, b) => getProductDisplayPrice(b, role).price - getProductDisplayPrice(a, role).price);
-  if (sort === "top-rated") return sorted.sort((a, b) => b.rating - a.rating);
-  if (sort === "newest") return sorted.reverse();
-  return sorted;
+  if (sort === "top-rated") return sorted.sort((a, b) => (b.rating * 100 + b.reviewCount) - (a.rating * 100 + a.reviewCount));
+  if (sort === "newest") return sorted.sort((a, b) => {
+    const firstTime = a.createdAt ? new Date(a.createdAt).getTime() : Number(a.id) || 0;
+    const secondTime = b.createdAt ? new Date(b.createdAt).getTime() : Number(b.id) || 0;
+    return secondTime - firstTime;
+  });
+  return sorted.sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999) || Number(a.id) - Number(b.id));
 }

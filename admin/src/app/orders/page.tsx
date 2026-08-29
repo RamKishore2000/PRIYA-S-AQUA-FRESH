@@ -39,9 +39,9 @@ export default function OrdersPage() {
     });
   }, [orders, payment, search, status]);
 
-  const paidOrders = orders.filter((order) => order.payment === "Paid").length;
+  const paidOrders = orders.filter((order) => order.payment === "Paid" || order.payment === "Partial").length;
   const confirmedOrders = orders.filter((order) => order.status === "Confirmed").length;
-  const totalRevenue = orders.filter((order) => order.payment === "Paid").reduce((total, order) => total + order.amount, 0);
+  const totalRevenue = orders.reduce((total, order) => total + Number(order.paidAmount || 0), 0);
 
   return (
     <AdminShell>
@@ -59,7 +59,7 @@ export default function OrdersPage() {
         <div className="grid gap-3 border-b border-slate-200 p-5 lg:grid-cols-[1fr_180px_180px]">
           <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search order, customer, mobile, product" className="h-10 rounded-md border border-slate-200 px-3 text-sm outline-none focus:border-teal-500" />
           <select value={payment} onChange={(event) => setPayment(event.target.value)} className="h-10 rounded-md border border-slate-200 px-3 text-sm outline-none focus:border-teal-500">
-            {["All", "Paid", "Pending", "Failed"].map((item) => <option key={item}>{item}</option>)}
+            {["All", "Paid", "Partial", "Pending", "Failed"].map((item) => <option key={item}>{item}</option>)}
           </select>
           <select value={status} onChange={(event) => setStatus(event.target.value)} className="h-10 rounded-md border border-slate-200 px-3 text-sm outline-none focus:border-teal-500">
             {["All", "Pending", "Confirmed", "Packed", "Shipped", "Delivered", "Cancelled"].map((item) => <option key={item}>{item}</option>)}
@@ -76,7 +76,7 @@ export default function OrdersPage() {
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <div className="relative h-14 w-14 overflow-hidden rounded-md border border-slate-200 bg-slate-50">
-                        <Image src={order.firstProductImage || "/file.svg"} alt={order.firstProductName} fill className="object-contain p-1.5" unoptimized />
+                        <Image src={order.firstProductImage || "/admin/file.svg"} alt={order.firstProductName} fill className="object-contain p-1.5" unoptimized />
                       </div>
                       <p className="line-clamp-2 max-w-[220px] font-semibold text-slate-700">{order.firstProductName}</p>
                     </div>
@@ -87,12 +87,12 @@ export default function OrdersPage() {
                     <p className="text-xs text-slate-500">{order.buyerMobile}</p>
                   </td>
                   <td className="px-5 py-4 text-slate-600">{order.items}</td>
-                  <td className="px-5 py-4 font-bold text-slate-950">{formatCurrency(order.amount)}</td>
-                  <td className="px-5 py-4"><StatusBadge value={order.payment} /></td>
+                  <td className="px-5 py-4"><p className="font-bold text-slate-950">{formatCurrency(order.amount)}</p><p className="mt-1 text-xs font-semibold text-slate-500">Paid: {formatCurrency(order.paidAmount || 0)}</p>{Number(order.balanceAmount || 0) > 0 ? <p className="text-xs font-semibold text-amber-700">Balance: {formatCurrency(order.balanceAmount || 0)}</p> : null}</td>
+                  <td className="px-5 py-4"><div className="flex flex-col items-start gap-1"><StatusBadge value={order.payment} /><span className="text-xs font-semibold text-slate-500">{order.paymentType || (order.paymentMethod === "COD" ? "Advance Payment" : "Full Payment")}</span></div></td>
                   <td className="px-5 py-4"><StatusBadge value={order.status} /></td>
                   <td className="px-5 py-4 text-slate-500">{order.date}</td>
                   <td className="px-5 py-4">
-                    <RowActionsDropdown actions={[{ label: "View Order", icon: "view", onClick: () => router.push(`/orders/${order.id}`) }]} />
+                    <RowActionsDropdown actions={[{ label: "View Order", icon: "view", onClick: () => router.push(`/orders/detail?id=${order.id}`) }]} />
                   </td>
                 </tr>
               ))}

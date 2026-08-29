@@ -15,6 +15,7 @@ router.use(requireAuth, requireRole("CUSTOMER", "DEALER"));
 router.post("/", asyncHandler(orderController.createOrder));
 router.get("/my", asyncHandler(orderController.listMyOrders));
 router.get("/:id", orderIdValidator, validateRequest, asyncHandler(orderController.getOrder));
+router.post("/:id/payment-failed", orderIdValidator, validateRequest, asyncHandler(orderController.markPaymentFailed));
 router.post("/razorpay/order", asyncHandler(orderController.createRazorpayOrder));
 router.post("/razorpay/verify", asyncHandler(orderController.verifyRazorpayPayment));
 

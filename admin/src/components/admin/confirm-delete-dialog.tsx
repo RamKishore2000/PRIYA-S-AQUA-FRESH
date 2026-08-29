@@ -27,7 +27,7 @@ export function ConfirmDeleteDialog({ itemName, compact = false, label = "Delete
         {label}
       </button>
       {open ? (
-        <AdminModalShell labelledBy={`delete-${itemName.toLowerCase()}-title`} maxWidth="sm">
+        <AdminModalShell labelledBy={`delete-${itemName.toLowerCase()}-title`} maxWidth="sm" onClose={() => setOpen(false)}>
           <div className="p-6">
             <h3 id={`delete-${itemName.toLowerCase()}-title`} className="text-lg font-bold text-slate-950">Delete {itemName}?</h3>
             <p className="mt-2 text-sm leading-6 text-slate-500">Are you sure you want to delete this {itemName.toLowerCase()}? This is a mock action for now.</p>

@@ -37,7 +37,7 @@ export default function LoginPage() {
         <div className="mb-8 text-center">
           <div className="relative mx-auto h-20 w-44 bg-white">
             <Image
-              src="/images/brand/priyas-aqua-fresh-logo-cropped.png"
+              src="/admin/images/brand/priyas-aqua-fresh-logo-cropped.png"
               alt="Priya's Aqua Fresh"
               fill
               sizes="176px"

@@ -12,6 +12,7 @@ const groups = [
     items: [
       { label: "Banners", href: "/banners", icon: "grid" },
       { label: "Categories", href: "/categories", icon: "categories" },
+      { label: "Subcategories", href: "/subcategories", icon: "categories" },
       { label: "Products", href: "/products", icon: "products" },
     ],
   },
@@ -26,6 +27,7 @@ const groups = [
     title: "Sales",
     items: [
       { label: "Orders", href: "/orders", icon: "orders" },
+      { label: "Training Enquiries", href: "/training-enquiries", icon: "service" },
       { label: "Coupons", href: "/coupons", icon: "coupon" },
     ],
   },
@@ -33,6 +35,7 @@ const groups = [
     title: "Support",
     items: [
       { label: "Services", href: "/services", icon: "service" },
+      { label: "Contact Messages", href: "/contact-messages", icon: "customer" },
       { label: "Reviews", href: "/reviews", icon: "star" },
       { label: "Testimonials", href: "/testimonials", icon: "customer" },
     ],
@@ -40,7 +43,6 @@ const groups = [
   {
     title: "System",
     items: [
-      { label: "Reports", href: "/reports", icon: "reports" },
       { label: "Settings", href: "/settings", icon: "settings" },
     ],
   },
@@ -60,7 +62,7 @@ export function AdminSidebar({ collapsed, onClose }: { collapsed: boolean; onClo
       <div className="flex h-20 items-center border-b border-slate-200 px-4">
         <div className={`relative shrink-0 bg-white ${collapsed ? "h-12 w-12" : "h-14 w-44"}`}>
           <Image
-            src="/images/brand/priyas-aqua-fresh-logo-cropped.png"
+            src="/admin/images/brand/priyas-aqua-fresh-logo-cropped.png"
             alt="Priya's Aqua Fresh"
             fill
             sizes={collapsed ? "48px" : "176px"}
