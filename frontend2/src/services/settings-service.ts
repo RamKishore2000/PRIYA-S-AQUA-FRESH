@@ -12,6 +12,8 @@ export type SiteSettings = {
   x: string;
   trainingAmount: number;
   orderAdvanceAmount: number;
+  trainingImages: string[];
+  trainingVideos: string[];
 };
 
 export const defaultSiteSettings: SiteSettings = {
@@ -26,6 +28,14 @@ export const defaultSiteSettings: SiteSettings = {
   x: "https://x.com/priyasaquafresh",
   trainingAmount: 4999,
   orderAdvanceAmount: 500,
+  trainingImages: [
+    "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.34 PM.jpeg",
+    "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.35 PM (1).jpeg",
+    "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.35 PM.jpeg",
+    "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.36 PM.jpeg",
+    "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.37 PM.jpeg",
+  ],
+  trainingVideos: [],
 };
 
 export async function fetchSiteSettings() {

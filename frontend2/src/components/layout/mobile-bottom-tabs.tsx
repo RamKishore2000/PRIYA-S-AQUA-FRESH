@@ -19,11 +19,9 @@ export function MobileBottomTabs() {
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
 
-  if (hideForProductDetail) return null;
-
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-[60] border-t border-[#D9C5AB] bg-[#FFF9F1]/96 px-2 pb-[calc(env(safe-area-inset-bottom)+0.45rem)] pt-2 shadow-[0_-12px_30px_rgba(10,36,38,0.12)] backdrop-blur-xl lg:hidden" aria-label="Mobile navigation">
-      <div className="mx-auto grid max-w-md grid-cols-5 items-end gap-1">
+    <nav data-mobile-bottom-tabs className="fixed inset-x-0 bottom-0 z-[60] border-t border-[#D9C5AB] bg-[#FFF9F1]/96 px-2 pb-[calc(env(safe-area-inset-bottom)+0.45rem)] pt-2 shadow-[0_-12px_30px_rgba(10,36,38,0.12)] backdrop-blur-xl lg:hidden" aria-label="Mobile navigation">
+      <div className="mx-auto flex w-full items-end justify-between gap-0">
         {tabs.map((tab) => {
           const active = isActive(tab.href);
           const Icon = tab.icon;
@@ -33,7 +31,7 @@ export function MobileBottomTabs() {
               key={tab.href}
               href={tab.href}
               aria-current={active ? "page" : undefined}
-              className={`relative grid min-h-12 place-items-center gap-0.5 rounded-xl px-1 text-[0.64rem] font-black transition ${
+              className={`relative grid min-h-12 place-items-center gap-0.5 w-[3.65rem] rounded-xl px-0 text-[0.64rem] font-black transition ${
                 active ? "text-[#0A3A38]" : "text-[#63706E]"
               }`}
             >
@@ -48,7 +46,7 @@ export function MobileBottomTabs() {
           <Link
             href="/profile"
             aria-current={isActive("/profile") ? "page" : undefined}
-            className={`grid min-h-12 place-items-center gap-0.5 rounded-xl px-1 text-[0.64rem] font-black transition ${
+            className={`grid min-h-12 place-items-center gap-0.5 w-[3.65rem] rounded-xl px-0 text-[0.64rem] font-black transition ${
               isActive("/profile") ? "text-[#0A3A38]" : "text-[#63706E]"
             }`}
           >
@@ -61,7 +59,7 @@ export function MobileBottomTabs() {
           <button
             type="button"
             onClick={openLogin}
-            className="grid min-h-12 place-items-center gap-0.5 rounded-xl px-1 text-[0.64rem] font-black text-[#63706E] transition"
+            className="grid min-h-12 place-items-center gap-0.5 w-[3.65rem] rounded-xl px-0 text-[0.64rem] font-black text-[#63706E] transition"
           >
             <span className="grid h-7 w-7 place-items-center rounded-full">
               <User className="h-4 w-4" />

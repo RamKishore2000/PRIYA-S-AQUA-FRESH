@@ -2,6 +2,14 @@ const { pool } = require("../config/database");
 
 const SITE_SETTINGS_KEY = "site_settings";
 
+const defaultTrainingImages = [
+  "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.34 PM.jpeg",
+  "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.35 PM (1).jpeg",
+  "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.35 PM.jpeg",
+  "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.36 PM.jpeg",
+  "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.37 PM.jpeg",
+];
+
 const defaultSiteSettings = {
   phone: "+919951078699",
   whatsapp: "919121043483",
@@ -14,6 +22,8 @@ const defaultSiteSettings = {
   x: "https://x.com/priyasaquafresh",
   trainingAmount: 4999,
   orderAdvanceAmount: 500,
+  trainingImages: defaultTrainingImages,
+  trainingVideos: [],
 };
 
 function parseSettings(value) {
@@ -24,6 +34,17 @@ function parseSettings(value) {
   } catch {
     return {};
   }
+}
+
+function normalizeList(value, fallback) {
+  const source = Array.isArray(value) ? value : fallback;
+  const cleaned = source.map((item) => String(item || "").trim()).filter(Boolean).slice(0, 5);
+  return cleaned.length ? cleaned : fallback.slice(0, 5);
+}
+
+function normalizeOptionalList(value) {
+  if (!Array.isArray(value)) return [];
+  return value.map((item) => String(item || "").trim()).filter(Boolean).slice(0, 5);
 }
 
 function normalizeSettings(input = {}) {
@@ -39,7 +60,25 @@ function normalizeSettings(input = {}) {
     x: String(input.x ?? defaultSiteSettings.x).trim(),
     trainingAmount: Math.max(1, Number(input.trainingAmount ?? defaultSiteSettings.trainingAmount) || defaultSiteSettings.trainingAmount),
     orderAdvanceAmount: Math.max(1, Number(input.orderAdvanceAmount ?? defaultSiteSettings.orderAdvanceAmount) || defaultSiteSettings.orderAdvanceAmount),
+    trainingImages: normalizeList(input.trainingImages, defaultTrainingImages),
+    trainingVideos: normalizeOptionalList(input.trainingVideos),
   };
+}
+
+function extractYouTubeId(value) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  const patterns = [
+    /youtu\.be\/([A-Za-z0-9_-]{6,})/,
+    /youtube\.com\/watch\?v=([A-Za-z0-9_-]{6,})/,
+    /youtube\.com\/embed\/([A-Za-z0-9_-]{6,})/,
+    /youtube\.com\/shorts\/([A-Za-z0-9_-]{6,})/,
+  ];
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match?.[1]) return match[1];
+  }
+  return text;
 }
 
 async function getSiteSettings() {

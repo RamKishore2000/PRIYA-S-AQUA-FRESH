@@ -18,6 +18,16 @@ const couponPayloadValidator = [
   body("usageLimit").isInt({ min: 1 }).withMessage("Usage limit is required."),
   body("sortOrder").optional({ nullable: true, checkFalsy: true }).isInt({ min: 0 }).withMessage("Sort order is invalid."),
   body("status").optional().isIn(["ACTIVE", "INACTIVE"]).withMessage("Status is invalid."),
+  body("applicableProductIds").optional().isArray().withMessage("Selected products must be a list."),
+  body("applicableProductIds.*").optional().isInt({ min: 1 }).withMessage("Selected product is invalid."),
+];
+
+const couponValidatePayloadValidator = [
+  body("code").trim().notEmpty().withMessage("Coupon code is required."),
+  body("subtotalAmount").isFloat({ min: 0.01 }).withMessage("Subtotal amount is required."),
+  body("lineItems").optional().isArray().withMessage("Line items must be a list."),
+  body("lineItems.*.productId").optional().isInt({ min: 1 }).withMessage("Line item product is invalid."),
+  body("lineItems.*.lineTotal").optional().isFloat({ min: 0.01 }).withMessage("Line item total is invalid."),
 ];
 
 const couponStatusValidator = [
@@ -27,5 +37,6 @@ const couponStatusValidator = [
 module.exports = {
   couponIdValidator,
   couponPayloadValidator,
+  couponValidatePayloadValidator,
   couponStatusValidator,
 };

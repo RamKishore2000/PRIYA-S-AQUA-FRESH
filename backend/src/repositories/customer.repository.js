@@ -17,10 +17,11 @@ function mapCustomer(row) {
 async function findAll() {
   const [rows] = await pool.execute(
     `SELECT u.id, u.full_name, u.mobile, u.email, u.status, u.created_at, u.updated_at,
-            COUNT(o.id) AS total_orders,
-            COALESCE(SUM(CASE WHEN o.payment_status = 'PAID' THEN o.total_amount ELSE 0 END), 0) AS total_spent
+            COUNT(DISTINCT o.id) AS total_orders,
+            COALESCE(SUM(CASE WHEN p.status = 'PAID' AND o.order_status <> 'CANCELLED' THEN p.amount ELSE 0 END), 0) AS total_spent
      FROM users u
      LEFT JOIN orders o ON o.user_id = u.id
+     LEFT JOIN payments p ON p.order_id = o.id
      WHERE u.role = 'CUSTOMER'
      GROUP BY u.id, u.full_name, u.mobile, u.email, u.status, u.created_at, u.updated_at
      ORDER BY u.created_at DESC`,
@@ -31,10 +32,11 @@ async function findAll() {
 async function findById(id) {
   const [rows] = await pool.execute(
     `SELECT u.id, u.full_name, u.mobile, u.email, u.status, u.created_at, u.updated_at,
-            COUNT(o.id) AS total_orders,
-            COALESCE(SUM(CASE WHEN o.payment_status = 'PAID' THEN o.total_amount ELSE 0 END), 0) AS total_spent
+            COUNT(DISTINCT o.id) AS total_orders,
+            COALESCE(SUM(CASE WHEN p.status = 'PAID' AND o.order_status <> 'CANCELLED' THEN p.amount ELSE 0 END), 0) AS total_spent
      FROM users u
      LEFT JOIN orders o ON o.user_id = u.id
+     LEFT JOIN payments p ON p.order_id = o.id
      WHERE u.id = ? AND u.role = 'CUSTOMER'
      GROUP BY u.id, u.full_name, u.mobile, u.email, u.status, u.created_at, u.updated_at
      LIMIT 1`,

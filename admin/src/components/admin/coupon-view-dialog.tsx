@@ -17,6 +17,8 @@ export function CouponViewDialog({ coupon, status, onClose }: { coupon: Coupon; 
     ["Start Date & Time", `${coupon.startDate} ${coupon.startTime}`],
     ["End Date & Time", `${coupon.endDate} ${coupon.endTime}`],
     ["Usage Limit", String(coupon.usageLimit)],
+    ["Applies To", coupon.applicableProductIds.length ? "Selected Products" : "All Products"],
+    ["Selected Products", coupon.applicableProducts?.length ? coupon.applicableProducts.map((product) => product.name).join(", ") : "All products"],
     ["Sort Order", String(coupon.sortOrder)],
   ];
 

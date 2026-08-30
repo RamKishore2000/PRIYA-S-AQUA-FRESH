@@ -42,7 +42,7 @@ export default function CustomersPage() {
     const term = search.trim().toLowerCase();
     if (!term) return customers;
     return customers.filter((customer) =>
-      [customer.fullName, customer.mobile, customer.email, customer.status].some((value) => String(value || "").toLowerCase().includes(term)),
+      [customer.fullName, customer.mobile, customer.status].some((value) => String(value || "").toLowerCase().includes(term)),
     );
   }, [customers, search]);
 
@@ -85,23 +85,21 @@ export default function CustomersPage() {
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search name, mobile, email"
+            placeholder="Search name or mobile"
             className="h-10 rounded-md border border-slate-200 px-3 text-sm outline-none focus:border-teal-500 lg:w-80"
           />
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[980px] text-left text-sm">
+          <table className="w-full min-w-[860px] text-left text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-              <tr>{["Customer Name", "Mobile", "Email", "Orders", "Total Spent", "Status", "Created Date", "Actions"].map((header) => <th key={header} className="px-5 py-3 font-bold">{header}</th>)}</tr>
+              <tr>{["Customer Name", "Mobile", "Orders", "Total Spent", "Status", "Created Date", "Actions"].map((header) => <th key={header} className="px-5 py-3 font-bold">{header}</th>)}</tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredCustomers.map((customer) => (
                 <tr key={customer.id}>
                   <td className="px-5 py-4 font-bold text-slate-950">{customer.fullName}</td>
-                  <td className="px-5 py-4 font-semibold text-slate-600">{customer.mobile}</td>
-                  <td className="px-5 py-4 text-slate-600">{customer.email}</td>
-                  <td className="px-5 py-4 text-slate-600">{customer.totalOrders}</td>
+                  <td className="px-5 py-4 font-semibold text-slate-600">{customer.mobile}</td>                  <td className="px-5 py-4 text-slate-600">{customer.totalOrders}</td>
                   <td className="px-5 py-4 font-semibold text-slate-700">{formatCurrency(customer.totalSpent)}</td>
                   <td className="px-5 py-4"><StatusBadge value={customer.status} /></td>
                   <td className="px-5 py-4 text-slate-500">{customer.createdDate}</td>

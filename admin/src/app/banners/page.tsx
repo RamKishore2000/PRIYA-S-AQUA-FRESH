@@ -220,7 +220,7 @@ function BannerFormDialog({
 
         <div className="grid gap-5 px-6 py-5 lg:grid-cols-[380px_1fr]">
           <div>
-            <p className="mb-2 text-sm font-bold text-slate-800">Banner Image</p>
+            <p className="mb-2 text-sm font-bold text-slate-800">Banner Right-Side Image</p>
             <div className="relative flex min-h-[420px] items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
               {form.imageUrl ? (
                 <Image src={form.imageUrl} alt={form.title || "Banner image"} fill className="object-contain p-4" unoptimized />
@@ -239,7 +239,7 @@ function BannerFormDialog({
                 </button>
               ) : null}
             </div>
-            <p className="mt-2 text-xs leading-5 text-slate-500">Recommended size: 1600 x 900 px for full banner images, or transparent product PNG/WebP around 1200 x 900 px. Upload converts to WebP without cropping.</p>
+            <p className="mt-2 text-xs leading-5 text-slate-500">Recommended size: 1200 x 900 px. Use transparent PNG/WebP product image for best result. Upload converts to WebP without cropping.</p>
           </div>
 
           <div className="grid gap-4">

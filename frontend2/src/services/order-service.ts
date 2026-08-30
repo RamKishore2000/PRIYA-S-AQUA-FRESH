@@ -65,10 +65,10 @@ export async function createAddress(payload: Omit<Address, "id">) {
   return data.address;
 }
 
-export async function validateCoupon(code: string, subtotalAmount: number) {
+export async function validateCoupon(code: string, subtotalAmount: number, lineItems: { productId: string | number; lineTotal: number }[] = []) {
   const data = await apiRequest<{ validation: { discountAmount: number; totalAmount: number } }>("/api/coupons/validate", {
     method: "POST",
-    body: JSON.stringify({ code, subtotalAmount }),
+    body: JSON.stringify({ code, subtotalAmount, lineItems }),
   });
   return data.validation;
 }

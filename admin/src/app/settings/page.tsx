@@ -1,14 +1,25 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState, type ReactNode } from "react";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { AdminToast } from "@/components/admin/admin-toast";
 import { Icon } from "@/components/admin/icon";
 import { PageHeader } from "@/components/admin/page-header";
-import { adminApi } from "@/services/api";
+import { adminApi, uploadImage } from "@/services/api";
 import type { SiteSettings } from "@/types/admin";
 
 type ThemeMode = "light" | "dark";
+
+const defaultTrainingImages = [
+  "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.34 PM.jpeg",
+  "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.35 PM (1).jpeg",
+  "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.35 PM.jpeg",
+  "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.36 PM.jpeg",
+  "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.37 PM.jpeg",
+];
+
+const defaultTrainingVideos: string[] = [];
 
 const defaultSettings: SiteSettings = {
   phone: "+919951078699",
@@ -22,11 +33,24 @@ const defaultSettings: SiteSettings = {
   x: "https://x.com/priyasaquafresh",
   trainingAmount: 4999,
   orderAdvanceAmount: 500,
+  trainingImages: defaultTrainingImages,
+  trainingVideos: defaultTrainingVideos,
 };
 
 function applyTheme(theme: ThemeMode) {
   document.documentElement.classList.toggle("admin-dark", theme === "dark");
   localStorage.setItem("priyas-admin-theme", theme);
+}
+
+function ensureFive(values: string[], fallback: string[]) {
+  return Array.from({ length: 5 }, (_, index) => values[index] || fallback[index] || "");
+}
+
+function toAdminYouTubeUrl(value: string) {
+  const text = value.trim();
+  if (!text) return "";
+  if (/^https?:\/\//i.test(text)) return text;
+  return `https://www.youtube.com/watch?v=${text}`;
 }
 
 export default function SettingsPage() {
@@ -38,10 +62,16 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [uploadingImageIndex, setUploadingImageIndex] = useState<number | null>(null);
 
   useEffect(() => {
     adminApi.getSiteSettings()
-      .then((data) => setSettings({ ...defaultSettings, ...data }))
+      .then((data) => setSettings({
+        ...defaultSettings,
+        ...data,
+        trainingImages: ensureFive(data.trainingImages || [], defaultTrainingImages),
+        trainingVideos: ensureFive(data.trainingVideos || [], defaultTrainingVideos).map(toAdminYouTubeUrl),
+      }))
       .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to load website settings."))
       .finally(() => setLoading(false));
   }, []);
@@ -56,12 +86,48 @@ export default function SettingsPage() {
     setSettings((current) => ({ ...current, [field]: value }));
   }
 
+  function updateTrainingImage(index: number, value: string) {
+    setSettings((current) => {
+      const trainingImages = ensureFive(current.trainingImages || [], defaultTrainingImages);
+      trainingImages[index] = value;
+      return { ...current, trainingImages };
+    });
+  }
+
+  function updateTrainingVideo(index: number, value: string) {
+    setSettings((current) => {
+      const trainingVideos = ensureFive(current.trainingVideos || [], defaultTrainingVideos);
+      trainingVideos[index] = value;
+      return { ...current, trainingVideos };
+    });
+  }
+
+  async function uploadTrainingImage(index: number, file?: File) {
+    if (!file) return;
+    setUploadingImageIndex(index);
+    setMessage("");
+    try {
+      const imageUrl = await uploadImage(file, "training", 1200, 900);
+      updateTrainingImage(index, imageUrl);
+      setMessage(`Training image ${index + 1} uploaded.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Training image upload failed.");
+    } finally {
+      setUploadingImageIndex(null);
+    }
+  }
+
   async function saveSettings() {
     setSaving(true);
     setMessage("");
     try {
-      const saved = await adminApi.updateSiteSettings(settings);
-      setSettings({ ...defaultSettings, ...saved });
+      const payload = {
+        ...settings,
+        trainingImages: ensureFive(settings.trainingImages || [], defaultTrainingImages).filter(Boolean).slice(0, 5),
+        trainingVideos: ensureFive(settings.trainingVideos || [], defaultTrainingVideos).map((video) => video.trim()).filter(Boolean).slice(0, 5),
+      };
+      const saved = await adminApi.updateSiteSettings(payload);
+      setSettings({ ...defaultSettings, ...saved, trainingVideos: ensureFive(saved.trainingVideos || [], defaultTrainingVideos).map(toAdminYouTubeUrl) });
       setMessage("Website settings updated successfully.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to update website settings.");
@@ -69,6 +135,9 @@ export default function SettingsPage() {
       setSaving(false);
     }
   }
+
+  const trainingImages = ensureFive(settings.trainingImages || [], defaultTrainingImages);
+  const trainingVideos = ensureFive(settings.trainingVideos || [], defaultTrainingVideos).map(toAdminYouTubeUrl);
 
   return (
     <AdminShell>
@@ -95,10 +164,37 @@ export default function SettingsPage() {
           </div>
         </SettingsCard>
 
-                <SettingsCard title="Payment Amount Settings" description="Control advance booking amount for product checkout and payment amount for RO Training.">
+        <SettingsCard title="Payment Amount Settings" description="Control advance booking amount for product checkout and payment amount for RO Training.">
           <div className="grid gap-4 md:grid-cols-2">
             <NumberField label="Order Advance Booking Amount" value={settings.orderAdvanceAmount} onChange={(value) => updateField("orderAdvanceAmount", value)} />
             <NumberField label="RO Training Payment Amount" value={settings.trainingAmount} onChange={(value) => updateField("trainingAmount", value)} />
+          </div>
+        </SettingsCard>
+
+        <SettingsCard title="RO Training Images" description="Set exactly five images used on the public training page.">
+          <p className="mb-4 text-xs font-semibold leading-5 text-slate-500">Recommended size: 1200 x 900 px. Use clear RO training classroom/service images. Upload converts to WebP without cropping.</p>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            {trainingImages.map((imageUrl, index) => (
+              <div key={index} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-md border border-slate-200 bg-white">
+                  <TrainingImagePreview imageUrl={imageUrl} index={index} />
+                </div>
+                <input value={imageUrl} onChange={(event) => updateTrainingImage(index, event.target.value)} className="mt-3 h-10 w-full rounded-md border border-slate-200 px-3 text-xs font-semibold text-slate-900 outline-none focus:border-teal-500" placeholder={`Training image ${index + 1} URL`} />
+                <label className="mt-2 inline-flex cursor-pointer rounded-md bg-slate-950 px-3 py-2 text-xs font-semibold text-white">
+                  {uploadingImageIndex === index ? "Uploading..." : "Upload"}
+                  <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" className="sr-only" disabled={uploadingImageIndex !== null} onChange={(event) => uploadTrainingImage(index, event.target.files?.[0])} />
+                </label>
+              </div>
+            ))}
+          </div>
+        </SettingsCard>
+
+        <SettingsCard title="RO Training Videos" description="Set exactly five YouTube videos used on the public training page.">
+          <p className="mb-4 text-xs font-semibold leading-5 text-slate-500">Paste the full YouTube video URL. Admin keeps the full URL visible after save.</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            {trainingVideos.map((videoId, index) => (
+              <Field key={index} label={`YouTube Video ${index + 1}`} value={videoId} onChange={(value) => updateTrainingVideo(index, value)} />
+            ))}
           </div>
         </SettingsCard>
 
@@ -121,6 +217,28 @@ export default function SettingsPage() {
         </SettingsCard>
       </div>
     </AdminShell>
+  );
+}
+
+
+function TrainingImagePreview({ imageUrl, index }: { imageUrl: string; index: number }) {
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    setFailed(false);
+  }, [imageUrl]);
+
+  if (!imageUrl || failed) {
+    return <span className="grid h-full place-items-center text-xs font-semibold text-slate-400">Image {index + 1}</span>;
+  }
+
+  return (
+    <img
+      key={imageUrl}
+      src={imageUrl}
+      alt={`RO training image ${index + 1}`}
+      className="h-full w-full object-cover"
+      onError={() => setFailed(true)}
+    />
   );
 }
 

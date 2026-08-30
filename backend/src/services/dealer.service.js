@@ -55,7 +55,7 @@ function normalizeDealerPayload(payload) {
     mobile: payload.mobile.trim(),
     email: payload.email.trim().toLowerCase(),
     dealerCode: payload.dealerCode.trim().toUpperCase(),
-    gstNumber: payload.gstNumber.trim().toUpperCase(),
+    gstNumber: payload.gstNumber?.trim() ? payload.gstNumber.trim().toUpperCase() : null,
     address: payload.address.trim(),
     city: payload.city.trim(),
     state: payload.state.trim(),

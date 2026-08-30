@@ -3,6 +3,7 @@ export type BuyerRole = "Customer" | "Dealer";
 export type OrderStatus = "Pending" | "Confirmed" | "Packed" | "Shipped" | "Delivered" | "Cancelled";
 export type ServiceStatus = "New" | "Assigned" | "In Progress" | "Completed" | "Cancelled";
 export type CouponManualStatus = "Active" | "Inactive";
+export type CouponProductScope = "All Products" | "Selected Products";
 export type CouponComputedStatus = "Active" | "Inactive" | "Upcoming" | "Expired";
 export type DiscountType = "Percentage" | "Flat Amount";
 
@@ -92,6 +93,8 @@ export type Coupon = {
   usageLimit: number;
   sortOrder: number;
   manualStatus: CouponManualStatus;
+  applicableProductIds: string[];
+  applicableProducts?: { id: string; name: string; sku?: string }[];
   createdDate: string;
 };
 
@@ -212,6 +215,8 @@ export type SiteSettings = {
   x: string;
   trainingAmount: number;
   orderAdvanceAmount: number;
+  trainingImages: string[];
+  trainingVideos: string[];
 };
 
 export type ContactMessage = {

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Phone, X } from "lucide-react";
 import type { SVGProps } from "react";
 import { CartDrawer } from "@/components/cart/cart-drawer";
@@ -86,6 +86,7 @@ const dealerSupportNumbers = ["8885449044", "8498831081"];
 
 export function Header({ overlay = false }: HeaderProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
@@ -108,6 +109,13 @@ export function Header({ overlay = false }: HeaderProps) {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, [overlay]);
+  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const query = String(formData.get("q") || "").trim();
+    setSearchOpen(false);
+    router.push(query ? `/search?q=${encodeURIComponent(query)}` : "/search");
+  };
 
   return (
     <>
@@ -204,6 +212,7 @@ export function Header({ overlay = false }: HeaderProps) {
         <div className="flex items-center justify-end gap-2 text-[#1D2D2E]">
           <form
             action="/search"
+            onSubmit={handleSearchSubmit}
             className={`hidden items-center overflow-hidden rounded-lg border border-[#E5D8C7] bg-white shadow-[0_8px_24px_rgba(84,61,35,0.06)] transition-all duration-700 ease-out lg:flex ${searchOpen ? "w-[320px] px-3 py-1.5 opacity-100" : "w-10 px-0 py-0 opacity-100"}`}
             onMouseEnter={() => setSearchOpen(true)}
             onMouseLeave={() => setSearchOpen(false)}
@@ -244,7 +253,7 @@ export function Header({ overlay = false }: HeaderProps) {
           </button>
         </div>
       </div>
-      <form action="/search" data-mobile-search-panel className={`mx-3 grid overflow-hidden transition-all duration-300 md:mx-5 lg:hidden ${searchOpen ? "max-h-20 pb-3 opacity-100" : "max-h-0 pb-0 opacity-0"}`}>
+      <form action="/search" onSubmit={handleSearchSubmit} data-mobile-search-panel className={`mx-3 grid overflow-hidden transition-all duration-300 md:mx-5 lg:hidden ${searchOpen ? "max-h-20 pb-3 opacity-100" : "max-h-0 pb-0 opacity-0"}`}>
         <div className="flex items-center gap-2 rounded-xl border border-[#D9C5AB] bg-white px-3 py-2 shadow-[0_8px_22px_rgba(84,61,35,0.08)]">
           <SearchIcon className="h-4 w-4 shrink-0 text-[#0A3A38]" />
           <input name="q" placeholder="Search products..." className="min-w-0 flex-1 bg-transparent text-sm font-bold text-[#1D2D2E] outline-none placeholder:text-[#7D7B75]" autoComplete="off" />

@@ -66,7 +66,7 @@ export function DealerForm({ mode = "add", initialDealer }: DealerFormProps) {
     if (!form.businessName.trim()) nextErrors.businessName = "Business name is required.";
     if (!/^[6-9]\d{9}$/.test(form.mobile)) nextErrors.mobile = "Enter a valid 10 digit mobile number.";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) nextErrors.email = "Enter a valid email.";
-    if (!form.gstNumber.trim()) nextErrors.gstNumber = "GST number is required.";
+    if (form.gstNumber.trim() && form.gstNumber.trim().length > 30) nextErrors.gstNumber = "GST number is too long.";
     if (!form.address.trim()) nextErrors.address = "Address is required.";
     if (!form.city.trim()) nextErrors.city = "City is required.";
     if (!form.state.trim()) nextErrors.state = "State is required.";
@@ -85,7 +85,7 @@ export function DealerForm({ mode = "add", initialDealer }: DealerFormProps) {
       mobile: form.mobile,
       email: form.email,
       dealerCode: form.dealerCode,
-      gstNumber: form.gstNumber,
+      gstNumber: form.gstNumber.trim(),
       address: form.address,
       city: form.city,
       state: form.state,
@@ -121,7 +121,7 @@ export function DealerForm({ mode = "add", initialDealer }: DealerFormProps) {
               ["mobile", "Mobile Number", "9876543210"],
               ["email", "Email", "dealer@example.com"],
               ["dealerCode", "Dealer Code", "DLR-AP-001"],
-              ["gstNumber", "GST Number", "GST number"],
+              ["gstNumber", "GST Number (Optional)", "GST number"],
               ["city", "City", "City"],
               ["state", "State", "State"],
               ["pincode", "Pincode", "Pincode"],

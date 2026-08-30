@@ -10,7 +10,7 @@ const dealerPayloadValidator = [
   body("mobile").trim().matches(/^[6-9]\d{9}$/).withMessage("Enter a valid 10 digit mobile number."),
   body("email").trim().isEmail().withMessage("Enter a valid email.").normalizeEmail(),
   body("dealerCode").trim().notEmpty().withMessage("Dealer code is required.").isLength({ max: 40 }).withMessage("Dealer code is too long."),
-  body("gstNumber").trim().notEmpty().withMessage("GST number is required.").isLength({ max: 30 }).withMessage("GST number is too long."),
+  body("gstNumber").optional({ nullable: true, checkFalsy: true }).trim().isLength({ max: 30 }).withMessage("GST number is too long."),
   body("address").trim().notEmpty().withMessage("Address is required."),
   body("city").trim().notEmpty().withMessage("City is required."),
   body("state").trim().notEmpty().withMessage("State is required."),

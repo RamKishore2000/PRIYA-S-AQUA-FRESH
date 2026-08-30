@@ -60,6 +60,7 @@
   RewriteRule ^shipping-policy/?$ /shipping-policy.html [L,QSA]
   RewriteRule ^terms/?$ /terms.html [L,QSA]
   RewriteRule ^warranty/?$ /warranty.html [L,QSA]
+  RewriteRule ^ro-training-institute/?$ /ro-training-institute.html [L,QSA]
 
   # Product details
   RewriteRule ^product-detail/?$ /product-detail.html [L,QSA]

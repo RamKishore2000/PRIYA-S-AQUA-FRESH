@@ -28,7 +28,7 @@ const whatsappDisplay = "9666541255";
 const whatsappLink = "919666541255";
 const supportCall = "8412255015";
 
-const trainingImages = [
+const fallbackTrainingImages = [
   "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.34 PM.jpeg",
   "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.35 PM (1).jpeg",
   "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.35 PM.jpeg",
@@ -40,14 +40,21 @@ const trainingImages = [
   "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.48 PM.jpeg",
 ];
 
-const videos = [
-  "lI08cxxKYIM",
-  "Z5NnF_NlK7E",
-  "rqMe0L_k5TA",
-  "WKlmRyNmDO8",
-  "-LcvD5IdfEY",
-];
 
+function getYouTubeVideoId(value: string) {
+  const text = value.trim();
+  const patterns = [
+    /youtu\.be\/([A-Za-z0-9_-]{6,})/,
+    /youtube\.com\/watch\?v=([A-Za-z0-9_-]{6,})/,
+    /youtube\.com\/embed\/([A-Za-z0-9_-]{6,})/,
+    /youtube\.com\/shorts\/([A-Za-z0-9_-]{6,})/,
+  ];
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match?.[1]) return match[1];
+  }
+  return text;
+}
 const emptyForm = {
   fullName: "",
   mobile: "",
@@ -69,6 +76,8 @@ export default function RoTrainingInstitutePage() {
   }, []);
 
   const trainingAmount = Math.max(1, Number(settings.trainingAmount || defaultSiteSettings.trainingAmount));
+  const trainingImages = (settings.trainingImages?.length ? settings.trainingImages : fallbackTrainingImages).filter(Boolean).slice(0, 5);
+  const videos = (settings.trainingVideos || []).map(getYouTubeVideoId).filter(Boolean).slice(0, 5);
   const modalDetails = useMemo(() => {
     if (!shareEnquiry) return [];
     return [
@@ -158,15 +167,13 @@ export default function RoTrainingInstitutePage() {
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
       <Header />
       <main className="pb-24 lg:pb-0">
-        <section className="app-training-hero relative overflow-hidden bg-[#0A2426] text-white">
-          <div className="absolute inset-0 opacity-35">
-            <Image src={trainingImages[0]} alt="RO training practical class" fill priority sizes="100vw" className="object-cover" />
-          </div>
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,36,38,0.94),rgba(10,36,38,0.78),rgba(10,36,38,0.34))]" />
-          <div className="relative mx-auto grid min-h-[calc(100vh-9rem)] max-w-7xl items-center gap-8 px-4 py-16 md:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
-            <div>
+        <section className="app-training-hero relative min-h-[calc(100vh-7rem)] overflow-hidden bg-[#0A2426] text-white">
+          <Image src={trainingImages[0]} alt="RO training practical class" fill priority sizes="100vw" className="object-cover" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,36,38,0.96),rgba(10,36,38,0.78),rgba(10,36,38,0.36))]" />
+          <div className="relative mx-auto flex min-h-[calc(100vh-7rem)] max-w-7xl items-center px-4 py-16 md:px-8 lg:py-20">
+            <div className="max-w-3xl">
               <p className="text-xs font-black uppercase tracking-[0.26em] text-[#D8B879]">RO Training Institute</p>
-              <h1 className="mt-4 max-w-3xl font-serif text-4xl font-semibold leading-tight md:text-6xl">Learn water purifier service work with practical RO training.</h1>
+              <h1 className="mt-4 font-serif text-4xl font-semibold leading-tight md:text-6xl">Learn water purifier service work with practical RO training.</h1>
               <p className="mt-5 max-w-2xl text-base font-semibold leading-8 text-[#F7EFE5] md:text-lg">
                 Hands-on RO installation, service, filter replacement, fault checking, customer handling and field-ready maintenance training for learners who want practical skills.
               </p>
@@ -176,17 +183,34 @@ export default function RoTrainingInstitutePage() {
                   <Phone className="h-4 w-4" /> Call Support
                 </a>
               </div>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {trainingImages.slice(1, 5).map((image, index) => (
-                <div key={image} className={`relative overflow-hidden rounded-xl border border-white/18 bg-white/10 shadow-[0_22px_55px_rgba(0,0,0,0.24)] ${index === 0 ? "aspect-[4/5] sm:row-span-2" : "aspect-[4/3]"}`}>
-                  <Image src={image} alt="RO training institute" fill sizes="(max-width: 768px) 50vw, 320px" className="object-cover" />
-                </div>
-              ))}
+              <div className="mt-8 grid max-w-2xl gap-3 text-sm font-black sm:grid-cols-3">
+                <div className="border-l-2 border-[#D8B879] pl-4">Real RO machines</div>
+                <div className="border-l-2 border-[#D8B879] pl-4">Field service practice</div>
+                <div className="border-l-2 border-[#D8B879] pl-4">Payment support</div>
+              </div>
             </div>
           </div>
         </section>
 
+        <section className="bg-[#F8F3EC] px-4 py-12 md:px-8 md:py-16">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#B68A45]">Training Gallery</p>
+                <h2 className="mt-3 font-serif text-3xl font-semibold text-[#1D2D2E] md:text-5xl">See the practical training setup.</h2>
+              </div>
+              <p className="max-w-md text-sm font-semibold leading-6 text-[#5A6362]">Five editable images from admin settings appear here. Use 1200 x 900 images for the best crop.</p>
+            </div>
+            <div className="mt-8 flex snap-x gap-4 overflow-x-auto pb-3 md:grid md:grid-cols-4 md:grid-rows-2 md:overflow-visible md:pb-0">
+              {trainingImages.map((image, index) => (
+                <figure key={`${image}-${index}`} className={`relative min-w-[82vw] snap-start overflow-hidden rounded-xl bg-[#EDE2D3] shadow-[0_16px_42px_rgba(84,61,35,0.12)] sm:min-w-[46vw] md:min-w-0 ${index === 0 ? "aspect-[4/3] md:col-span-2 md:row-span-2 md:aspect-auto" : "aspect-[4/3]"}`}>
+                  <Image src={image} alt={`RO training image ${index + 1}`} fill sizes={index === 0 ? "(max-width: 767px) 82vw, 50vw" : "(max-width: 767px) 82vw, 25vw"} className="object-cover" />
+                  {index === 0 ? <figcaption className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/55 to-transparent p-4 text-sm font-black text-white">Hands-on training environment</figcaption> : null}
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
         <section className="app-training-highlights px-4 py-16 md:px-8">
           <div className="mx-auto max-w-7xl">
             <div className="grid gap-4 md:grid-cols-4">
@@ -223,16 +247,23 @@ export default function RoTrainingInstitutePage() {
                 ))}
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-              {trainingImages.slice(4).map((image) => (
-                <div key={image} className="relative aspect-[4/5] overflow-hidden rounded-xl border border-[#E5D8C7] bg-[#F7F0E7]">
-                  <Image src={image} alt="RO training gallery" fill sizes="(max-width: 768px) 50vw, 240px" className="object-cover" />
+            <div className="grid gap-3 sm:grid-cols-2">
+              {[
+                "Live purifier service practice",
+                "Installation and fitting guidance",
+                "Filter, membrane and pump handling",
+                "Fault checking with real tools",
+              ].map((item) => (
+                <div key={item} className="rounded-xl border border-[#E5D8C7] bg-[#FFF9F1] p-5 shadow-[0_10px_30px_rgba(84,61,35,0.06)]">
+                  <CheckCircle2 className="h-6 w-6 text-[#0A3A38]" />
+                  <p className="mt-4 text-base font-black text-[#1D2D2E]">{item}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
+        {videos.length ? (
         <section className="app-training-videos px-4 py-16 md:px-8">
           <div className="mx-auto max-w-7xl">
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
@@ -244,7 +275,7 @@ export default function RoTrainingInstitutePage() {
                 <PlayCircle className="h-4 w-4" /> YouTube Channel
               </Link>
             </div>
-            <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            <div data-training-video-row className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
               {videos.map((video) => (
                 <div key={video} className="overflow-hidden rounded-xl border border-[#E5D8C7] bg-black shadow-[0_14px_34px_rgba(84,61,35,0.08)]">
                   <iframe
@@ -259,6 +290,8 @@ export default function RoTrainingInstitutePage() {
             </div>
           </div>
         </section>
+
+        ) : null}
 
         <section id="training-form" className="app-training-form bg-[#0A2426] px-4 py-16 text-white md:px-8">
           <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">

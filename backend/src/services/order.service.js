@@ -26,7 +26,7 @@ async function createOrder(userId, payload, role) {
   let coupon = null;
   let discountAmount = 0;
   if (payload.couponCode) {
-    const validation = await couponService.validateCoupon({ code: payload.couponCode, subtotalAmount });
+    const validation = await couponService.validateCoupon({ code: payload.couponCode, subtotalAmount, lineItems: items.map((item) => ({ productId: item.product.id, lineTotal: item.lineTotal })) });
     coupon = validation.coupon;
     discountAmount = validation.discountAmount;
   }

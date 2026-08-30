@@ -1,5 +1,9 @@
+"use client";
+
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Category } from "@/types/product";
 
 const preferredCategoryOrder = [
@@ -23,6 +27,11 @@ const preferredCategoryOrder = [
 
 export function CategoryShowcase({ categories }: { categories: Category[] }) {
   const visibleCategories = getOrderedCategories(categories);
+  const rowRef = useRef<HTMLDivElement>(null);
+
+  function scrollCategories(direction: "left" | "right") {
+    rowRef.current?.scrollBy({ left: direction === "left" ? -240 : 240, behavior: "smooth" });
+  }
 
   if (!visibleCategories.length) return null;
 
@@ -38,7 +47,7 @@ export function CategoryShowcase({ categories }: { categories: Category[] }) {
           <Link href="/categories" className="shrink-0 text-xs font-black text-[#9B7137] lg:hidden">More</Link>
         </div>
 
-        <div data-home-category-row className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:gap-4 lg:mx-0 lg:overflow-x-auto lg:px-0 lg:pb-1">
+        <div ref={rowRef} data-home-category-row className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:gap-4 lg:mx-0 lg:overflow-x-auto lg:px-0 lg:pb-1">
           {visibleCategories.map((category) => (
             <Link key={category.id} data-reveal-item data-home-category-card href={`/products?category=${category.slug}`} className="group grid w-24 shrink-0 gap-2 overflow-visible rounded-none border-0 bg-transparent px-1 py-1 text-center shadow-none transition duration-300 hover:-translate-y-0.5 md:w-28 lg:min-h-[134px] lg:grid-cols-[1fr_6.25rem] lg:items-center lg:overflow-hidden lg:rounded-[0.8rem] lg:border lg:border-[#E9DDCF] lg:bg-[#FFF8EF] lg:px-4 lg:py-4 lg:text-left lg:shadow-[0_8px_22px_rgba(84,61,35,0.045)] lg:hover:border-[#D6B47A] lg:hover:bg-[#FFFDF8] lg:hover:shadow-[0_12px_28px_rgba(182,138,69,0.12)]">
               <div className="relative order-1 mx-auto h-20 w-20 lg:order-2 lg:h-24 lg:w-24 lg:justify-self-end">
@@ -53,10 +62,20 @@ export function CategoryShowcase({ categories }: { categories: Category[] }) {
         </div>
 
         {visibleCategories.length > 2 ? (
-          <div data-home-scroll-cue className="mt-1 flex justify-center gap-1.5" aria-hidden="true">
-            <span className="h-1.5 w-5 rounded-full bg-[#0A3A38]" />
-            <span className="h-1.5 w-1.5 rounded-full bg-[#CDBB9C]" />
-            <span className="h-1.5 w-1.5 rounded-full bg-[#CDBB9C]" />
+          <div className="mt-2 flex items-center justify-between gap-3">
+            <div data-home-scroll-cue className="flex justify-center gap-1.5" aria-hidden="true">
+              <span className="h-1.5 w-5 rounded-full bg-[#0A3A38]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#CDBB9C]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#CDBB9C]" />
+            </div>
+            <div data-home-carousel-controls className="flex items-center gap-2" aria-label="Category carousel controls">
+              <button type="button" onClick={() => scrollCategories("left")} className="grid h-9 w-9 place-items-center rounded-full border border-[#D8C8B4] bg-[#FFF9F1] text-[#0A3A38] shadow-[0_8px_18px_rgba(84,61,35,0.1)] transition hover:border-[#0A3A38] hover:bg-white" aria-label="Scroll categories left" title="Scroll left">
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button type="button" onClick={() => scrollCategories("right")} className="grid h-9 w-9 place-items-center rounded-full bg-[#0A3A38] text-white shadow-[0_8px_18px_rgba(10,58,56,0.2)] transition hover:bg-[#124945]" aria-label="Scroll categories right" title="Scroll right">
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         ) : null}
       </div>

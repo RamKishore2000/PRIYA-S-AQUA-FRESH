@@ -77,6 +77,7 @@ function CheckoutContent() {
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [message, setMessage] = useState("");
+  const [couponMessage, setCouponMessage] = useState("");
   const [orderShare, setOrderShare] = useState<CheckoutShareState | null>(null);
   const [orderAdvanceAmount, setOrderAdvanceAmount] = useState(defaultSiteSettings.orderAdvanceAmount);
 
@@ -179,16 +180,17 @@ function CheckoutContent() {
 
   async function applyCoupon() {
     if (!couponCode.trim()) {
-      setMessage("Enter coupon code.");
+      setCouponMessage("Enter coupon code.");
       return;
     }
     try {
-      const validation = await validateCoupon(couponCode, checkoutSubtotal);
+      const validation = await validateCoupon(couponCode, checkoutSubtotal, checkoutItems.map((item) => ({ productId: item.product.id, lineTotal: getProductDisplayPrice(item.product, user?.role).price * item.quantity })));
       setDiscount(validation.discountAmount);
-      setMessage("Coupon applied.");
+      setCouponMessage("Coupon applied.");
+      setMessage("");
     } catch (error) {
       setDiscount(0);
-      setMessage(error instanceof Error ? error.message : "Unable to apply coupon.");
+      setCouponMessage(error instanceof Error ? error.message : "Unable to apply coupon.");
     }
   }
 
@@ -420,9 +422,12 @@ function CheckoutContent() {
               )}
             </div>
 
-            <div className="mt-5 flex gap-2">
-              <input value={couponCode} onChange={(event) => setCouponCode(event.target.value.toUpperCase())} placeholder="Coupon" className="min-w-0 flex-1 rounded-full border border-[#E5D8C7] bg-white px-4 py-3 font-semibold text-[#1D2D2E] outline-none" />
-              <button type="button" onClick={applyCoupon} className="rounded-full border border-[#C59A55] px-4 font-black text-[#9B7137]">Apply</button>
+            <div className="mt-5">
+              <div className="flex gap-2">
+                <input value={couponCode} onChange={(event) => { setCouponCode(event.target.value.toUpperCase()); setCouponMessage(""); }} placeholder="Coupon" className="min-w-0 flex-1 rounded-full border border-[#E5D8C7] bg-white px-4 py-3 font-semibold text-[#1D2D2E] outline-none" />
+                <button type="button" onClick={applyCoupon} className="rounded-full border border-[#C59A55] px-4 font-black text-[#9B7137]">Apply</button>
+              </div>
+              {couponMessage ? <p className="mt-2 rounded-lg bg-[#F5E9D8] px-3 py-2 text-sm font-semibold text-[#8A5F23]">{couponMessage}</p> : null}
             </div>
             <div className="mt-5 grid gap-3">
               <p className="text-sm font-black text-[#3B4343]">Payment Option</p>

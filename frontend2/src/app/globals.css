@@ -4444,7 +4444,9 @@ body.priyas-native-app [data-native-screen="product-detail"] {
 /* Final web mobile header: keep header sticky on normal browser mobile too. */
 @media (max-width: 1023px) {
   body:not(.priyas-native-app) header {
-    position: sticky !important;
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
     top: 0 !important;
     z-index: 1000 !important;
   }
@@ -4804,5 +4806,293 @@ body.priyas-native-app .native-boot-splash p {
   body.priyas-native-app main,
   body.priyas-native-app [data-native-screen] {
     padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* Final web mobile parity: keep APK-sized header, visible bottom tabs, and compact training layout. */
+@media (max-width: 1023px) {
+  body:not(.priyas-native-app) header {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    background: #f8f3ec !important;
+    min-height: 3.95rem !important;
+    padding-top: 0 !important;
+  }
+
+  body:not(.priyas-native-app) header > div:first-child:not(:last-child) {
+    display: none !important;
+  }
+
+  body:not(.priyas-native-app) header > div:nth-child(2) {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    min-height: 3.95rem !important;
+    gap: 0.5rem !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  body:not(.priyas-native-app) header > div:nth-child(2) > a:first-child {
+    width: 7.85rem !important;
+    min-width: 7.85rem !important;
+    max-width: 7.85rem !important;
+    height: 2.65rem !important;
+    min-height: 2.65rem !important;
+    max-height: 2.65rem !important;
+    overflow: hidden !important;
+  }
+
+  body:not(.priyas-native-app) header > div:nth-child(2) > a:first-child img {
+    width: 7.85rem !important;
+    height: auto !important;
+    max-height: 2.55rem !important;
+    object-fit: contain !important;
+  }
+
+  body:not(.priyas-native-app) header > div:nth-child(2) > div:last-child {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 0.38rem !important;
+  }
+
+  body:not(.priyas-native-app) header > div:nth-child(2) > div:last-child > button,
+  body:not(.priyas-native-app) header > div:nth-child(2) > div:last-child > a,
+  body:not(.priyas-native-app) #header-cart-target {
+    width: 2.42rem !important;
+    min-width: 2.42rem !important;
+    max-width: 2.42rem !important;
+    height: 2.42rem !important;
+    min-height: 2.42rem !important;
+    max-height: 2.42rem !important;
+    border-radius: 0.72rem !important;
+  }
+
+  body:not(.priyas-native-app) header > div:nth-child(2) > div:last-child svg {
+    width: 1rem !important;
+    height: 1rem !important;
+  }
+
+  body:not(.priyas-native-app) [data-mobile-search-panel] {
+    top: 3.95rem !important;
+    z-index: 1001 !important;
+  }
+
+  nav[aria-label="Mobile navigation"] {
+    display: block !important;
+    z-index: 1200 !important;
+    min-height: calc(4.35rem + env(safe-area-inset-bottom)) !important;
+    padding: 0.35rem 0.45rem calc(env(safe-area-inset-bottom) + 0.38rem) !important;
+  }
+
+  nav[aria-label="Mobile navigation"] > div {
+    max-width: 28rem !important;
+    gap: 0.35rem !important;
+  }
+
+  nav[aria-label="Mobile navigation"] a,
+  nav[aria-label="Mobile navigation"] button {
+    min-height: 3.25rem !important;
+    gap: 0.18rem !important;
+    border-radius: 1rem !important;
+    font-size: 0.72rem !important;
+    line-height: 1 !important;
+  }
+
+  nav[aria-label="Mobile navigation"] a svg,
+  nav[aria-label="Mobile navigation"] button svg {
+    width: 1.35rem !important;
+    height: 1.35rem !important;
+  }
+
+  nav[aria-label="Mobile navigation"] a span,
+  nav[aria-label="Mobile navigation"] button span {
+    font-size: 0.72rem !important;
+    line-height: 1 !important;
+    font-weight: 900 !important;
+  }
+
+  body:not(.priyas-native-app) main {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  body:not(.priyas-native-app) [data-native-screen="training"] main,
+  body:not(.priyas-native-app) [data-native-screen="training"] {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-hero > .relative {
+    min-height: auto !important;
+    display: block !important;
+    padding: 2rem 1rem 1.25rem !important;
+  }
+
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-hero h1 {
+    margin-top: 0.75rem !important;
+    font-size: 2rem !important;
+    line-height: 1.08 !important;
+  }
+
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-hero p:not(:first-child) {
+    margin-top: 0.8rem !important;
+    font-size: 0.92rem !important;
+    line-height: 1.65 !important;
+  }
+
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-hero .grid.gap-3.sm\:grid-cols-2 {
+    margin-top: 1.35rem !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.55rem !important;
+  }
+
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-hero .grid.gap-3.sm\:grid-cols-2 > div {
+    aspect-ratio: 1 / 1 !important;
+    border-radius: 0.9rem !important;
+  }
+
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-hero .grid.gap-3.sm\:grid-cols-2 > div:first-child {
+    grid-row: auto !important;
+  }
+
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-highlights,
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-learn,
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-videos,
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-form {
+    padding: 1.25rem 1rem !important;
+  }
+
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-form {
+    padding-bottom: calc(5.75rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-highlights .grid,
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-learn .grid,
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-videos .grid,
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-form .grid {
+    gap: 0.75rem !important;
+  }
+
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-highlights .rounded-xl,
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-learn .rounded-xl,
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-videos .rounded-xl,
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-form .rounded-2xl {
+    border-radius: 1rem !important;
+  }
+
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-learn h2,
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-videos h2,
+  body:not(.priyas-native-app) [data-native-screen="training"] .app-training-form h2 {
+    font-size: 1.85rem !important;
+    line-height: 1.1 !important;
+  }
+}
+/* Final web mobile training video carousel. */
+@media (max-width: 767px) {
+  body:not(.priyas-native-app) [data-native-screen="training"] [data-training-video-row] {
+    display: flex !important;
+    grid-template-columns: none !important;
+    gap: 0.75rem !important;
+    margin-left: -1rem !important;
+    margin-right: -1rem !important;
+    overflow-x: auto !important;
+    padding: 0 1rem 0.4rem !important;
+    scroll-snap-type: x mandatory !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  body:not(.priyas-native-app) [data-native-screen="training"] [data-training-video-row]::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  body:not(.priyas-native-app) [data-native-screen="training"] [data-training-video-row] > div {
+    flex: 0 0 min(72vw, 18rem) !important;
+    width: min(72vw, 18rem) !important;
+    scroll-snap-align: start !important;
+  }
+}
+
+/* Keep web-only home carousel controls out of the native app shell. */
+body.priyas-native-app [data-home-carousel-controls] {
+  display: none !important;
+}
+
+/* Final web product-page mobile nav stability and coupon mobile card layout. */
+@media (max-width: 1023px) {
+  body:not(.priyas-native-app) [data-mobile-bottom-tabs] {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: translateZ(0) !important;
+    pointer-events: auto !important;
+    z-index: 2140 !important;
+  }
+
+  body:not(.priyas-native-app) [data-mobile-bottom-tabs] > div {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Absolute final bottom tab tablet spacing fix. */
+@media (max-width: 1023px) {
+  body:not(.priyas-native-app) nav[data-mobile-bottom-tabs] > div,
+  body.priyas-native-app nav[data-mobile-bottom-tabs] > div {
+    display: flex !important;
+    width: 100% !important;
+    max-width: none !important;
+    align-items: flex-end !important;
+    justify-content: space-between !important;
+    gap: 0 !important;
+  }
+
+  nav[data-mobile-bottom-tabs] a,
+  nav[data-mobile-bottom-tabs] button {
+    width: 3.65rem !important;
+    min-width: 3.65rem !important;
+    max-width: 3.65rem !important;
+  }
+}
+
+/* Final mobile layering: tabs stay visible normally, drawers cover them only when opened. */
+@media (max-width: 1023px) {
+  nav[data-mobile-bottom-tabs] {
+    z-index: 1200 !important;
+  }
+
+  [data-mobile-filter-overlay] {
+    z-index: 2400 !important;
+  }
+
+  [data-mobile-filter-drawer] {
+    z-index: 2401 !important;
+  }
+
+  [aria-label="Shopping cart"] {
+    z-index: 2501 !important;
+  }
+
+  [aria-hidden] > button[aria-label="Close cart"] {
+    z-index: 2500 !important;
+  }
+}
+
+/* Final cart drawer overlay fix: cart must cover mobile bottom tabs. */
+@media (max-width: 1023px) {
+  [data-cart-drawer-overlay] {
+    z-index: 2600 !important;
+  }
+
+  [data-cart-drawer-backdrop] {
+    z-index: 2600 !important;
+  }
+
+  [data-cart-drawer-panel] {
+    z-index: 2601 !important;
   }
 }

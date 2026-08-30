@@ -9,7 +9,7 @@ import { RowActionsDropdown } from "@/components/admin/row-actions-dropdown";
 import { StatsCard } from "@/components/admin/stats-card";
 import { StatusBadge } from "@/components/admin/status-badge";
 import { adminApi } from "@/services/api";
-import type { Coupon, CouponComputedStatus } from "@/types/admin";
+import type { Coupon, CouponComputedStatus, Product } from "@/types/admin";
 import { formatCurrency } from "@/utils/format-currency";
 
 function getCouponDate(coupon: Coupon, type: "start" | "end") {
@@ -49,6 +49,7 @@ function discountText(coupon: Coupon) {
 
 export default function CouponsPage() {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [message, setMessage] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState<"add" | "edit">("add");
@@ -64,12 +65,14 @@ export default function CouponsPage() {
   );
 
   useEffect(() => {
-    adminApi.listCoupons()
-      .then(setCoupons)
+    Promise.all([adminApi.listCoupons(), adminApi.listProducts()])
+      .then(([couponItems, productItems]) => {
+        setCoupons(couponItems);
+        setProducts(productItems);
+      })
       .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to load coupons."))
       .finally(() => setLoading(false));
   }, []);
-
   function openAddCoupon() {
     setFormMode("add");
     setSelectedCoupon(null);
@@ -130,9 +133,9 @@ export default function CouponsPage() {
 
       <section className="mt-5 rounded-lg border border-slate-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[980px] text-left text-sm">
+          <table className="w-full min-w-[1120px] text-left text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-              <tr>{["Coupon Code", "Discount", "Minimum Order", "Validity", "Usage Limit", "Status", "Created Date", "Actions"].map((header) => <th key={header} className="px-5 py-3 font-bold">{header}</th>)}</tr>
+              <tr>{["Coupon Code", "Discount", "Minimum Order", "Applies To", "Validity", "Usage Limit", "Status", "Created Date", "Actions"].map((header) => <th key={header} className="px-5 py-3 font-bold">{header}</th>)}</tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {coupons.map((coupon) => {
@@ -149,6 +152,10 @@ export default function CouponsPage() {
                       {coupon.maximumDiscountAmount ? <p className="text-xs text-slate-400">Max {formatCurrency(coupon.maximumDiscountAmount)}</p> : null}
                     </td>
                     <td className="px-5 py-4 font-semibold text-slate-700">{formatCurrency(coupon.minimumOrderAmount)}</td>
+                    <td className="px-5 py-4 text-slate-600">
+                      <p className="font-semibold">{coupon.applicableProductIds.length ? "Selected Products" : "All Products"}</p>
+                      {coupon.applicableProductIds.length ? <p className="text-xs text-slate-400">{coupon.applicableProductIds.length} product{coupon.applicableProductIds.length === 1 ? "" : "s"}</p> : null}
+                    </td>
                     <td className="px-5 py-4 text-slate-500">
                       <p>{validity.start}</p>
                       <p className="text-xs">to {validity.end}</p>
@@ -191,6 +198,7 @@ export default function CouponsPage() {
         mode={formMode}
         open={formOpen}
         initialCoupon={selectedCoupon}
+        products={products}
         onClose={() => setFormOpen(false)}
         onSave={saveCoupon}
       />

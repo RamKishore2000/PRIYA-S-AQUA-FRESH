@@ -124,6 +124,8 @@ type ApiCoupon = {
   usageLimit: number;
   sortOrder: number;
   status: "ACTIVE" | "INACTIVE";
+  applicableProductIds?: number[];
+  applicableProducts?: { id: number; name: string; sku?: string }[];
   createdAt: string;
 };
 
@@ -767,7 +769,7 @@ function mapDealer(dealer: ApiDealer): Dealer {
     mobile: dealer.mobile,
     email: dealer.email,
     businessName: dealer.businessName,
-    gstNumber: dealer.gstNumber,
+    gstNumber: dealer.gstNumber || "",
     address: dealer.address,
     city: dealer.city,
     state: dealer.state,
@@ -812,6 +814,8 @@ function mapCoupon(coupon: ApiCoupon): Coupon {
     usageLimit: coupon.usageLimit,
     sortOrder: Number(coupon.sortOrder || 0),
     manualStatus: coupon.status === "ACTIVE" ? "Active" : "Inactive",
+    applicableProductIds: (coupon.applicableProductIds || []).map(String),
+    applicableProducts: (coupon.applicableProducts || []).map((product) => ({ id: String(product.id), name: product.name, sku: product.sku })),
     createdDate: formatDate(coupon.createdAt),
   };
 }
@@ -831,6 +835,7 @@ function toCouponPayload(coupon: Coupon) {
     usageLimit: coupon.usageLimit,
     sortOrder: coupon.sortOrder,
     status: coupon.manualStatus === "Active" ? "ACTIVE" : "INACTIVE",
+    applicableProductIds: (coupon.applicableProductIds || []).map(Number).filter(Boolean),
   };
 }
 
@@ -984,4 +989,3 @@ function mapReview(review: ApiReview): Review {
     createdDate: formatDate(review.createdAt),
   };
 }
-

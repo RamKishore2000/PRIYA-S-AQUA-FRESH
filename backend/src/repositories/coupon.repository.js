@@ -17,14 +17,46 @@ function mapCoupon(row) {
     usageLimit: row.usage_limit,
     sortOrder: Number(row.sort_order || 0),
     status: row.status,
+    applicableProductIds: [],
+    applicableProducts: [],
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
 }
 
+async function attachCouponProducts(coupons) {
+  const items = Array.isArray(coupons) ? coupons : coupons ? [coupons] : [];
+  if (!items.length) return coupons;
+
+  const ids = items.map((coupon) => coupon.id);
+  const placeholders = ids.map(() => "?").join(", ");
+  const [rows] = await pool.execute(
+    `SELECT cp.coupon_id, p.id AS product_id, p.name, p.sku
+     FROM coupon_products cp
+     INNER JOIN products p ON p.id = cp.product_id
+     WHERE cp.coupon_id IN (${placeholders})
+     ORDER BY p.name ASC`,
+    ids,
+  );
+
+  const byCoupon = new Map();
+  for (const row of rows) {
+    if (!byCoupon.has(row.coupon_id)) byCoupon.set(row.coupon_id, []);
+    byCoupon.get(row.coupon_id).push({ id: row.product_id, name: row.name, sku: row.sku });
+  }
+
+  for (const coupon of items) {
+    const products = byCoupon.get(coupon.id) || [];
+    coupon.applicableProducts = products;
+    coupon.applicableProductIds = products.map((product) => product.id);
+  }
+
+  return coupons;
+}
+
 async function findAll() {
   const [rows] = await pool.execute("SELECT * FROM coupons ORDER BY sort_order ASC, created_at DESC");
-  return rows.map(mapCoupon);
+  return attachCouponProducts(rows.map(mapCoupon));
 }
 
 async function findActivePublic() {
@@ -38,68 +70,102 @@ async function findActivePublic() {
      HAVING used_count < c.usage_limit
      ORDER BY c.sort_order ASC, c.created_at DESC`,
   );
-  return rows.map(mapCoupon);
+  return attachCouponProducts(rows.map(mapCoupon));
 }
 
 async function findById(id) {
   const [rows] = await pool.execute("SELECT * FROM coupons WHERE id = ? LIMIT 1", [id]);
-  return mapCoupon(rows[0]);
+  return attachCouponProducts(mapCoupon(rows[0]));
 }
 
 async function findByCode(code) {
   const [rows] = await pool.execute("SELECT * FROM coupons WHERE code = ? LIMIT 1", [code]);
-  return mapCoupon(rows[0]);
+  return attachCouponProducts(mapCoupon(rows[0]));
+}
+
+async function replaceCouponProducts(connection, couponId, productIds = []) {
+  await connection.execute("DELETE FROM coupon_products WHERE coupon_id = ?", [couponId]);
+  const uniqueIds = [...new Set((productIds || []).map(Number).filter((id) => Number.isInteger(id) && id > 0))];
+  for (const productId of uniqueIds) {
+    await connection.execute(
+      `INSERT IGNORE INTO coupon_products (coupon_id, product_id)
+       VALUES (?, ?)`,
+      [couponId, productId],
+    );
+  }
 }
 
 async function createCoupon(payload) {
-  const [result] = await pool.execute(
-    `INSERT INTO coupons
-     (code, title, subtitle, image_url, discount_type, discount_value, minimum_order_amount, maximum_discount_amount, start_at, end_at, usage_limit, sort_order, status)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      payload.code,
-      payload.title,
-      payload.subtitle,
-      payload.imageUrl,
-      payload.discountType,
-      payload.discountValue,
-      payload.minimumOrderAmount,
-      payload.maximumDiscountAmount,
-      payload.startAt,
-      payload.endAt,
-      payload.usageLimit,
-      payload.sortOrder,
-      payload.status,
-    ],
-  );
-  return findById(result.insertId);
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+    const [result] = await connection.execute(
+      `INSERT INTO coupons
+       (code, title, subtitle, image_url, discount_type, discount_value, minimum_order_amount, maximum_discount_amount, start_at, end_at, usage_limit, sort_order, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        payload.code,
+        payload.title,
+        payload.subtitle,
+        payload.imageUrl,
+        payload.discountType,
+        payload.discountValue,
+        payload.minimumOrderAmount,
+        payload.maximumDiscountAmount,
+        payload.startAt,
+        payload.endAt,
+        payload.usageLimit,
+        payload.sortOrder,
+        payload.status,
+      ],
+    );
+    await replaceCouponProducts(connection, result.insertId, payload.applicableProductIds);
+    await connection.commit();
+    return findById(result.insertId);
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
 }
 
 async function updateCoupon(id, payload) {
-  await pool.execute(
-    `UPDATE coupons
-     SET code = ?, title = ?, subtitle = ?, image_url = ?, discount_type = ?, discount_value = ?,
-         minimum_order_amount = ?, maximum_discount_amount = ?, start_at = ?, end_at = ?,
-         usage_limit = ?, sort_order = ?, status = ?
-     WHERE id = ?`,
-    [
-      payload.code,
-      payload.title,
-      payload.subtitle,
-      payload.imageUrl,
-      payload.discountType,
-      payload.discountValue,
-      payload.minimumOrderAmount,
-      payload.maximumDiscountAmount,
-      payload.startAt,
-      payload.endAt,
-      payload.usageLimit,
-      payload.sortOrder,
-      payload.status,
-      id,
-    ],
-  );
-  return findById(id);
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+    await connection.execute(
+      `UPDATE coupons
+       SET code = ?, title = ?, subtitle = ?, image_url = ?, discount_type = ?, discount_value = ?,
+           minimum_order_amount = ?, maximum_discount_amount = ?, start_at = ?, end_at = ?,
+           usage_limit = ?, sort_order = ?, status = ?
+       WHERE id = ?`,
+      [
+        payload.code,
+        payload.title,
+        payload.subtitle,
+        payload.imageUrl,
+        payload.discountType,
+        payload.discountValue,
+        payload.minimumOrderAmount,
+        payload.maximumDiscountAmount,
+        payload.startAt,
+        payload.endAt,
+        payload.usageLimit,
+        payload.sortOrder,
+        payload.status,
+        id,
+      ],
+    );
+    await replaceCouponProducts(connection, id, payload.applicableProductIds);
+    await connection.commit();
+    return findById(id);
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
 }
 
 async function deleteCoupon(id) {

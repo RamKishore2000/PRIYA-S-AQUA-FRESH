@@ -21,14 +21,14 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
   }, [onClose, open]);
 
   return (
-    <div className={`fixed inset-0 z-[1500] ${open ? "pointer-events-auto" : "pointer-events-none"}`} aria-hidden={!open}>
+    <div data-cart-drawer-overlay className={`fixed inset-0 z-[1500] ${open ? "pointer-events-auto" : "pointer-events-none"}`} aria-hidden={!open}>
       <button
         type="button"
         className={`absolute inset-0 bg-black/45 backdrop-blur-sm transition duration-300 ${open ? "opacity-100" : "opacity-0"}`}
         aria-label="Close cart"
         onClick={onClose}
       />
-      <aside className={`absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-[#FFF9F1] text-[#1D2D2E] shadow-[0_30px_90px_rgba(0,0,0,0.28)] transition duration-300 ${open ? "translate-x-0" : "translate-x-full"}`} aria-label="Shopping cart">
+      <aside data-cart-drawer-panel className={`absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-[#FFF9F1] text-[#1D2D2E] shadow-[0_30px_90px_rgba(0,0,0,0.28)] transition duration-300 ${open ? "translate-x-0" : "translate-x-full"}`} aria-label="Shopping cart">
         <div className="flex items-center justify-between border-b border-[#E5D8C7] px-5 py-4">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.22em] text-[#B68A45]">Shopping Cart</p>

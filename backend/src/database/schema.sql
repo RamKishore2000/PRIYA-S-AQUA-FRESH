@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS dealers (
   user_id BIGINT UNSIGNED NOT NULL,
   dealer_code VARCHAR(40) NOT NULL,
   business_name VARCHAR(160) NOT NULL,
-  gst_number VARCHAR(30) NOT NULL,
+  gst_number VARCHAR(30) NULL,
   address TEXT NOT NULL,
   city VARCHAR(80) NOT NULL,
   state VARCHAR(80) NOT NULL,
@@ -251,6 +251,16 @@ CREATE TABLE IF NOT EXISTS coupons (
   )
 );
 
+
+CREATE TABLE IF NOT EXISTS coupon_products (
+  coupon_id BIGINT UNSIGNED NOT NULL,
+  product_id BIGINT UNSIGNED NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (coupon_id, product_id),
+  KEY idx_coupon_products_product_id (product_id),
+  CONSTRAINT fk_coupon_products_coupon_id FOREIGN KEY (coupon_id) REFERENCES coupons(id) ON DELETE CASCADE,
+  CONSTRAINT fk_coupon_products_product_id FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
 CREATE TABLE IF NOT EXISTS orders (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   order_number VARCHAR(40) NOT NULL,
@@ -439,5 +449,3 @@ CREATE TABLE IF NOT EXISTS settings (
   PRIMARY KEY (id),
   UNIQUE KEY uq_settings_key (setting_key)
 );
-
-

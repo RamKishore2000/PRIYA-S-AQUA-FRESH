@@ -9,7 +9,7 @@ async function getDashboard(_req, res) {
       (SELECT COUNT(*) FROM orders) AS totalOrders,
       (SELECT COUNT(*) FROM service_requests) AS totalServices,
       (SELECT COUNT(*) FROM products WHERE status = 'ACTIVE') AS activeProducts,
-      (SELECT COALESCE(SUM(total_amount), 0) FROM orders WHERE payment_status = 'PAID') AS totalRevenue
+      (SELECT COALESCE(SUM(p.amount), 0) FROM payments p INNER JOIN orders o ON o.id = p.order_id WHERE p.status = 'PAID' AND o.order_status <> 'CANCELLED') AS totalRevenue
   `);
 
   return sendSuccess(res, 200, "Dashboard fetched successfully.", {

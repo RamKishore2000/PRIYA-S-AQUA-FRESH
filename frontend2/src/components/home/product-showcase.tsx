@@ -1,5 +1,8 @@
-import type { CSSProperties } from "react";
+"use client";
+
+import { useRef, type CSSProperties } from "react";
 import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ProductCard } from "@/components/shop/product-card";
 import type { Product } from "@/types/product";
 
@@ -18,6 +21,12 @@ export function ProductShowcase({
   viewAllHref = "/products",
   tone = "light",
 }: ProductShowcaseProps) {
+  const rowRef = useRef<HTMLDivElement>(null);
+
+  function scrollProducts(direction: "left" | "right") {
+    rowRef.current?.scrollBy({ left: direction === "left" ? -320 : 320, behavior: "smooth" });
+  }
+
   if (!products.length) return null;
 
   return (
@@ -33,24 +42,31 @@ export function ProductShowcase({
           </Link>
         </div>
 
-        <div data-native-home-product-row className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-3 [scrollbar-width:none] md:-mx-6 md:px-6 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0">
+        <div ref={rowRef} data-native-home-product-row className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-3 [scrollbar-width:none] md:-mx-6 md:px-6 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0">
           {products.map((product) => (
             <div key={product.id} data-reveal-item data-native-home-product-card className="w-[var(--home-product-card-width)] max-w-none shrink-0 snap-start sm:max-w-[18rem] md:w-[31vw] lg:w-auto lg:max-w-none" style={{ "--home-product-card-width": "calc((100vw - 3.1rem) / 2)" } as CSSProperties}>
               <ProductCard product={product} />
             </div>
           ))}
         </div>
-        {products.length > 2 ? (
-          <div data-home-scroll-cue className="mt-1 flex justify-center gap-1.5" aria-hidden="true">
-            <span className="h-1.5 w-5 rounded-full bg-[#0A3A38]" />
-            <span className="h-1.5 w-1.5 rounded-full bg-[#CDBB9C]" />
-            <span className="h-1.5 w-1.5 rounded-full bg-[#CDBB9C]" />
+        {products.length > 1 ? (
+          <div className="mt-2 flex items-center justify-between gap-3">
+            <div data-home-scroll-cue className="flex justify-center gap-1.5" aria-hidden="true">
+              <span className="h-1.5 w-5 rounded-full bg-[#0A3A38]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#CDBB9C]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#CDBB9C]" />
+            </div>
+            <div data-home-carousel-controls className="flex items-center gap-2" aria-label="Product carousel controls">
+              <button type="button" onClick={() => scrollProducts("left")} className="grid h-9 w-9 place-items-center rounded-full border border-[#D8C8B4] bg-[#FFF9F1] text-[#0A3A38] shadow-[0_8px_18px_rgba(84,61,35,0.1)] transition hover:border-[#0A3A38] hover:bg-white" aria-label="Scroll products left" title="Scroll left">
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button type="button" onClick={() => scrollProducts("right")} className="grid h-9 w-9 place-items-center rounded-full bg-[#0A3A38] text-white shadow-[0_8px_18px_rgba(10,58,56,0.2)] transition hover:bg-[#124945]" aria-label="Scroll products right" title="Scroll right">
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         ) : null}
       </div>
     </section>
   );
 }
-
-
-

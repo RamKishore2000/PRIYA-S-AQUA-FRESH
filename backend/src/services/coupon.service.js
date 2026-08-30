@@ -54,13 +54,35 @@ async function validateCoupon(payload) {
     throw new ApiError(422, "Subtotal amount is required.", { subtotalAmount: "Subtotal amount is required." });
   }
   const coupon = await couponRepository.findByCode(code);
-  const discount = await calculateCouponDiscount(coupon, subtotal);
+  const eligibleSubtotal = calculateEligibleSubtotal(coupon, payload.lineItems, subtotal);
+  const discount = await calculateCouponDiscount(coupon, eligibleSubtotal);
   return {
     coupon,
     discountAmount: discount,
+    eligibleSubtotalAmount: eligibleSubtotal,
     subtotalAmount: subtotal,
     totalAmount: Math.max(0, subtotal - discount),
   };
+}
+
+function calculateEligibleSubtotal(coupon, lineItems, subtotal) {
+  if (!coupon) return subtotal;
+  const productIds = (coupon.applicableProductIds || []).map(Number).filter(Boolean);
+  if (!productIds.length) return subtotal;
+
+  const items = Array.isArray(lineItems) ? lineItems : [];
+  const eligibleIds = new Set(productIds);
+  const eligibleSubtotal = items.reduce((sum, item) => {
+    const productId = Number(item.productId);
+    const lineTotal = Number(item.lineTotal);
+    if (!eligibleIds.has(productId) || !Number.isFinite(lineTotal) || lineTotal <= 0) return sum;
+    return sum + lineTotal;
+  }, 0);
+
+  if (eligibleSubtotal <= 0) {
+    throw new ApiError(422, "This coupon is not valid for this product.", { code: "This coupon is not valid for this product." });
+  }
+  return eligibleSubtotal;
 }
 
 async function calculateCouponDiscount(coupon, subtotal) {
@@ -80,8 +102,8 @@ async function calculateCouponDiscount(coupon, subtotal) {
     throw new ApiError(422, "Coupon has expired.", { code: "Coupon has expired." });
   }
   if (subtotal < coupon.minimumOrderAmount) {
-    throw new ApiError(422, `Minimum order amount is ${coupon.minimumOrderAmount}.`, {
-      code: `Minimum order amount is ${coupon.minimumOrderAmount}.`,
+    throw new ApiError(422, `Minimum eligible product amount is ${coupon.minimumOrderAmount}.`, {
+      code: `Minimum eligible product amount is ${coupon.minimumOrderAmount}.`,
     });
   }
   const usageCount = await couponRepository.countUsages(coupon.id);
@@ -118,7 +140,13 @@ function normalizeCouponPayload(payload) {
     usageLimit: Number(payload.usageLimit),
     sortOrder: payload.sortOrder ? Number(payload.sortOrder) : 0,
     status: payload.status || "ACTIVE",
+    applicableProductIds: normalizeProductIds(payload.applicableProductIds),
   };
+}
+
+function normalizeProductIds(value) {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.map(Number).filter((id) => Number.isInteger(id) && id > 0))];
 }
 
 function cleanOptionalText(value) {
