@@ -175,7 +175,7 @@ export function Hero({ banners, categories }: HeroProps) {
   }
 
   return (
-    <section ref={heroRef} className="relative isolate -mt-px overflow-hidden bg-[linear-gradient(135deg,#043C5C_0%,#057FC0_46%,#12A8E6_100%)] px-4 pb-0 pt-0 text-[#1D2D2E] md:px-6 lg:px-8 lg:pb-14">
+    <section ref={heroRef} className="relative isolate -mt-px overflow-hidden bg-[linear-gradient(135deg,#043C5C_0%,#057FC0_46%,#12A8E6_100%)] px-4 pb-0 pt-0 text-[#102033] md:px-6 lg:px-8 lg:pb-14">
       <div
         className="absolute inset-0"
         style={{
@@ -234,12 +234,12 @@ export function Hero({ banners, categories }: HeroProps) {
           </div>
         </div>
 
-        <div className="relative left-1/2 mt-3 flex w-screen -translate-x-1/2 items-center justify-center gap-2 border-t border-[#E5D8C7] bg-[#FFF9F1] px-3 py-3 shadow-[0_-1px_0_rgba(255,255,255,0.45)]">
+        <div className="relative left-1/2 mt-3 flex w-screen -translate-x-1/2 items-center justify-center gap-2 border-t border-[#D8EAF8] bg-[#FFFFFF] px-3 py-3 shadow-[0_-1px_0_rgba(255,255,255,0.45)]">
           {items.slice(0, Math.min(items.length, 6)).map((dotItem, dotIndex) => (
             <button
               key={`mobile-dot-${dotItem.id}`}
               onClick={() => setActiveIndex(dotIndex)}
-              className={`h-2 rounded-full transition-all duration-300 ${dotIndex === activeIndex ? "w-7 bg-[#0A3A38]" : "w-2 bg-[#D8C7AE] hover:bg-[#B68A45]"}`}
+              className={`h-2 rounded-full transition-all duration-300 ${dotIndex === activeIndex ? "w-7 bg-[#0057C8]" : "w-2 bg-[#D8C7AE] hover:bg-[#0057C8]"}`}
               aria-label={`Show ${dotItem.name}`}
             />
           ))}
@@ -266,7 +266,7 @@ export function Hero({ banners, categories }: HeroProps) {
 
         <div className="relative z-30 max-w-xl py-1 md:py-3 lg:order-1 lg:-translate-y-1 lg:py-10">
           <div key={active.id}>
-            <p data-ref-copy className="inline-flex border-l-2 border-[#12A8E6] bg-white/70 px-3 py-1.5 text-[0.68rem] font-extrabold uppercase tracking-[0.22em] text-[#0589C8] shadow-[0_8px_24px_rgba(84,61,35,0.06)] backdrop-blur lg:px-4 lg:py-2 lg:text-xs">
+            <p data-ref-copy className="inline-flex border-l-2 border-[#12A8E6] bg-white/70 px-3 py-1.5 text-[0.68rem] font-extrabold uppercase tracking-[0.22em] text-[#0589C8] shadow-[0_8px_24px_rgba(0,87,200,0.07)] backdrop-blur lg:px-4 lg:py-2 lg:text-xs">
               {copy.kicker}
             </p>
             <h1 data-ref-copy className="mt-3 font-serif text-3xl font-semibold leading-tight text-white md:text-4xl lg:mt-5 lg:text-[4rem]">
@@ -280,7 +280,7 @@ export function Hero({ banners, categories }: HeroProps) {
           <div data-ref-copy className="mt-5 grid grid-cols-2 gap-2 sm:max-w-sm lg:mt-7 lg:flex lg:max-w-none lg:flex-row lg:gap-3">
             <Link
               href={active.buttonLink || `/products?category=${active.slug}`}
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-[linear-gradient(90deg,#0477B7,#12A8E6)] px-3 py-3 text-xs font-extrabold text-white shadow-[0_8px_22px_rgba(10,36,38,0.18)] transition hover:bg-[#12383A] lg:gap-3 lg:px-7 lg:py-4 lg:text-sm"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-[linear-gradient(90deg,#0477B7,#12A8E6)] px-3 py-3 text-xs font-extrabold text-white shadow-[0_8px_22px_rgba(0,87,200,0.16)] transition hover:bg-[#063B7A] lg:gap-3 lg:px-7 lg:py-4 lg:text-sm"
             >
               Explore Range
               <ArrowIcon className="h-4 w-4 lg:h-5 lg:w-5" />

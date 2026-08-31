@@ -45,8 +45,8 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={submit} className="rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-5 shadow-[0_10px_30px_rgba(84,61,35,0.06)] md:p-6">
-      <h2 className="font-serif text-3xl font-semibold text-[#1D2D2E]">Send Message</h2>
+    <form onSubmit={submit} className="rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-5 shadow-[0_10px_30px_rgba(0,87,200,0.07)] md:p-6">
+      <h2 className="font-serif text-3xl font-semibold text-[#102033]">Send Message</h2>
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         <Field label="Full Name" error={errors.name}><TextInput name="name" placeholder="Full Name" /></Field>
         <Field label="Phone Number" error={errors.phone}><TextInput name="phone" placeholder="Phone Number" /></Field>
@@ -56,14 +56,14 @@ export function ContactForm() {
           <textarea
             name="message"
             placeholder="Tell us how we can help you..."
-            className="min-h-[150px] w-full resize-y rounded-xl border border-[#E5D8C7] bg-white px-4 py-3 text-sm font-semibold text-[#1D2D2E] outline-none placeholder:text-[#7D7B75] focus:border-[#0A3A38]"
+            className="min-h-[150px] w-full resize-y rounded-xl border border-[#D8EAF8] bg-white px-4 py-3 text-sm font-semibold text-[#102033] outline-none placeholder:text-[#74879A] focus:border-[#0057C8]"
           />
         </Field>
       </div>
-      <button type="submit" disabled={submitting} className="mt-5 rounded-full bg-[#0A3A38] px-6 py-3 text-sm font-black text-white transition hover:bg-[#12383A] disabled:cursor-not-allowed disabled:opacity-65">
+      <button type="submit" disabled={submitting} className="mt-5 rounded-full bg-[#0057C8] px-6 py-3 text-sm font-black text-white transition hover:bg-[#063B7A] disabled:cursor-not-allowed disabled:opacity-65">
         {submitting ? "Sending..." : "Send Message"}
       </button>
-      {message ? <p className="mt-4 rounded-lg bg-[#F5E9D8] px-3 py-2 text-sm font-bold text-[#8A5F23]">{message}</p> : null}
+      {message ? <p className="mt-4 rounded-lg bg-[#EAF6FF] px-3 py-2 text-sm font-bold text-[#075985]">{message}</p> : null}
     </form>
   );
 }
@@ -72,7 +72,7 @@ function TextInput({ className = "", ...props }: React.InputHTMLAttributes<HTMLI
   return (
     <input
       {...props}
-      className={`h-11 rounded-xl border border-[#E5D8C7] bg-white px-4 text-sm font-semibold text-[#1D2D2E] outline-none placeholder:text-[#7D7B75] focus:border-[#0A3A38] ${className}`}
+      className={`h-11 rounded-xl border border-[#D8EAF8] bg-white px-4 text-sm font-semibold text-[#102033] outline-none placeholder:text-[#74879A] focus:border-[#0057C8] ${className}`}
     />
   );
 }
@@ -80,7 +80,7 @@ function TextInput({ className = "", ...props }: React.InputHTMLAttributes<HTMLI
 function Field({ children, error, label, className }: { children: ReactNode; error?: string; label: string; className?: string }) {
   return (
     <label className={`grid gap-1.5 ${className ?? ""}`}>
-      <span className="text-sm font-black text-[#526161]">{label}</span>
+      <span className="text-sm font-black text-[#40576C]">{label}</span>
       {children}
       {error ? <span className="text-xs font-bold text-red-600">{error}</span> : null}
     </label>

@@ -114,7 +114,7 @@ const emptyForm = {
   message: "",
 };
 
-const fieldClass = "h-12 rounded-xl border border-[#D9C5AB] bg-white px-4 text-sm font-bold text-[#1D2D2E] outline-none transition placeholder:text-[#7D7B75] focus:border-[#0A3A38] focus:ring-2 focus:ring-[#0A3A38]/10";
+const fieldClass = "h-12 rounded-xl border border-[#C7E4F8] bg-white px-4 text-sm font-bold text-[#102033] outline-none transition placeholder:text-[#74879A] focus:border-[#0057C8] focus:ring-2 focus:ring-[#0057C8]/10";
 
 export default function RoTrainingInstitutePage() {
   const [settings, setSettings] = useState<SiteSettings>(defaultSiteSettings);
@@ -179,7 +179,7 @@ export default function RoTrainingInstitutePage() {
         name: "Priya's Aqua Fresh",
         description: "RO Training Institute",
         prefill: { name: form.fullName, contact: form.mobile },
-        theme: { color: "#0A3A38" },
+        theme: { color: "#0057C8" },
         modal: {
           ondismiss: async () => {
             try {
@@ -212,25 +212,25 @@ export default function RoTrainingInstitutePage() {
   }
 
   return (
-    <div data-native-screen="training" className="min-h-screen bg-[#F8F3EC] text-[#1D2D2E]">
+    <div data-native-screen="training" className="min-h-screen bg-[#F3FAFF] text-[#102033]">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
       <Header />
       <main className="pb-24 lg:pb-0">
-        <section className="relative min-h-[680px] overflow-hidden bg-[#062F33] text-white sm:min-h-[calc(100vh-4rem)]">
+        <section className="relative min-h-[680px] overflow-hidden bg-[#063B7A] text-white sm:min-h-[calc(100vh-4rem)]">
           <Image src={trainingImages[0]} alt="RO technician practical training" fill priority sizes="100vw" className="object-cover object-[58%_center] md:object-center" />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,38,42,0.12)_0%,rgba(4,38,42,0.50)_38%,rgba(4,38,42,0.98)_100%)] md:bg-[linear-gradient(90deg,rgba(4,38,42,0.98)_0%,rgba(4,38,42,0.84)_43%,rgba(4,38,42,0.18)_100%)]" />
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#062F33] to-transparent" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,59,122,0.18)_0%,rgba(6,59,122,0.58)_38%,rgba(6,59,122,0.94)_100%)] md:bg-[linear-gradient(90deg,rgba(6,59,122,0.94)_0%,rgba(6,59,122,0.82)_43%,rgba(6,59,122,0.18)_100%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#063B7A] to-transparent" />
           <div className="relative mx-auto flex min-h-[680px] max-w-7xl items-end px-4 pb-10 pt-28 sm:min-h-[calc(100vh-4rem)] md:items-center md:px-8 md:py-20">
             <div className="max-w-4xl">
-              <p className="text-[11px] font-black uppercase tracking-[0.26em] text-[#E7C376] md:text-xs md:tracking-[0.34em]">RO Training Institute</p>
+              <p className="text-[11px] font-black uppercase tracking-[0.26em] text-[#7ED957] md:text-xs md:tracking-[0.34em]">RO Training Institute</p>
               <h1 className="mt-4 max-w-4xl font-serif text-[2.35rem] font-semibold leading-[1.08] md:mt-5 md:text-6xl md:leading-tight lg:text-7xl">
-                Become a Professional <span className="text-[#E7C376]">RO Technician</span> with Practical Training.
+                Become a Professional <span className="text-[#7ED957]">RO Technician</span> with Practical Training.
               </h1>
-              <p className="mt-5 max-w-2xl text-sm font-semibold leading-7 text-[#F7EFE5] md:mt-6 md:text-lg md:leading-8">
+              <p className="mt-5 max-w-2xl text-sm font-semibold leading-7 text-[#EAF6FF] md:mt-6 md:text-lg md:leading-8">
                 Hands-on RO Technician Training covering RO installation, service, repair, troubleshooting, filter replacement, and maintenance. Learn with real RO systems and gain practical skills to build your career.
               </p>
               <div className="mt-7 grid grid-cols-2 gap-3 sm:flex sm:flex-row md:mt-8">
-                <a href="#training-form" className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#E7C376] px-4 text-xs font-black text-[#062F33] transition hover:bg-white md:h-14 md:px-7 md:text-sm">
+                <a href="#training-form" className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#7ED957] px-4 text-xs font-black text-[#063B7A] transition hover:bg-white md:h-14 md:px-7 md:text-sm">
                   <GraduationCap className="h-5 w-5" /> Join Training
                 </a>
                 <a href={`tel:${supportCall}`} className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-4 text-xs font-black text-white backdrop-blur transition hover:bg-white/15 md:h-14 md:px-7 md:text-sm">
@@ -240,7 +240,7 @@ export default function RoTrainingInstitutePage() {
               <div className="mt-7 grid grid-cols-2 gap-2 sm:grid-cols-2 md:mt-10 md:gap-4 lg:grid-cols-4">
                 {trainingHighlights.map((item) => (
                   <div key={item} className="flex min-h-14 items-center gap-2 rounded-xl border border-white/12 bg-white/10 px-3 py-2 text-[11px] font-black leading-4 text-white backdrop-blur md:gap-3 md:rounded-none md:border-l md:border-r-0 md:border-y-0 md:bg-transparent md:pl-4 md:text-sm md:leading-5 md:backdrop-blur-0">
-                    <Wrench className="h-5 w-5 shrink-0 text-[#E7C376] md:h-7 md:w-7" />
+                    <Wrench className="h-5 w-5 shrink-0 text-[#7ED957] md:h-7 md:w-7" />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -249,7 +249,7 @@ export default function RoTrainingInstitutePage() {
           </div>
         </section>
 
-        <section data-training-five-image-banner className="bg-[#F8F3EC] px-4 py-8 md:px-8 md:py-14">
+        <section data-training-five-image-banner className="bg-[#F3FAFF] px-4 py-8 md:px-8 md:py-14">
           <div className="mx-auto max-w-7xl">
             <div className="grid gap-3 lg:h-[30rem] lg:grid-cols-[1.15fr_0.85fr] lg:gap-4">
               <figure className="relative aspect-[16/10] overflow-hidden rounded-xl border border-[#DCE9F5] bg-[#EAF6FB] shadow-[0_18px_45px_rgba(36,73,117,0.12)] lg:aspect-auto lg:h-full">
@@ -266,19 +266,19 @@ export default function RoTrainingInstitutePage() {
           </div>
         </section>
 
-        <section className="bg-[#F8F3EC] px-4 py-10 md:px-8 md:py-20">
+        <section className="bg-[#F3FAFF] px-4 py-10 md:px-8 md:py-20">
           <div className="mx-auto max-w-7xl">
             <div className="max-w-4xl">
-              <p className="text-xs font-black uppercase tracking-[0.24em] text-[#B68A45]">What You Learn</p>
+              <p className="text-xs font-black uppercase tracking-[0.24em] text-[#0057C8]">What You Learn</p>
               <h2 className="mt-3 font-serif text-2xl font-semibold leading-tight md:text-5xl">Complete RO Technician Training with Hands-On Practical Experience</h2>
-              <p className="mt-4 max-w-2xl text-sm font-semibold leading-7 text-[#5A6362]">
+              <p className="mt-4 max-w-2xl text-sm font-semibold leading-7 text-[#40576C]">
                 Learn RO installation, servicing, repair, troubleshooting, and maintenance with real machines and practical tools.
               </p>
             </div>
             <div className="mt-6 grid gap-3 md:mt-8 md:grid-cols-2">
               {learnPoints.map((point) => (
-                <div key={point} className="flex items-center justify-between gap-3 rounded-lg border border-[#E8DCCB] bg-white px-3 py-3 shadow-[0_8px_24px_rgba(84,61,35,0.05)] md:gap-4 md:px-4">
-                  <span className="flex items-center gap-3 text-sm font-black text-[#274244]"><CheckCircle2 className="h-5 w-5 shrink-0 text-[#0A60C8]" /> {point}</span>
+                <div key={point} className="flex items-center justify-between gap-3 rounded-lg border border-[#D8EAF8] bg-white px-3 py-3 shadow-[0_8px_24px_rgba(0,87,200,0.06)] md:gap-4 md:px-4">
+                  <span className="flex items-center gap-3 text-sm font-black text-[#102033]"><CheckCircle2 className="h-5 w-5 shrink-0 text-[#0057C8]" /> {point}</span>
                 </div>
               ))}
             </div>
@@ -289,7 +289,7 @@ export default function RoTrainingInstitutePage() {
           <div className="mx-auto max-w-7xl">
             <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.24em] text-[#B68A45]">Practical Training Cards</p>
+                <p className="text-xs font-black uppercase tracking-[0.24em] text-[#0057C8]">Practical Training Cards</p>
                 <h2 className="mt-3 max-w-3xl font-serif text-2xl font-semibold leading-tight md:text-5xl">Practice with real RO machines and service tools.</h2>
               </div>
             </div>
@@ -308,10 +308,10 @@ export default function RoTrainingInstitutePage() {
                       )}
                     </div>
                     <div className="grid grid-cols-[2.5rem_1fr] gap-3 p-3 md:grid-cols-[3rem_1fr] md:p-4">
-                      <span className="grid h-10 w-10 place-items-center rounded-full bg-[#0A60C8] text-white md:h-11 md:w-11"><card.icon className="h-5 w-5 md:h-6 md:w-6" /></span>
+                      <span className="grid h-10 w-10 place-items-center rounded-full bg-[#0057C8] text-white md:h-11 md:w-11"><card.icon className="h-5 w-5 md:h-6 md:w-6" /></span>
                       <div>
-                        <h3 className="text-[15px] font-black leading-5 text-[#0A60C8] md:text-base">{card.title}</h3>
-                        <p className="mt-1 text-xs font-bold leading-5 text-[#4D5E6F]">{card.text}</p>
+                        <h3 className="text-[15px] font-black leading-5 text-[#0057C8] md:text-base">{card.title}</h3>
+                        <p className="mt-1 text-xs font-bold leading-5 text-[#40576C]">{card.text}</p>
                       </div>
                     </div>
                   </article>
@@ -326,9 +326,9 @@ export default function RoTrainingInstitutePage() {
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
               {topFeatures.map((feature) => (
                 <article key={feature.title} className="rounded-xl border border-[#E7ECF3] bg-white p-4 shadow-[0_12px_32px_rgba(36,73,117,0.08)] md:p-6">
-                  <feature.icon className="h-7 w-7 text-[#0A60C8] md:h-9 md:w-9" />
-                  <h2 className="mt-3 text-sm font-black leading-5 text-[#0A60C8] md:mt-4 md:text-lg">{feature.title}</h2>
-                  <p className="mt-2 text-xs font-semibold leading-5 text-[#4D5E6F] md:text-sm md:leading-6">{feature.text}</p>
+                  <feature.icon className="h-7 w-7 text-[#0057C8] md:h-9 md:w-9" />
+                  <h2 className="mt-3 text-sm font-black leading-5 text-[#0057C8] md:mt-4 md:text-lg">{feature.title}</h2>
+                  <p className="mt-2 text-xs font-semibold leading-5 text-[#40576C] md:text-sm md:leading-6">{feature.text}</p>
                 </article>
               ))}
             </div>
@@ -336,24 +336,24 @@ export default function RoTrainingInstitutePage() {
         </section>
 
         {videos.length ? (
-          <section className="bg-[#F8F3EC] px-4 py-10 md:px-8 md:py-20">
+          <section className="bg-[#F3FAFF] px-4 py-10 md:px-8 md:py-20">
             <div className="mx-auto max-w-7xl">
               <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.22em] text-[#B68A45]">Training Videos</p>
+                  <p className="text-xs font-black uppercase tracking-[0.22em] text-[#0057C8]">Training Videos</p>
                   <h2 className="mt-3 font-serif text-2xl font-semibold md:text-5xl">Watch recent training moments.</h2>
                 </div>
-                <a href="https://www.youtube.com/@priyasaquafresh" target="_blank" rel="noreferrer" className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[#C59A55] px-5 text-sm font-black text-[#9B7137] hover:bg-[#F5E9D8]">
+                <a href="https://www.youtube.com/@priyasaquafresh" target="_blank" rel="noreferrer" className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[#0057C8] px-5 text-sm font-black text-[#0057C8] hover:bg-[#EAF6FF]">
                   <PlayCircle className="h-4 w-4" /> YouTube Channel
                 </a>
               </div>
               <div data-training-video-row className="mt-6 flex snap-x gap-4 overflow-x-auto pb-2 md:mt-8 md:grid md:grid-cols-2 md:overflow-visible md:pb-0 xl:grid-cols-5">
                 {videos.map((video) => (
-                  <a key={video} href={`https://www.youtube.com/watch?v=${video}`} target="_blank" rel="noreferrer" className="group relative block w-[72vw] shrink-0 snap-start overflow-hidden rounded-xl border border-[#E5D8C7] bg-black shadow-[0_14px_34px_rgba(84,61,35,0.08)] sm:w-[44vw] md:w-auto md:shrink">
+                  <a key={video} href={`https://www.youtube.com/watch?v=${video}`} target="_blank" rel="noreferrer" className="group relative block w-[72vw] shrink-0 snap-start overflow-hidden rounded-xl border border-[#D8EAF8] bg-black shadow-[0_14px_34px_rgba(0,87,200,0.08)] sm:w-[44vw] md:w-auto md:shrink">
                     <Image src={`https://img.youtube.com/vi/${video}/hqdefault.jpg`} alt="RO training video" width={480} height={360} unoptimized className="aspect-[9/16] w-full object-cover opacity-90 transition group-hover:scale-105 group-hover:opacity-100" />
                     <span className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
                     <span className="absolute inset-0 grid place-items-center">
-                      <span className="grid h-14 w-14 place-items-center rounded-full bg-white text-[#0A60C8] shadow-[0_12px_34px_rgba(0,0,0,0.25)] transition group-hover:scale-110">
+                      <span className="grid h-14 w-14 place-items-center rounded-full bg-white text-[#0057C8] shadow-[0_12px_34px_rgba(0,0,0,0.25)] transition group-hover:scale-110">
                         <PlayCircle className="h-8 w-8" />
                       </span>
                     </span>
@@ -365,21 +365,21 @@ export default function RoTrainingInstitutePage() {
           </section>
         ) : null}
 
-        <section id="training-form" className="relative overflow-hidden bg-[#062F33] px-4 py-12 text-white md:px-8 md:py-20">
+        <section id="training-form" className="relative overflow-hidden bg-[#063B7A] px-4 py-12 text-white md:px-8 md:py-20">
           <Image src={trainingImages[0]} alt="RO training registration" fill sizes="100vw" className="object-cover opacity-25" />
-          <div className="absolute inset-0 bg-[#062F33]/86" />
+          <div className="absolute inset-0 bg-[#063B7A]/86" />
           <div className="relative mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#E7C376]">Join Now</p>
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#7ED957]">Join Now</p>
               <h2 className="mt-3 max-w-xl font-serif text-2xl font-semibold leading-tight md:text-5xl">Start Your Career as an RO Technician!</h2>
-              <p className="mt-3 text-lg font-black text-[#E7C376] md:mt-4 md:text-xl">Learn. Practice. Become an Expert.</p>
-              <p className="mt-4 max-w-2xl text-sm font-semibold leading-7 text-[#F7EFE5]">
+              <p className="mt-3 text-lg font-black text-[#7ED957] md:mt-4 md:text-xl">Learn. Practice. Become an Expert.</p>
+              <p className="mt-4 max-w-2xl text-sm font-semibold leading-7 text-[#EAF6FF]">
                 Get hands-on RO Technician Training covering installation, servicing, repair, troubleshooting, and maintenance using real RO machines.
               </p>
               <div className="mt-7 grid gap-4 sm:grid-cols-2">
                 {joinReasons.map((reason) => (
                   <div key={reason.title} className="rounded-xl border border-white/14 bg-white/[0.08] p-4 backdrop-blur">
-                    <h3 className="text-base font-black text-[#E7C376]">{reason.title}</h3>
+                    <h3 className="text-base font-black text-[#7ED957]">{reason.title}</h3>
                     <p className="mt-2 text-sm font-semibold leading-6 text-white/80">{reason.text}</p>
                   </div>
                 ))}
@@ -390,38 +390,38 @@ export default function RoTrainingInstitutePage() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-white/14 bg-[#FFF9F1] p-4 text-[#1D2D2E] shadow-[0_24px_70px_rgba(0,0,0,0.25)] md:rounded-2xl md:p-6">
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#B68A45]">Join RO Training</p>
+            <div className="rounded-xl border border-white/14 bg-[#FFFFFF] p-4 text-[#102033] shadow-[0_24px_70px_rgba(0,0,0,0.25)] md:rounded-2xl md:p-6">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#0057C8]">Join RO Training</p>
               <h2 className="mt-2 font-serif text-2xl font-semibold md:text-3xl">Send Your Details Today</h2>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <input className={fieldClass} placeholder="Full Name" value={form.fullName} onChange={(event) => updateField("fullName", event.target.value)} />
                 <input className={fieldClass} placeholder="Mobile Number" value={form.mobile} onChange={(event) => updateField("mobile", event.target.value)} />
                 <input className={fieldClass} placeholder="City" value={form.city} onChange={(event) => updateField("city", event.target.value)} />
-                <div className="flex h-12 items-center rounded-xl border border-[#D9C5AB] bg-white px-4 text-sm font-black text-[#0A3A38]">Training Fee: Rs. {trainingAmount.toLocaleString("en-IN")}</div>
+                <div className="flex h-12 items-center rounded-xl border border-[#C7E4F8] bg-white px-4 text-sm font-black text-[#0057C8]">Training Fee: Rs. {trainingAmount.toLocaleString("en-IN")}</div>
                 <textarea className={`${fieldClass} h-28 py-3 md:col-span-2`} placeholder="Message / Preferred Batch Details" value={form.message} onChange={(event) => updateField("message", event.target.value)} />
               </div>
               <div className="mt-5 grid gap-3 rounded-xl bg-white p-4 sm:grid-cols-2">
                 <div>
-                  <h3 className="text-sm font-black text-[#0A3A38]">I Am Interested</h3>
-                  <p className="mt-1 text-xs font-semibold leading-5 text-[#5A6362]">Our team will contact you and share complete training details.</p>
+                  <h3 className="text-sm font-black text-[#0057C8]">I Am Interested</h3>
+                  <p className="mt-1 text-xs font-semibold leading-5 text-[#40576C]">Our team will contact you and share complete training details.</p>
                 </div>
                 <div>
-                  <h3 className="text-sm font-black text-[#0A3A38]">Pay Now</h3>
-                  <p className="mt-1 text-xs font-semibold leading-5 text-[#5A6362]">Complete your registration and confirm your seat.</p>
+                  <h3 className="text-sm font-black text-[#0057C8]">Pay Now</h3>
+                  <p className="mt-1 text-xs font-semibold leading-5 text-[#40576C]">Complete your registration and confirm your seat.</p>
                 </div>
               </div>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <button type="button" onClick={submitInterest} disabled={Boolean(saving)} className="h-12 rounded-full border border-[#C59A55] px-5 text-sm font-black text-[#9B7137] transition hover:bg-[#F5E9D8] disabled:opacity-60">
+                <button type="button" onClick={submitInterest} disabled={Boolean(saving)} className="h-12 rounded-full border border-[#0057C8] px-5 text-sm font-black text-[#0057C8] transition hover:bg-[#EAF6FF] disabled:opacity-60">
                   {saving === "INTERESTED" ? "Saving..." : "I Am Interested"}
                 </button>
-                <button type="button" onClick={submitPayment} disabled={Boolean(saving)} className="h-12 rounded-full bg-[#0A3A38] px-5 text-sm font-black text-white transition hover:bg-[#12383A] disabled:opacity-60">
+                <button type="button" onClick={submitPayment} disabled={Boolean(saving)} className="h-12 rounded-full bg-[#0057C8] px-5 text-sm font-black text-white transition hover:bg-[#063B7A] disabled:opacity-60">
                   {saving === "PAYMENT" ? "Processing..." : "Pay Now"}
                 </button>
               </div>
-              {message ? <p className="mt-4 rounded-lg bg-[#F5E9D8] px-3 py-2 text-sm font-semibold text-[#8A5F23]">{message}</p> : null}
+              {message ? <p className="mt-4 rounded-lg bg-[#EAF6FF] px-3 py-2 text-sm font-semibold text-[#075985]">{message}</p> : null}
             </div>
           </div>
-          <div className="relative mx-auto mt-8 max-w-7xl rounded-2xl border border-white/12 bg-white/[0.08] px-4 py-3 text-center text-[11px] font-black uppercase leading-5 tracking-[0.12em] text-[#E7C376] md:mt-10 md:rounded-full md:px-5 md:text-xs md:tracking-[0.16em]">
+          <div className="relative mx-auto mt-8 max-w-7xl rounded-2xl border border-white/12 bg-white/[0.08] px-4 py-3 text-center text-[11px] font-black uppercase leading-5 tracking-[0.12em] text-[#7ED957] md:mt-10 md:rounded-full md:px-5 md:text-xs md:tracking-[0.16em]">
             Limited Seats | Practical Training | Expert Guidance | Certificate | Career Support
           </div>
           <p className="relative mt-5 text-center font-serif text-xl font-semibold text-white md:text-2xl">Learn Today. Build Your Career Tomorrow!</p>

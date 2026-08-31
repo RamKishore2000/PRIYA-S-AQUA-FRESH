@@ -56,7 +56,7 @@ export function HomePageClient() {
   }, []);
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#F8F3EC] pb-20 text-[#1D2D2E] lg:pb-0">
+    <main className="min-h-screen overflow-x-hidden bg-[#F3FAFF] pb-20 text-[#102033] lg:pb-0">
       <HomeAnimations />
       <Header overlay />
       {loading ? <HomeHeroSkeleton /> : <Hero banners={data.banners} categories={data.categories} />}

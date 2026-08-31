@@ -21,7 +21,7 @@ export default async function CategorySlugPage({ params }: { params: Promise<{ s
         <div className="mx-auto max-w-7xl">
           <Link
             href={`/products?category=${slug}`}
-            className="inline-flex rounded-full bg-[#0A3A38] px-6 py-3 text-sm font-black text-white"
+            className="inline-flex rounded-full bg-[#0057C8] px-6 py-3 text-sm font-black text-white"
           >
             View Products
           </Link>

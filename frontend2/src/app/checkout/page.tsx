@@ -54,7 +54,7 @@ const emptyAddress: AddressForm = {
   isDefault: false,
 };
 
-const inputClass = "h-11 rounded-xl border border-[#E5D8C7] bg-white px-4 font-semibold text-[#1D2D2E] outline-none placeholder:text-[#7D7B75] focus:border-[#0A3A38]";
+const inputClass = "h-11 rounded-xl border border-[#D8EAF8] bg-white px-4 font-semibold text-[#102033] outline-none placeholder:text-[#74879A] focus:border-[#0057C8]";
 
 function CheckoutContent() {
   const router = useRouter();
@@ -234,7 +234,7 @@ function CheckoutContent() {
           name: selectedAddress?.fullName || "",
           contact: selectedAddress?.mobile || "",
         },
-        theme: { color: "#0A3A38" },
+        theme: { color: "#0057C8" },
         modal: {
           ondismiss: async () => {
             try {
@@ -316,8 +316,8 @@ function CheckoutContent() {
     return (
       <SitePage eyebrow="Checkout" title="Login to checkout" description="Please login before placing your order.">
         <section data-native-screen="checkout" className="px-4 pb-28 md:px-8">
-          <div className="mx-auto max-w-3xl rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-6 text-center shadow-[0_10px_30px_rgba(84,61,35,0.06)] md:p-10">
-            <button onClick={openLogin} className="rounded-full bg-[#0A3A38] px-6 py-3 text-sm font-black text-white">Login to Continue</button>
+          <div className="mx-auto max-w-3xl rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-6 text-center shadow-[0_10px_30px_rgba(0,87,200,0.07)] md:p-10">
+            <button onClick={openLogin} className="rounded-full bg-[#0057C8] px-6 py-3 text-sm font-black text-white">Login to Continue</button>
           </div>
         </section>
       </SitePage>
@@ -329,18 +329,18 @@ function CheckoutContent() {
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
       <section data-native-screen="checkout" className="px-4 pb-28 md:px-8">
         <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[1fr_24rem] lg:gap-8">
-          <div className="rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-4 shadow-[0_10px_30px_rgba(84,61,35,0.06)] lg:p-6">
+          <div className="rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-4 shadow-[0_10px_30px_rgba(0,87,200,0.07)] lg:p-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-xl font-black lg:text-2xl">Delivery Address</h2>
-                <p className="mt-1 text-sm font-semibold text-[#5A6362]">Current delivery address for this order.</p>
+                <p className="mt-1 text-sm font-semibold text-[#40576C]">Current delivery address for this order.</p>
               </div>
             </div>
 
             <div className="mt-5">
-              {addressLoading ? <p className="rounded-xl border border-dashed border-[#D8B879] p-4 text-sm font-semibold text-[#5A6362]">Loading saved addresses...</p> : null}
+              {addressLoading ? <p className="rounded-xl border border-dashed border-[#28B463] p-4 text-sm font-semibold text-[#40576C]">Loading saved addresses...</p> : null}
               {!addressLoading && !selectedAddress ? (
-                <p className="rounded-xl border border-dashed border-[#D8B879] p-4 text-sm font-semibold text-[#5A6362]">No saved address found. Add one address below to continue checkout.</p>
+                <p className="rounded-xl border border-dashed border-[#28B463] p-4 text-sm font-semibold text-[#40576C]">No saved address found. Add one address below to continue checkout.</p>
               ) : null}
               {selectedAddress ? (
                 <button
@@ -348,29 +348,29 @@ function CheckoutContent() {
                   onClick={() => {
                     setAddressSelectorOpen(true);
                   }}
-                  className="flex w-full items-start justify-between gap-3 rounded-xl border border-[#0A3A38] bg-white p-3 text-left transition hover:bg-[#F5E9D8] md:p-4"
+                  className="flex w-full items-start justify-between gap-3 rounded-xl border border-[#0057C8] bg-white p-3 text-left transition hover:bg-[#EAF6FF] md:p-4"
                 >
                   <span className="min-w-0">
-                    <span className="flex flex-wrap items-center gap-2 font-black text-[#1D2D2E]">
+                    <span className="flex flex-wrap items-center gap-2 font-black text-[#102033]">
                       {selectedAddress.fullName}
-                      <span className="text-sm text-[#5A6362]">{selectedAddress.mobile}</span>
-                      {selectedAddress.isDefault ? <span className="rounded-full bg-[#0A3A38] px-2 py-0.5 text-xs font-black text-white">Default</span> : null}
+                      <span className="text-sm text-[#40576C]">{selectedAddress.mobile}</span>
+                      {selectedAddress.isDefault ? <span className="rounded-full bg-[#0057C8] px-2 py-0.5 text-xs font-black text-white">Default</span> : null}
                     </span>
-                    <span className="mt-2 block text-sm font-semibold leading-6 text-[#5A6362]">
+                    <span className="mt-2 block text-sm font-semibold leading-6 text-[#40576C]">
                       {selectedAddress.addressLine1}
                       {selectedAddress.addressLine2 ? `, ${selectedAddress.addressLine2}` : ""}, {selectedAddress.city}, {selectedAddress.state} - {selectedAddress.pincode}
                       {selectedAddress.landmark ? `, Landmark: ${selectedAddress.landmark}` : ""}
                     </span>
                   </span>
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[#E5D8C7] bg-[#FFF9F1] text-[#0A3A38] md:h-11 md:w-11">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[#D8EAF8] bg-[#FFFFFF] text-[#0057C8] md:h-11 md:w-11">
                     <ChevronDownIcon className="h-5 w-5" />
                   </span>
                 </button>
               ) : null}
             </div>
 
-            <div className="mt-5 rounded-2xl border border-[#E5D8C7] bg-white p-3 md:p-4">
-              <h3 className="font-serif text-xl font-semibold text-[#1D2D2E] md:text-2xl">Add New Address</h3>
+            <div className="mt-5 rounded-2xl border border-[#D8EAF8] bg-white p-3 md:p-4">
+              <h3 className="font-serif text-xl font-semibold text-[#102033] md:text-2xl">Add New Address</h3>
               <div className="mt-4 grid gap-3 md:grid-cols-2 md:gap-4">
                 <input className={inputClass} placeholder="Full name" value={addressForm.fullName} onChange={(event) => updateAddress("fullName", event.target.value)} />
                 <input className={inputClass} placeholder="Mobile number" value={addressForm.mobile} onChange={(event) => updateAddress("mobile", event.target.value)} />
@@ -381,41 +381,41 @@ function CheckoutContent() {
                 <input className={inputClass} placeholder="Pincode" value={addressForm.pincode} onChange={(event) => updateAddress("pincode", event.target.value)} />
                 <input className={inputClass} placeholder="Landmark optional" value={addressForm.landmark} onChange={(event) => updateAddress("landmark", event.target.value)} />
               </div>
-              <label className="mt-4 flex items-center gap-2 text-sm font-black text-[#526161]">
-                <input type="checkbox" className="h-4 w-4 accent-[#0A3A38]" checked={addressForm.isDefault} onChange={(event) => updateAddress("isDefault", event.target.checked)} />
+              <label className="mt-4 flex items-center gap-2 text-sm font-black text-[#40576C]">
+                <input type="checkbox" className="h-4 w-4 accent-[#0057C8]" checked={addressForm.isDefault} onChange={(event) => updateAddress("isDefault", event.target.checked)} />
                 Set as default address
               </label>
               <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                <button type="button" disabled={addressSaving} onClick={saveAddress} className="rounded-full bg-[#0A3A38] px-6 py-3 text-sm font-black text-white disabled:opacity-60">
+                <button type="button" disabled={addressSaving} onClick={saveAddress} className="rounded-full bg-[#0057C8] px-6 py-3 text-sm font-black text-white disabled:opacity-60">
                   {addressSaving ? "Saving..." : "Save Address"}
                 </button>
-                <button type="button" onClick={() => setAddressForm(emptyAddress)} className="rounded-full border border-[#C59A55] px-6 py-3 text-sm font-black text-[#9B7137]">
+                <button type="button" onClick={() => setAddressForm(emptyAddress)} className="rounded-full border border-[#0057C8] px-6 py-3 text-sm font-black text-[#0057C8]">
                   Clear
                 </button>
               </div>
             </div>
           </div>
 
-          <aside className="h-max rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-4 shadow-[0_10px_30px_rgba(84,61,35,0.06)] lg:p-6">
+          <aside className="h-max rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-4 shadow-[0_10px_30px_rgba(0,87,200,0.07)] lg:p-6">
             <h2 className="text-xl font-black lg:text-2xl">{isBuyNow ? "Buy Now Summary" : "Summary"}</h2>
             <div className="mt-5 grid gap-3">
               {buyNowLoading ? (
-                <p className="text-sm font-semibold text-[#5A6362]">Loading product...</p>
+                <p className="text-sm font-semibold text-[#40576C]">Loading product...</p>
               ) : checkoutItems.length === 0 ? (
-                <p className="text-sm font-semibold text-[#5A6362]">{isBuyNow ? "Product is not available." : "Your cart is empty."}</p>
+                <p className="text-sm font-semibold text-[#40576C]">{isBuyNow ? "Product is not available." : "Your cart is empty."}</p>
               ) : (
                 checkoutItems.map((item) => {
                   const display = getProductDisplayPrice(item.product, user?.role);
                   return (
-                  <div key={item.product.id} className="grid grid-cols-[52px_1fr] gap-3 rounded-xl border border-[#E5D8C7] bg-white p-2 text-sm sm:grid-cols-[56px_1fr_auto]">
+                  <div key={item.product.id} className="grid grid-cols-[52px_1fr] gap-3 rounded-xl border border-[#D8EAF8] bg-white p-2 text-sm sm:grid-cols-[56px_1fr_auto]">
                     <div className="relative h-[3.25rem] w-[3.25rem] overflow-hidden rounded-lg bg-[#F7F0E7] sm:h-14 sm:w-14">
                       <Image src={item.product.image} alt={item.product.name} fill sizes="(max-width: 639px) 52px, 56px" className="object-contain p-1.5" unoptimized />
                     </div>
                     <div className="min-w-0">
-                      <p className="line-clamp-2 font-black leading-5 text-[#1D2D2E]">{item.product.name}</p>
-                      <p className="mt-1 text-xs font-bold text-[#5A6362]">Qty: {item.quantity}</p>
+                      <p className="line-clamp-2 font-black leading-5 text-[#102033]">{item.product.name}</p>
+                      <p className="mt-1 text-xs font-bold text-[#40576C]">Qty: {item.quantity}</p>
                     </div>
-                    <span data-current-price className="col-span-2 text-right font-black text-[#0A3A38] sm:col-span-1">Rs. {(display.price * item.quantity).toLocaleString("en-IN")}</span>
+                    <span data-current-price className="col-span-2 text-right font-black text-[#0057C8] sm:col-span-1">Rs. {(display.price * item.quantity).toLocaleString("en-IN")}</span>
                   </div>
                   );
                 })
@@ -424,58 +424,58 @@ function CheckoutContent() {
 
             <div className="mt-5">
               <div className="flex gap-2">
-                <input value={couponCode} onChange={(event) => { setCouponCode(event.target.value.toUpperCase()); setCouponMessage(""); }} placeholder="Coupon" className="min-w-0 flex-1 rounded-full border border-[#E5D8C7] bg-white px-4 py-3 font-semibold text-[#1D2D2E] outline-none" />
-                <button type="button" onClick={applyCoupon} className="rounded-full border border-[#C59A55] px-4 font-black text-[#9B7137]">Apply</button>
+                <input value={couponCode} onChange={(event) => { setCouponCode(event.target.value.toUpperCase()); setCouponMessage(""); }} placeholder="Coupon" className="min-w-0 flex-1 rounded-full border border-[#D8EAF8] bg-white px-4 py-3 font-semibold text-[#102033] outline-none" />
+                <button type="button" onClick={applyCoupon} className="rounded-full border border-[#0057C8] px-4 font-black text-[#0057C8]">Apply</button>
               </div>
-              {couponMessage ? <p className="mt-2 rounded-lg bg-[#F5E9D8] px-3 py-2 text-sm font-semibold text-[#8A5F23]">{couponMessage}</p> : null}
+              {couponMessage ? <p className="mt-2 rounded-lg bg-[#EAF6FF] px-3 py-2 text-sm font-semibold text-[#075985]">{couponMessage}</p> : null}
             </div>
             <div className="mt-5 grid gap-3">
               <p className="text-sm font-black text-[#3B4343]">Payment Option</p>
               <button
                 type="button"
                 onClick={() => setPaymentMethod("ONLINE")}
-                className={`rounded-xl border p-4 text-left transition ${paymentMethod === "ONLINE" ? "border-[#0A3A38] bg-white" : "border-[#E5D8C7] bg-white/70 hover:border-[#C59A55]"}`}
+                className={`rounded-xl border p-4 text-left transition ${paymentMethod === "ONLINE" ? "border-[#0057C8] bg-white" : "border-[#D8EAF8] bg-white/70 hover:border-[#0057C8]"}`}
               >
                 <span className="flex items-start gap-3">
-                  <span className={`mt-1 h-4 w-4 rounded-full border ${paymentMethod === "ONLINE" ? "border-[#0A3A38] bg-[#0A3A38]" : "border-[#C59A55]"}`} />
+                  <span className={`mt-1 h-4 w-4 rounded-full border ${paymentMethod === "ONLINE" ? "border-[#0057C8] bg-[#0057C8]" : "border-[#0057C8]"}`} />
                   <span>
-                    <span className="block font-black text-[#1D2D2E]">Pay Online</span>
-                    <span className="mt-1 block text-xs font-semibold text-[#5A6362]">Pay full amount now through Razorpay.</span>
+                    <span className="block font-black text-[#102033]">Pay Online</span>
+                    <span className="mt-1 block text-xs font-semibold text-[#40576C]">Pay full amount now through Razorpay.</span>
                   </span>
                 </span>
               </button>
               <button
                 type="button"
                 onClick={() => setPaymentMethod("COD")}
-                className={`rounded-xl border p-4 text-left transition ${paymentMethod === "COD" ? "border-[#0A3A38] bg-white" : "border-[#E5D8C7] bg-white/70 hover:border-[#C59A55]"}`}
+                className={`rounded-xl border p-4 text-left transition ${paymentMethod === "COD" ? "border-[#0057C8] bg-white" : "border-[#D8EAF8] bg-white/70 hover:border-[#0057C8]"}`}
               >
                 <span className="flex items-start gap-3">
-                  <span className={`mt-1 h-4 w-4 rounded-full border ${paymentMethod === "COD" ? "border-[#0A3A38] bg-[#0A3A38]" : "border-[#C59A55]"}`} />
+                  <span className={`mt-1 h-4 w-4 rounded-full border ${paymentMethod === "COD" ? "border-[#0057C8] bg-[#0057C8]" : "border-[#0057C8]"}`} />
                   <span>
-                    <span className="block font-black text-[#1D2D2E]">Cash on Delivery</span>
-                    <span className="mt-1 block text-xs font-semibold text-[#5A6362]">Pay Rs. {codAdvanceAmount.toLocaleString("en-IN")} advance now. Pay remaining amount on delivery.</span>
+                    <span className="block font-black text-[#102033]">Cash on Delivery</span>
+                    <span className="mt-1 block text-xs font-semibold text-[#40576C]">Pay Rs. {codAdvanceAmount.toLocaleString("en-IN")} advance now. Pay remaining amount on delivery.</span>
                   </span>
                 </span>
               </button>
             </div>
-            <div className="mt-5 grid gap-2 border-t border-[#E5D8C7] pt-5 text-sm font-bold text-[#5A6362]">
+            <div className="mt-5 grid gap-2 border-t border-[#D8EAF8] pt-5 text-sm font-bold text-[#40576C]">
               <p className="flex justify-between"><span>Subtotal</span><span>Rs. {checkoutSubtotal.toLocaleString("en-IN")}</span></p>
               <p className="flex justify-between"><span>Discount</span><span>-Rs. {discount.toLocaleString("en-IN")}</span></p>
               {paymentMethod === "COD" ? (
                 <>
-                  <p className="flex justify-between text-[#0A3A38]"><span>Advance Payable Now</span><span>Rs. {advanceAmount.toLocaleString("en-IN")}</span></p>
+                  <p className="flex justify-between text-[#0057C8]"><span>Advance Payable Now</span><span>Rs. {advanceAmount.toLocaleString("en-IN")}</span></p>
                   <p className="flex justify-between"><span>Balance on Delivery</span><span>Rs. {balanceAmount.toLocaleString("en-IN")}</span></p>
                 </>
               ) : null}
             </div>
             <p data-current-price className="mt-4 text-2xl font-black lg:text-3xl">Rs. {(paymentMethod === "COD" ? advanceAmount : total).toLocaleString("en-IN")}</p>
-            <button type="button" disabled={saving || buyNowLoading || checkoutItems.length === 0} onClick={placeOrder} className="mt-6 h-[3.25rem] w-full rounded-full bg-[#0A3A38] font-black text-white disabled:cursor-not-allowed disabled:opacity-60">
+            <button type="button" disabled={saving || buyNowLoading || checkoutItems.length === 0} onClick={placeOrder} className="mt-6 h-[3.25rem] w-full rounded-full bg-[#0057C8] font-black text-white disabled:cursor-not-allowed disabled:opacity-60">
               {saving ? "Processing..." : paymentMethod === "COD" ? `Pay Rs. ${advanceAmount.toLocaleString("en-IN")} Advance` : "Pay with Razorpay"}
             </button>
-            <Link href={isBuyNow ? "/products" : "/cart"} className="mt-3 flex h-12 items-center justify-center rounded-full border border-[#C59A55] font-black text-[#9B7137] hover:bg-[#F5E9D8]">
+            <Link href={isBuyNow ? "/products" : "/cart"} className="mt-3 flex h-12 items-center justify-center rounded-full border border-[#0057C8] font-black text-[#0057C8] hover:bg-[#EAF6FF]">
               {isBuyNow ? "Continue Shopping" : "Back to Cart"}
             </Link>
-            {message ? <p className="mt-4 rounded-lg bg-[#F5E9D8] px-3 py-2 text-sm font-semibold text-[#8A5F23]">{message}</p> : null}
+            {message ? <p className="mt-4 rounded-lg bg-[#EAF6FF] px-3 py-2 text-sm font-semibold text-[#075985]">{message}</p> : null}
           </aside>
         </div>
       </section>
@@ -502,10 +502,10 @@ function CheckoutContent() {
       />
       {addressSelectorOpen ? (
         <div className="fixed inset-0 z-[100] flex items-end bg-[#071624]/70 backdrop-blur-sm lg:grid lg:place-items-center lg:px-5">
-          <div className="max-h-[86vh] w-full overflow-y-auto rounded-t-3xl border border-b-0 border-[#E5D8C7] bg-[#FFF9F1] p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] text-[#1D2D2E] shadow-[0_40px_120px_rgba(43,35,22,0.24)] md:p-6 lg:max-h-[90vh] lg:max-w-3xl lg:rounded-2xl lg:border">
+          <div className="max-h-[86vh] w-full overflow-y-auto rounded-t-3xl border border-b-0 border-[#D8EAF8] bg-[#FFFFFF] p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] text-[#102033] shadow-[0_40px_120px_rgba(16,32,51,0.22)] md:p-6 lg:max-h-[90vh] lg:max-w-3xl lg:rounded-2xl lg:border">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#B68A45]">Delivery Address</p>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#0057C8]">Delivery Address</p>
                 <h3 className="mt-2 font-serif text-2xl font-semibold md:text-3xl">Select Address</h3>
               </div>
               <button
@@ -513,7 +513,7 @@ function CheckoutContent() {
                 onClick={() => {
                   setAddressSelectorOpen(false);
                 }}
-                className="grid h-10 w-10 place-items-center rounded-full border border-[#E5D8C7] bg-white text-lg font-black text-[#0A3A38] hover:bg-[#F5E9D8]"
+                className="grid h-10 w-10 place-items-center rounded-full border border-[#D8EAF8] bg-white text-lg font-black text-[#0057C8] hover:bg-[#EAF6FF]"
               >
                 x
               </button>
@@ -521,7 +521,7 @@ function CheckoutContent() {
 
             <div className="mt-5 grid gap-3">
               {addresses.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-[#D8B879] bg-white p-4 text-sm font-semibold text-[#5A6362]">No saved address found. Add a new address from the checkout page.</p>
+                <p className="rounded-xl border border-dashed border-[#28B463] bg-white p-4 text-sm font-semibold text-[#40576C]">No saved address found. Add a new address from the checkout page.</p>
               ) : null}
               {addresses.map((address) => {
                 const active = selectedAddressId === address.id;
@@ -533,19 +533,19 @@ function CheckoutContent() {
                       setSelectedAddressId(address.id);
                       setAddressSelectorOpen(false);
                     }}
-                    className={`block w-full rounded-xl border p-3 text-left transition md:p-4 ${active ? "border-[#0A3A38] bg-[#F5E9D8]" : "border-[#E5D8C7] bg-white hover:border-[#C59A55]"}`}
+                    className={`block w-full rounded-xl border p-3 text-left transition md:p-4 ${active ? "border-[#0057C8] bg-[#EAF6FF]" : "border-[#D8EAF8] bg-white hover:border-[#0057C8]"}`}
                   >
                     <span className="flex items-start gap-3">
-                      <span className={`mt-1 grid h-4 w-4 place-items-center rounded-full border ${active ? "border-[#0A3A38]" : "border-[#C59A55]"}`}>
-                        {active ? <span className="h-2 w-2 rounded-full bg-[#0A3A38]" /> : null}
+                      <span className={`mt-1 grid h-4 w-4 place-items-center rounded-full border ${active ? "border-[#0057C8]" : "border-[#0057C8]"}`}>
+                        {active ? <span className="h-2 w-2 rounded-full bg-[#0057C8]" /> : null}
                       </span>
                       <span className="min-w-0">
-                        <span className="flex flex-wrap items-center gap-2 font-black text-[#1D2D2E]">
+                        <span className="flex flex-wrap items-center gap-2 font-black text-[#102033]">
                           {address.fullName}
-                          <span className="text-sm text-[#5A6362]">{address.mobile}</span>
-                          {address.isDefault ? <span className="rounded-full bg-[#0A3A38] px-2 py-0.5 text-xs font-black text-white">Default</span> : null}
+                          <span className="text-sm text-[#40576C]">{address.mobile}</span>
+                          {address.isDefault ? <span className="rounded-full bg-[#0057C8] px-2 py-0.5 text-xs font-black text-white">Default</span> : null}
                         </span>
-                        <span className="mt-2 block text-sm font-semibold leading-6 text-[#5A6362]">
+                        <span className="mt-2 block text-sm font-semibold leading-6 text-[#40576C]">
                           {address.addressLine1}
                           {address.addressLine2 ? `, ${address.addressLine2}` : ""}, {address.city}, {address.state} - {address.pincode}
                           {address.landmark ? `, Landmark: ${address.landmark}` : ""}
@@ -562,7 +562,7 @@ function CheckoutContent() {
                 onClick={() => {
                   setAddressSelectorOpen(false);
                 }}
-                className="rounded-full bg-[#0A3A38] px-6 py-3 text-sm font-black text-white"
+                className="rounded-full bg-[#0057C8] px-6 py-3 text-sm font-black text-white"
               >
                 Done
               </button>

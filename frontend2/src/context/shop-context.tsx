@@ -230,20 +230,20 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       {children}
       {loginOpen ? (
         <div className="fixed inset-0 z-[1600] grid place-items-center bg-[#071624]/70 px-5 backdrop-blur-sm">
-          <div className="w-full max-w-md overflow-hidden rounded-[1.35rem] border border-[#E5D8C7] bg-[#FFF9F1] text-[#1D2D2E] shadow-[0_40px_120px_rgba(43,35,22,0.24)]">
-            <div className="h-2 bg-[linear-gradient(90deg,#0A3A38,#12a8e6,#D8B879)]" />
+          <div className="w-full max-w-md overflow-hidden rounded-[1.35rem] border border-[#D8EAF8] bg-[#FFFFFF] text-[#102033] shadow-[0_40px_120px_rgba(16,32,51,0.22)]">
+            <div className="h-2 bg-[linear-gradient(90deg,#0057C8,#12a8e6,#28B463)]" />
             <div className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.24em] text-[#B68A45]">OTP Login</p>
-                <h2 className="mt-2 font-serif text-3xl font-semibold text-[#1D2D2E]">Welcome to Priya&apos;s</h2>
+                <p className="text-xs font-black uppercase tracking-[0.24em] text-[#0057C8]">OTP Login</p>
+                <h2 className="mt-2 font-serif text-3xl font-semibold text-[#102033]">Welcome to Priya&apos;s</h2>
               </div>
-              <button onClick={() => setLoginOpen(false)} className="h-10 w-10 rounded-full border border-[#E5D8C7] bg-white text-[#0A3A38] transition hover:bg-[#F5E9D8]">x</button>
+              <button onClick={() => setLoginOpen(false)} className="h-10 w-10 rounded-full border border-[#D8EAF8] bg-white text-[#0057C8] transition hover:bg-[#EAF6FF]">x</button>
             </div>
             <form action={submitLogin} className="mt-6 grid gap-3">
-              <div className="rounded-xl border border-[#E5D8C7] bg-white/70 px-4 py-3">
-                <p className="text-sm font-black text-[#1D2D2E]">Login with OTP</p>
-                <p className="mt-1 text-xs font-semibold text-[#5A6362]">
+              <div className="rounded-xl border border-[#D8EAF8] bg-white/70 px-4 py-3">
+                <p className="text-sm font-black text-[#102033]">Login with OTP</p>
+                <p className="mt-1 text-xs font-semibold text-[#40576C]">
                   {otpSent ? `Enter the 6 digit OTP sent to ${otpMobile}.` : "Enter your mobile number to continue."}
                 </p>
               </div>
@@ -255,20 +255,20 @@ export function ShopProvider({ children }: { children: ReactNode }) {
                   placeholder="Mobile number"
                   value={otpMobile}
                   onChange={(event) => setOtpMobile(event.target.value.replace(/\D/g, "").slice(0, 10))}
-                  className="rounded-xl border border-[#E5D8C7] bg-white px-4 py-3 font-semibold text-[#1D2D2E] outline-none placeholder:text-[#7D7B75]"
+                  className="rounded-xl border border-[#D8EAF8] bg-white px-4 py-3 font-semibold text-[#102033] outline-none placeholder:text-[#74879A]"
                 />
               ) : (
                 <>
                   <OtpBoxes value={otpCode} onChange={setOtpCode} />
                   <div className="flex items-center justify-between text-sm">
-                    <button type="button" className="font-black text-[#0A3A38]" onClick={async () => { if (otpBusy) return; setOtpBusy(true); try { await resendLoginOtp(otpMobile.trim()); setOtpCode(""); setMessage("OTP resent successfully."); showToast("OTP resent successfully.", "success"); } catch (error) { const nextMessage = error instanceof Error ? error.message : "Unable to resend OTP."; setMessage(nextMessage); showToast(nextMessage, "error"); } finally { setOtpBusy(false); } }}>Resend OTP</button>
-                    <button type="button" className="font-bold text-[#7D7B75]" onClick={() => { setOtpSent(false); setOtpCode(""); setMessage(""); }}>Change mobile</button>
+                    <button type="button" className="font-black text-[#0057C8]" onClick={async () => { if (otpBusy) return; setOtpBusy(true); try { await resendLoginOtp(otpMobile.trim()); setOtpCode(""); setMessage("OTP resent successfully."); showToast("OTP resent successfully.", "success"); } catch (error) { const nextMessage = error instanceof Error ? error.message : "Unable to resend OTP."; setMessage(nextMessage); showToast(nextMessage, "error"); } finally { setOtpBusy(false); } }}>Resend OTP</button>
+                    <button type="button" className="font-bold text-[#74879A]" onClick={() => { setOtpSent(false); setOtpCode(""); setMessage(""); }}>Change mobile</button>
                   </div>
                 </>
               )}
-              <button disabled={otpBusy} className="mt-2 rounded-full bg-[#0A3A38] px-5 py-3 font-black text-white transition hover:bg-[#12383A] disabled:opacity-60">{otpBusy ? "Please wait..." : otpSent ? "Verify OTP" : "Send OTP"}</button>
+              <button disabled={otpBusy} className="mt-2 rounded-full bg-[#0057C8] px-5 py-3 font-black text-white transition hover:bg-[#063B7A] disabled:opacity-60">{otpBusy ? "Please wait..." : otpSent ? "Verify OTP" : "Send OTP"}</button>
             </form>
-            {message ? <p className="mt-4 rounded-lg bg-[#F5E9D8] px-3 py-2 text-sm font-semibold text-[#8A5F23]">{message}</p> : null}
+            {message ? <p className="mt-4 rounded-lg bg-[#EAF6FF] px-3 py-2 text-sm font-semibold text-[#075985]">{message}</p> : null}
 
           </div>
         </div>
@@ -276,7 +276,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       ) : null}
       {toast ? (
         <div className="fixed bottom-5 left-1/2 z-[1700] w-[min(340px,calc(100vw-2rem))] -translate-x-1/2">
-          <div className={`rounded-xl border bg-white px-4 py-3 text-sm font-black text-[#1D2D2E] shadow-[0_18px_48px_rgba(43,35,22,0.2)] ${toast.tone === "error" ? "border-red-200 border-l-red-500" : toast.tone === "info" ? "border-[#D8B879] border-l-[#B68A45]" : "border-emerald-200 border-l-emerald-500"} border-l-4`}>
+          <div className={`rounded-xl border bg-white px-4 py-3 text-sm font-black text-[#102033] shadow-[0_18px_48px_rgba(16,32,51,0.18)] ${toast.tone === "error" ? "border-red-200 border-l-red-500" : toast.tone === "info" ? "border-[#28B463] border-l-[#0057C8]" : "border-emerald-200 border-l-emerald-500"} border-l-4`}>
             {toast.title}
           </div>
         </div>
@@ -322,7 +322,7 @@ function OtpBoxes({ value, onChange }: { value: string; onChange: (value: string
               previousInput?.focus();
             }
           }}
-          className="h-12 rounded-xl border border-[#E5D8C7] bg-white text-center text-lg font-black text-[#1D2D2E] outline-none transition focus:border-[#0A3A38] focus:ring-2 focus:ring-[#D8B879]/30"
+          className="h-12 rounded-xl border border-[#D8EAF8] bg-white text-center text-lg font-black text-[#102033] outline-none transition focus:border-[#0057C8] focus:ring-2 focus:ring-[#28B463]/30"
           aria-label={`OTP digit ${index + 1}`}
         />
       ))}

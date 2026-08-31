@@ -79,7 +79,7 @@ function buildSocialLinks(settings: SiteSettings) {
     { label: "YouTube", href: settings.youtube, icon: YouTubeIcon, className: "text-[#ff0000]" },
     { label: "Instagram", href: settings.instagram, icon: InstagramIcon, className: "text-[#e4405f]" },
     { label: "LinkedIn", href: settings.linkedin, icon: LinkedInIcon, className: "text-[#0a66c2]" },
-    { label: "X", href: settings.x, icon: XIcon, className: "text-[#1D2D2E]" },
+    { label: "X", href: settings.x, icon: XIcon, className: "text-[#102033]" },
   ].filter((social) => social.href);
 }
 const dealerSupportNumbers = ["8885449044", "8498831081"];
@@ -120,19 +120,19 @@ export function Header({ overlay = false }: HeaderProps) {
   return (
     <>
     <header
-      className={`inset-x-0 top-0 z-50 bg-[#F8F3EC] transition-shadow duration-300 ${
+      className={`inset-x-0 top-0 z-50 bg-[#F3FAFF] transition-shadow duration-300 ${
         overlay && scrolled
-          ? "fixed shadow-[0_14px_36px_rgba(84,61,35,0.16)]"
+          ? "fixed shadow-[0_14px_36px_rgba(0,87,200,0.14)]"
           : "sticky"
       }`}
     >
-      <div className="hidden border-b border-[#E5D8C7] bg-[#0A2426] text-[#FFF9F1] lg:block">
+      <div className="hidden border-b border-[#D8EAF8] bg-[#063B7A] text-[#FFFFFF] lg:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-6 py-1.5 text-xs font-semibold">
           {isDealer ? (
             <div className="flex items-center gap-4">
-              <span className="uppercase tracking-[0.18em] text-[#D8B879]">Dealer Support</span>
+              <span className="uppercase tracking-[0.18em] text-[#28B463]">Dealer Support</span>
               {dealerSupportNumbers.map((number) => (
-                <a key={number} href={`tel:${number.replace(/\D/g, "")}`}  className="inline-flex items-center gap-1.5 text-white transition hover:text-[#D8B879]">
+                <a key={number} href={`tel:${number.replace(/\D/g, "")}`}  className="inline-flex items-center gap-1.5 text-white transition hover:text-[#28B463]">
                   <Phone className="h-3.5 w-3.5" />
                   {number}
                 </a>
@@ -178,10 +178,10 @@ export function Header({ overlay = false }: HeaderProps) {
                   key={link.href}
                   href={link.href}
                   aria-current={active ? "page" : undefined}
-                  className={`relative rounded-full px-3 py-2 text-sm font-bold transition after:absolute after:inset-x-4 after:bottom-1 after:h-0.5 after:origin-left after:rounded-full after:bg-[#B68A45] after:transition xl:px-4 ${
+                  className={`relative rounded-full px-3 py-2 text-sm font-bold transition after:absolute after:inset-x-4 after:bottom-1 after:h-0.5 after:origin-left after:rounded-full after:bg-[#0057C8] after:transition xl:px-4 ${
                     active
-                      ? "text-[#B68A45] after:scale-x-100"
-                      : "text-[#1D2D2E] after:scale-x-0 hover:bg-white/55 hover:text-[#0A2426] hover:after:scale-x-100"
+                      ? "text-[#0057C8] after:scale-x-100"
+                      : "text-[#102033] after:scale-x-0 hover:bg-white/55 hover:text-[#0057C8] hover:after:scale-x-100"
                   }`}
                 >
                   {link.label}
@@ -200,7 +200,7 @@ export function Header({ overlay = false }: HeaderProps) {
                 href={link.href}
                 aria-current={active ? "page" : undefined}
                 className={`rounded-full px-3 py-2 text-sm font-bold transition ${
-                  active ? "text-[#B68A45]" : "text-[#1D2D2E] hover:bg-white/55 hover:text-[#B68A45]"
+                  active ? "text-[#0057C8]" : "text-[#102033] hover:bg-white/55 hover:text-[#0057C8]"
                 }`}
               >
                 {link.label}
@@ -209,55 +209,55 @@ export function Header({ overlay = false }: HeaderProps) {
           })}
         </nav>
 
-        <div className="flex items-center justify-end gap-2 text-[#1D2D2E]">
+        <div className="flex items-center justify-end gap-2 text-[#102033]">
           <form
             action="/search"
             onSubmit={handleSearchSubmit}
-            className={`hidden items-center overflow-hidden rounded-lg border border-[#E5D8C7] bg-white shadow-[0_8px_24px_rgba(84,61,35,0.06)] transition-all duration-700 ease-out lg:flex ${searchOpen ? "w-[320px] px-3 py-1.5 opacity-100" : "w-10 px-0 py-0 opacity-100"}`}
+            className={`hidden items-center overflow-hidden rounded-lg border border-[#D8EAF8] bg-white shadow-[0_8px_24px_rgba(0,87,200,0.07)] transition-all duration-700 ease-out lg:flex ${searchOpen ? "w-[320px] px-3 py-1.5 opacity-100" : "w-10 px-0 py-0 opacity-100"}`}
             onMouseEnter={() => setSearchOpen(true)}
             onMouseLeave={() => setSearchOpen(false)}
           >
-            <button type="button" onClick={() => setSearchOpen((open) => !open)} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-[#0A3A38]" aria-label="Search">
+            <button type="button" onClick={() => setSearchOpen((open) => !open)} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-[#0057C8]" aria-label="Search">
               <SearchIcon className="h-5 w-5" />
             </button>
-            <input name="q" placeholder="Search purifiers, filters, spare parts..." className={`min-w-0 flex-1 bg-transparent text-sm font-semibold text-[#1D2D2E] outline-none placeholder:text-[#7D7B75] transition duration-500 ${searchOpen ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`} />
+            <input name="q" placeholder="Search purifiers, filters, spare parts..." className={`min-w-0 flex-1 bg-transparent text-sm font-semibold text-[#102033] outline-none placeholder:text-[#74879A] transition duration-500 ${searchOpen ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`} />
           </form>
-          <button type="button" onClick={() => setSearchOpen((open) => !open)} className="grid h-10 w-10 place-items-center rounded-lg border border-[#E5D8C7] bg-white shadow-sm transition hover:border-[#B68A45] hover:text-[#0A3A38] lg:hidden" aria-label="Search">
+          <button type="button" onClick={() => setSearchOpen((open) => !open)} className="grid h-10 w-10 place-items-center rounded-lg border border-[#D8EAF8] bg-white shadow-sm transition hover:border-[#0057C8] hover:text-[#0057C8] lg:hidden" aria-label="Search">
             <SearchIcon className="h-5 w-5" />
           </button>
-          <Link href="/wishlist" className="relative grid h-10 w-10 place-items-center rounded-lg border border-[#E5D8C7] bg-white shadow-sm transition hover:border-[#B68A45] hover:text-[#0A3A38]" aria-label="Wishlist">
+          <Link href="/wishlist" className="relative grid h-10 w-10 place-items-center rounded-lg border border-[#D8EAF8] bg-white shadow-sm transition hover:border-[#0057C8] hover:text-[#0057C8]" aria-label="Wishlist">
             <HeartIcon className="h-5 w-5" />
-            {user && wishlistCount ? <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-[#B68A45] text-[0.65rem] font-black text-white">{wishlistCount}</span> : null}
+            {user && wishlistCount ? <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full border-2 border-[#F3FAFF] bg-[#0057C8] px-1 text-[0.65rem] font-black leading-none text-white">{wishlistCount}</span> : null}
           </Link>
           <div className="group relative hidden lg:block">
-            <button onClick={() => (user ? undefined : openLogin())} className="grid h-10 w-10 place-items-center rounded-lg border border-[#E5D8C7] bg-white shadow-sm transition hover:border-[#B68A45] hover:text-[#0A3A38]" aria-label="Account">
+            <button onClick={() => (user ? undefined : openLogin())} className="grid h-10 w-10 place-items-center rounded-lg border border-[#D8EAF8] bg-white shadow-sm transition hover:border-[#0057C8] hover:text-[#0057C8]" aria-label="Account">
               <UserIcon className="h-5 w-5" />
             </button>
             {user ? (
               <div className="invisible absolute right-0 top-10 z-50 w-72 pt-2 opacity-0 transition group-hover:visible group-hover:opacity-100">
-                <div className="rounded-2xl border border-[#E5D8C7] bg-[#FFF9F1] p-5 shadow-[0_20px_50px_rgba(84,61,35,0.12)]">
-                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#B68A45]">Signed in</p>
-                  <p className="mt-1 text-lg font-black text-[#1D2D2E]">{user.mobile}</p>
-                  <div className="mt-4 grid gap-3 border-t border-[#E5D8C7] pt-4">
-                    <Link href="/profile" className="font-black text-[#1D2D2E] hover:text-[#B68A45]">My Profile</Link>
-                    <Link href="/profile/orders" className="font-black text-[#1D2D2E] hover:text-[#B68A45]">Order History</Link>
+                <div className="rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-5 shadow-[0_20px_50px_rgba(0,87,200,0.12)]">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#0057C8]">Signed in</p>
+                  <p className="mt-1 text-lg font-black text-[#102033]">{user.mobile}</p>
+                  <div className="mt-4 grid gap-3 border-t border-[#D8EAF8] pt-4">
+                    <Link href="/profile" className="font-black text-[#102033] hover:text-[#0057C8]">My Profile</Link>
+                    <Link href="/profile/orders" className="font-black text-[#102033] hover:text-[#0057C8]">Order History</Link>
                     <button onClick={logout} className="text-left font-black text-red-600">Logout</button>
                   </div>
                 </div>
               </div>
             ) : null}
           </div>
-          <button id="header-cart-target" type="button" onClick={() => setCartOpen(true)} className="relative grid h-10 w-10 place-items-center rounded-lg bg-[#0A3A38] text-white shadow-[0_8px_22px_rgba(10,36,38,0.18)] transition hover:bg-[#12383A]" aria-label="Cart">
+          <button id="header-cart-target" type="button" onClick={() => setCartOpen(true)} className="relative grid h-10 w-10 place-items-center rounded-lg bg-[#0057C8] text-white shadow-[0_8px_22px_rgba(0,87,200,0.16)] transition hover:bg-[#063B7A]" aria-label="Cart">
             <CartIcon className="h-5 w-5" />
-            {cartCount ? <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-[#B68A45] text-[0.65rem] font-black text-white">{cartCount}</span> : null}
+            {cartCount ? <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full border-2 border-[#F3FAFF] bg-[#28B463] px-1 text-[0.65rem] font-black leading-none text-white shadow-[0_4px_10px_rgba(16,32,51,0.18)]">{cartCount}</span> : null}
           </button>
         </div>
       </div>
       <form action="/search" onSubmit={handleSearchSubmit} data-mobile-search-panel className={`mx-3 grid overflow-hidden transition-all duration-300 md:mx-5 lg:hidden ${searchOpen ? "max-h-20 pb-3 opacity-100" : "max-h-0 pb-0 opacity-0"}`}>
-        <div className="flex items-center gap-2 rounded-xl border border-[#D9C5AB] bg-white px-3 py-2 shadow-[0_8px_22px_rgba(84,61,35,0.08)]">
-          <SearchIcon className="h-4 w-4 shrink-0 text-[#0A3A38]" />
-          <input name="q" placeholder="Search products..." className="min-w-0 flex-1 bg-transparent text-sm font-bold text-[#1D2D2E] outline-none placeholder:text-[#7D7B75]" autoComplete="off" />
-          <button type="button" onClick={() => setSearchOpen(false)} className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#F5E9D8] text-[#0A3A38]" aria-label="Close search">
+        <div className="flex items-center gap-2 rounded-xl border border-[#C7E4F8] bg-white px-3 py-2 shadow-[0_8px_22px_rgba(0,87,200,0.08)]">
+          <SearchIcon className="h-4 w-4 shrink-0 text-[#0057C8]" />
+          <input name="q" placeholder="Search products..." className="min-w-0 flex-1 bg-transparent text-sm font-bold text-[#102033] outline-none placeholder:text-[#74879A]" autoComplete="off" />
+          <button type="button" onClick={() => setSearchOpen(false)} className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#EAF6FF] text-[#0057C8]" aria-label="Close search">
             <X className="h-4 w-4" />
           </button>
         </div>

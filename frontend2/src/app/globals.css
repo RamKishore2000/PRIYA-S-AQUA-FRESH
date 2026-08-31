@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8f3ec;
-  --foreground: #1d2d2e;
-  --brand: #12a8e6;
-  --brand-dark: #0a3a38;
-  --ivory: #f8f3ec;
-  --cream: #fff9f1;
-  --beige: #f4eadf;
-  --border-beige: #e5d8c7;
-  --royal-teal: #0a2426;
-  --rich-teal: #0a3a38;
-  --antique-gold: #b68a45;
+  --background: #f3faff;
+  --foreground: #102033;
+  --brand: #0057c8;
+  --brand-dark: #063b7a;
+  --ivory: #f3faff;
+  --cream: #ffffff;
+  --beige: #eaf6ff;
+  --border-beige: #d8eaf8;
+  --royal-teal: #063b7a;
+  --rich-teal: #0057c8;
+  --antique-gold: #28b463;
 }
 
 @theme inline {
@@ -33,9 +33,9 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 12% 0%, rgba(182, 138, 69, 0.12), transparent 30%),
-    radial-gradient(circle at 88% 10%, rgba(10, 58, 56, 0.1), transparent 28%),
-    linear-gradient(135deg, #fff9f1 0%, #f8f3ec 52%, #f1e5d6 100%);
+    radial-gradient(circle at 12% 0%, rgba(0, 174, 239, 0.14), transparent 30%),
+    radial-gradient(circle at 88% 10%, rgba(40, 180, 99, 0.10), transparent 28%),
+    linear-gradient(135deg, #ffffff 0%, #f3faff 52%, #eaf6ff 100%);
   color: var(--foreground);
   font-family: var(--font-manrope), Arial, Helvetica, sans-serif;
 }
@@ -785,7 +785,7 @@ body.priyas-native-app [data-native-screen="training"] .app-training-hero h1 {
 }
 
 body.priyas-native-app [data-native-screen="training"] .app-training-hero p:not(:first-child) {
-  color: #526161 !important;
+  color: #40576C !important;
   font-size: 0.92rem !important;
   line-height: 1.65 !important;
 }
@@ -815,7 +815,7 @@ body.priyas-native-app [data-native-screen="training"] .app-training-form h2 {
 }
 
 body.priyas-native-app [data-native-screen="training"] .app-training-form p:not(:first-child) {
-  color: #526161 !important;
+  color: #40576C !important;
 }
 
 body.priyas-native-app [data-native-screen="training"] .app-training-form .rounded-2xl,
@@ -1074,7 +1074,7 @@ body.priyas-native-app [data-native-screen="services"] .mt-10 span.rounded-full 
   position: relative;
   z-index: 2;
   margin: 0;
-  color: #526161;
+  color: #40576C;
   font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -4573,7 +4573,7 @@ body.priyas-native-app .native-splash p,
   position: relative !important;
   z-index: 2 !important;
   margin: 0 !important;
-  color: #526161 !important;
+  color: #40576C !important;
   font-size: 0.72rem !important;
   font-weight: 800 !important;
   letter-spacing: 0.11em !important;
@@ -4668,7 +4668,7 @@ body.priyas-native-app .native-boot-splash p {
   position: relative !important;
   z-index: 2 !important;
   margin: 0 !important;
-  color: #526161 !important;
+  color: #40576C !important;
   font-size: 0.72rem !important;
   font-weight: 800 !important;
   letter-spacing: 0.11em !important;

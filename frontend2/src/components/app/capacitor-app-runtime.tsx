@@ -17,7 +17,7 @@ export function CapacitorAppRuntime() {
     const configureStatusBar = async () => {
       try {
         await StatusBar.setOverlaysWebView({ overlay: false });
-        await StatusBar.setBackgroundColor({ color: "#F8F3EC" });
+        await StatusBar.setBackgroundColor({ color: "#F3FAFF" });
         await StatusBar.setStyle({ style: Style.Light });
       } catch {
         // Keep startup usable even if a device blocks status bar updates.

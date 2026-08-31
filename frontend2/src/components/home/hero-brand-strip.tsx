@@ -10,7 +10,7 @@ const brandItems = [
 
 export function HeroBrandStrip() {
   return (
-    <section className="relative z-20 overflow-hidden bg-[#F8F3EC] py-5 md:py-7">
+    <section className="relative z-20 overflow-hidden bg-[#F3FAFF] py-5 md:py-7">
       <div className="brand-cert-window">
         <div className="brand-cert-track">
           {[...brandItems, ...brandItems].map((item, index) => (

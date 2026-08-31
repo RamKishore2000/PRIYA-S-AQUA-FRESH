@@ -25,7 +25,7 @@ export default function WishlistPage() {
           ) : products.length ? (
             <ProductGrid products={products} />
           ) : (
-            <div className="rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-6 text-center font-semibold text-[#5A6362] shadow-[0_10px_30px_rgba(84,61,35,0.06)] md:p-10">
+            <div className="rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-6 text-center font-semibold text-[#40576C] shadow-[0_10px_30px_rgba(0,87,200,0.07)] md:p-10">
               {message}
             </div>
           )}

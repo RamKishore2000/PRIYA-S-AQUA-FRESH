@@ -61,13 +61,13 @@ export function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <article data-product-card className="group overflow-hidden rounded-[0.9rem] border border-[#E8DCCB] bg-[#FFFBF6] text-center text-[#253738] shadow-[0_8px_24px_rgba(70,50,25,0.07)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(82,60,30,0.12)]">
+    <article data-product-card className="group overflow-hidden rounded-[0.9rem] border border-[#D8EAF8] bg-[#FFFFFF] text-center text-[#253738] shadow-[0_8px_24px_rgba(0,87,200,0.07)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(82,60,30,0.12)]">
       <div className="relative isolate h-48 overflow-hidden md:h-52 lg:h-56">
         <Link href={productHref} className="absolute inset-0 flex items-center justify-center" aria-label={product.name}>
           <span data-product-image-area className="relative block aspect-square w-full max-w-[12.25rem] overflow-hidden bg-[#F7F0E7] md:max-w-[13.25rem] lg:max-w-[14.5rem]">
 
 
-            <span className="absolute inset-x-8 bottom-4 h-12 rounded-[100%] bg-black/20 blur-xl transition duration-500 group-hover:bg-[#0A3A38]/12" />
+            <span className="absolute inset-x-8 bottom-4 h-12 rounded-[100%] bg-black/20 blur-xl transition duration-500 group-hover:bg-[#0057C8]/12" />
             <Image
               src={product.image}
               alt={product.name}
@@ -76,10 +76,10 @@ export function ProductCard({ product }: { product: Product }) {
               className="object-contain p-3 transition duration-500 group-hover:scale-[1.04]"
               unoptimized
             />
-            <span className="absolute bottom-3 right-3 z-20 inline-flex items-center gap-1 rounded-md bg-[#FFF9F1] px-2.5 py-1 text-xs font-black leading-none text-[#B68A45] shadow-[0_10px_22px_rgba(84,61,35,0.16)]">
+            <span className="absolute bottom-3 right-3 z-20 inline-flex items-center gap-1 rounded-md bg-[#FFFFFF] px-2.5 py-1 text-xs font-black leading-none text-[#0057C8] shadow-[0_10px_22px_rgba(0,87,200,0.14)]">
               <span aria-hidden="true">{"\u2605"}</span>
               {rating.toFixed(1)}
-              <span className="text-[#7D7B75]">({reviewCount})</span>
+              <span className="text-[#74879A]">({reviewCount})</span>
             </span>
           </span>
         </Link>
@@ -87,7 +87,7 @@ export function ProductCard({ product }: { product: Product }) {
         <span className="absolute right-2 top-2 z-30 flex flex-col gap-1.5 lg:right-4 lg:top-4 lg:gap-2">
           <button
             onClick={handleWishlist}
-            className={`relative grid h-8 w-8 place-items-center overflow-visible rounded-lg backdrop-blur transition lg:h-9 lg:w-9 ${wished ? "bg-[#0A3A38] text-white" : "bg-[#FFF9F1]/90 text-[#0A3A38] hover:bg-[#0A3A38] hover:text-white"}`}
+            className={`relative grid h-8 w-8 place-items-center overflow-visible rounded-lg backdrop-blur transition lg:h-9 lg:w-9 ${wished ? "bg-[#0057C8] text-white" : "bg-[#FFFFFF]/90 text-[#0057C8] hover:bg-[#0057C8] hover:text-white"}`}
             aria-label="Wishlist"
           >
             {showBurst ? (
@@ -105,20 +105,20 @@ export function ProductCard({ product }: { product: Product }) {
             ) : null}
             <HeartIcon className="h-4 w-4" />
           </button>
-          <a href={shareLink} className="grid h-8 w-8 place-items-center rounded-lg bg-[#FFF9F1]/90 text-[#0A3A38] backdrop-blur transition hover:bg-[#0A3A38] hover:text-white lg:h-9 lg:w-9" aria-label="Share">
+          <a href={shareLink} className="grid h-8 w-8 place-items-center rounded-lg bg-[#FFFFFF]/90 text-[#0057C8] backdrop-blur transition hover:bg-[#0057C8] hover:text-white lg:h-9 lg:w-9" aria-label="Share">
             <ShareIcon className="h-4 w-4" />
           </a>
         </span>
       </div>
 
       <div data-product-card-body className="mx-auto w-full max-w-full px-3 pb-2 pt-1 lg:max-w-[18rem] lg:px-4 lg:pb-4 lg:pt-2">
-        <p data-product-category-label className="mx-auto block w-full max-w-full truncate text-[0.56rem] font-black uppercase leading-none tracking-[0.12em] text-[#B68A45] lg:text-[0.68rem] lg:tracking-[0.18em]">{product.category}</p>
-        <Link href={productHref} className="mx-auto mt-1 block min-w-0 max-w-full overflow-hidden text-[0.78rem] font-black leading-[0.95rem] text-[#253738] transition hover:text-[#0A3A38] md:text-sm lg:mt-2 lg:text-base lg:leading-5">
+        <p data-product-category-label className="mx-auto block w-full max-w-full truncate text-[0.56rem] font-black uppercase leading-none tracking-[0.12em] text-[#0057C8] lg:text-[0.68rem] lg:tracking-[0.18em]">{product.category}</p>
+        <Link href={productHref} className="mx-auto mt-1 block min-w-0 max-w-full overflow-hidden text-[0.78rem] font-black leading-[0.95rem] text-[#253738] transition hover:text-[#0057C8] md:text-sm lg:mt-2 lg:text-base lg:leading-5">
           <span data-product-name-text className="line-clamp-2 min-h-[2.24rem] leading-[1.12rem] lg:min-h-0 lg:truncate">{product.name}</span>
         </Link>
         <PriceDisplay product={product} center stacked mobileInline className="mt-1 lg:mt-2" priceClassName="text-base md:text-lg lg:text-2xl" originalClassName="text-[0.68rem] md:text-sm" />
         <div data-product-actions className="mx-auto mt-2 grid w-full max-w-[15rem] grid-cols-[2.55rem_minmax(0,1fr)] items-center gap-1.5 lg:mt-3 lg:flex lg:w-full lg:gap-2">
-          <button data-product-add-button onClick={handleAddToCart} className="inline-flex h-8 min-w-0 items-center justify-center gap-1 rounded-lg bg-[#0A3A38] px-2 text-[0.62rem] font-black text-white transition hover:bg-[#124945] lg:h-10 lg:flex-1 lg:gap-1.5 lg:px-3 lg:text-xs whitespace-nowrap" aria-label={`Add ${product.name} to cart`}>
+          <button data-product-add-button onClick={handleAddToCart} className="inline-flex h-8 min-w-0 items-center justify-center gap-1 rounded-lg bg-[#0057C8] px-2 text-[0.62rem] font-black text-white transition hover:bg-[#124945] lg:h-10 lg:flex-1 lg:gap-1.5 lg:px-3 lg:text-xs whitespace-nowrap" aria-label={`Add ${product.name} to cart`}>
             <CartIcon className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
             <span data-add-label aria-hidden="true">Add</span>
           </button>

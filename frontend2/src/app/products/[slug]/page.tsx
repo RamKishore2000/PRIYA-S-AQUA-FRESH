@@ -25,7 +25,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       <SitePage eyebrow="Product" title="Product not found" description="The product you are looking for is not available.">
         <section data-native-screen="product-detail" className="px-4 pb-20 md:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            <Link href="/products" className="font-black text-[#0A3A38]">Browse products</Link>
+            <Link href="/products" className="font-black text-[#0057C8]">Browse products</Link>
           </div>
         </section>
       </SitePage>
@@ -45,14 +45,14 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     <SitePage eyebrow={product.category} title={product.name} description="Review product details, pricing and support options before checkout." compactHero>
       <section data-native-screen="product-detail" className="px-4 pb-20 md:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <nav className="mb-4 hidden flex-wrap items-center gap-2 text-xs font-bold text-[#7D7B75] md:flex lg:mb-6">
-            <Link href="/" className="hover:text-[#0A3A38]">Home</Link>
+          <nav className="mb-4 hidden flex-wrap items-center gap-2 text-xs font-bold text-[#74879A] md:flex lg:mb-6">
+            <Link href="/" className="hover:text-[#0057C8]">Home</Link>
             <span>/</span>
-            <Link href="/products" className="hover:text-[#0A3A38]">Products</Link>
+            <Link href="/products" className="hover:text-[#0057C8]">Products</Link>
             <span>/</span>
             <span>{product.category}</span>
             <span>/</span>
-            <span className="max-w-[280px] truncate text-[#1D2D2E]">{product.name}</span>
+            <span className="max-w-[280px] truncate text-[#102033]">{product.name}</span>
           </nav>
 
           <div className="grid gap-5 lg:grid-cols-[1.12fr_0.88fr] lg:items-start lg:gap-8">
@@ -60,31 +60,31 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <div className="grid gap-3 md:grid-cols-[5.5rem_1fr] lg:gap-4">
                 <div className="flex gap-3 overflow-x-auto pb-1 md:flex-col md:pb-0">
                   {product.images.map((image) => (
-                    <span key={image} className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-[#E5D8C7] bg-[#FFF9F1] shadow-[0_8px_24px_rgba(84,61,35,0.06)]">
+                    <span key={image} className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] shadow-[0_8px_24px_rgba(0,87,200,0.07)]">
                       <Image src={image} alt="" fill sizes="80px" className="object-contain p-1.5" unoptimized />
                     </span>
                   ))}
                 </div>
-                <div data-product-detail-image className="relative min-h-[20rem] overflow-hidden rounded-2xl border-0 bg-transparent shadow-none md:min-h-[24rem] lg:min-h-[28rem] lg:border lg:border-[#E5D8C7] lg:bg-[#FFF9F1] lg:rounded-[2rem] lg:shadow-[0_24px_70px_rgba(84,61,35,0.12)]">
-                  <span className="absolute inset-x-16 bottom-10 h-16 rounded-full bg-[#0A3A38]/12 blur-2xl" />
+                <div data-product-detail-image className="relative min-h-[20rem] overflow-hidden rounded-2xl border-0 bg-transparent shadow-none md:min-h-[24rem] lg:min-h-[28rem] lg:border lg:border-[#D8EAF8] lg:bg-[#FFFFFF] lg:rounded-[2rem] lg:shadow-[0_24px_70px_rgba(0,87,200,0.12)]">
+                  <span className="absolute inset-x-16 bottom-10 h-16 rounded-full bg-[#0057C8]/12 blur-2xl" />
                   <Image src={product.image} alt={product.name} fill sizes="620px" className="object-contain p-5 md:p-6 lg:p-8" unoptimized />
                   <div className="absolute right-3 top-3 z-20 lg:hidden">
                     <ProductDetailIconActions product={product} />
                   </div>
                 </div>
               </div>
-              <div className="rounded-none border-0 bg-transparent p-0 shadow-none lg:rounded-2xl lg:border lg:border-[#E5D8C7] lg:bg-[#FFF9F1] lg:p-5 lg:shadow-[0_14px_42px_rgba(84,61,35,0.08)]">
-                <h2 className="text-sm font-black uppercase tracking-[0.2em] text-[#B68A45]">Product Details</h2>
+              <div className="rounded-none border-0 bg-transparent p-0 shadow-none lg:rounded-2xl lg:border lg:border-[#D8EAF8] lg:bg-[#FFFFFF] lg:p-5 lg:shadow-[0_14px_42px_rgba(0,87,200,0.08)]">
+                <h2 className="text-sm font-black uppercase tracking-[0.2em] text-[#0057C8]">Product Details</h2>
                 <ProductDescription description={product.description} />
               </div>
             </div>
 
-            <div className="rounded-none border-0 bg-transparent p-0 shadow-none md:p-0 lg:sticky lg:top-28 lg:rounded-2xl lg:border lg:border-[#E5D8C7] lg:bg-[#FFF9F1] lg:p-6 lg:shadow-[0_18px_60px_rgba(84,61,35,0.08)]">
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#B68A45]">{product.category}</p>
-              <h1 className="mt-2 font-serif text-2xl font-semibold leading-tight text-[#1D2D2E] md:text-3xl lg:mt-3 lg:text-4xl">{product.name}</h1>
-              <div className="mt-3 flex flex-wrap items-center gap-2 text-sm font-bold text-[#5A6362]">
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#0A3A38] px-3 py-1 text-white">
-                  <StarIcon className="h-4 w-4 fill-[#D8B879] text-[#D8B879]" />
+            <div className="rounded-none border-0 bg-transparent p-0 shadow-none md:p-0 lg:sticky lg:top-28 lg:rounded-2xl lg:border lg:border-[#D8EAF8] lg:bg-[#FFFFFF] lg:p-6 lg:shadow-[0_18px_60px_rgba(0,87,200,0.08)]">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#0057C8]">{product.category}</p>
+              <h1 className="mt-2 font-serif text-2xl font-semibold leading-tight text-[#102033] md:text-3xl lg:mt-3 lg:text-4xl">{product.name}</h1>
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-sm font-bold text-[#40576C]">
+                <span className="inline-flex items-center gap-1 rounded-full bg-[#0057C8] px-3 py-1 text-white">
+                  <StarIcon className="h-4 w-4 fill-[#28B463] text-[#28B463]" />
                   {(product.rating || 4.8).toFixed(1)}
                 </span>
                 <span>({product.reviewCount || 0} reviews)</span>
@@ -92,24 +92,24 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
               <PriceDisplay product={product} className="mt-4 lg:mt-5" priceClassName="text-2xl md:text-3xl lg:text-4xl" originalClassName="pb-1 text-sm md:text-base lg:text-xl" />
 
-              <div className="mt-5 border-y border-[#E5D8C7] py-4 lg:mt-7 lg:py-5">
-                <p className="font-black text-[#1D2D2E]">Category: <span className="text-[#0A3A38]">{product.category}</span></p>
-                {product.sku ? <p className="mt-3 font-black text-[#5A6362]">Product Code: {product.sku}</p> : null}
+              <div className="mt-5 border-y border-[#D8EAF8] py-4 lg:mt-7 lg:py-5">
+                <p className="font-black text-[#102033]">Category: <span className="text-[#0057C8]">{product.category}</span></p>
+                {product.sku ? <p className="mt-3 font-black text-[#40576C]">Product Code: {product.sku}</p> : null}
               </div>
 
               <ProductDetailActions product={product} />
 
               <div className="mt-5 grid gap-2 text-sm pb-16 lg:mt-6 lg:gap-3 lg:pb-0">
-                <div className="flex items-start gap-3 rounded-none border-0 bg-transparent p-0 font-semibold text-[#5A6362] lg:rounded-xl lg:border lg:border-[#E5D8C7] lg:bg-white lg:p-3">
-                  <Truck className="mt-0.5 h-4 w-4 shrink-0 text-[#B68A45]" />
+                <div className="flex items-start gap-3 rounded-none border-0 bg-transparent p-0 font-semibold text-[#40576C] lg:rounded-xl lg:border lg:border-[#D8EAF8] lg:bg-white lg:p-3">
+                  <Truck className="mt-0.5 h-4 w-4 shrink-0 text-[#0057C8]" />
                   <p>Enjoy free delivery and free returns on selected orders.</p>
                 </div>
-                <div className="flex items-start gap-3 rounded-none border-0 bg-transparent p-0 font-semibold text-[#5A6362] lg:rounded-xl lg:border lg:border-[#E5D8C7] lg:bg-white lg:p-3">
-                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#B68A45]" />
+                <div className="flex items-start gap-3 rounded-none border-0 bg-transparent p-0 font-semibold text-[#40576C] lg:rounded-xl lg:border lg:border-[#D8EAF8] lg:bg-white lg:p-3">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#0057C8]" />
                   <p>Installation support available for eligible purifier models.</p>
                 </div>
-                <div className="flex items-start gap-3 rounded-none border-0 bg-transparent p-0 font-semibold text-[#5A6362] lg:rounded-xl lg:border lg:border-[#E5D8C7] lg:bg-white lg:p-3">
-                  <Heart className="mt-0.5 h-4 w-4 shrink-0 text-[#B68A45]" />
+                <div className="flex items-start gap-3 rounded-none border-0 bg-transparent p-0 font-semibold text-[#40576C] lg:rounded-xl lg:border lg:border-[#D8EAF8] lg:bg-white lg:p-3">
+                  <Heart className="mt-0.5 h-4 w-4 shrink-0 text-[#0057C8]" />
                   <p>Genuine Priya&apos;s Aqua Fresh products and spare parts.</p>
                 </div>
               </div>
@@ -118,18 +118,18 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           </div>
 
           {related.length > 0 ? (
-            <section data-related-products-section className="mt-12 border-t border-[#E5D8C7] pt-8 lg:mt-16 lg:pt-10">
+            <section data-related-products-section className="mt-12 border-t border-[#D8EAF8] pt-8 lg:mt-16 lg:pt-10">
               <div className="mb-5 flex flex-col justify-between gap-3 md:mb-7 md:flex-row md:items-end">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.22em] text-[#B68A45]">Recommended</p>
-                  <h2 className="mt-2 font-serif text-2xl font-semibold tracking-tight text-[#1D2D2E] md:text-5xl">
+                  <p className="text-xs font-black uppercase tracking-[0.22em] text-[#0057C8]">Recommended</p>
+                  <h2 className="mt-2 font-serif text-2xl font-semibold tracking-tight text-[#102033] md:text-5xl">
                     You May Also Like This Product
                   </h2>
-                  <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-[#5A6362]">
+                  <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-[#40576C]">
                     Similar Priya&apos;s Aqua Fresh products selected from the catalog.
                   </p>
                 </div>
-                <Link href="/products" className="inline-flex w-fit rounded-full border border-[#C59A55] bg-[#FFF9F1] px-5 py-2.5 text-sm font-black text-[#9B7137] transition hover:bg-[#F5E9D8]">
+                <Link href="/products" className="inline-flex w-fit rounded-full border border-[#0057C8] bg-[#FFFFFF] px-5 py-2.5 text-sm font-black text-[#0057C8] transition hover:bg-[#EAF6FF]">
                   View All Products
                 </Link>
               </div>
@@ -152,7 +152,7 @@ function ProductDescription({ description }: { description: string }) {
   const { details, specifications } = parseProductDescriptionClean(description);
 
   if (details.length === 0 && specifications.length === 0) {
-    return <p className="mt-3 text-sm font-semibold leading-7 text-[#5A6362]">Product information will be updated soon.</p>;
+    return <p className="mt-3 text-sm font-semibold leading-7 text-[#40576C]">Product information will be updated soon.</p>;
   }
 
   return (
@@ -161,15 +161,15 @@ function ProductDescription({ description }: { description: string }) {
         <div className="space-y-3">
           {details.map((item, index) => (
             item.kind === "point" ? (
-              <div key={`${item.text}-${index}`} className="flex gap-3 text-sm font-semibold leading-7 text-[#5A6362]">
-                <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-[#B68A45]" />
+              <div key={`${item.text}-${index}`} className="flex gap-3 text-sm font-semibold leading-7 text-[#40576C]">
+                <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-[#0057C8]" />
                 <p>
-                  {item.label ? <span className="font-black text-[#1D2D2E]">{item.label}: </span> : null}
+                  {item.label ? <span className="font-black text-[#102033]">{item.label}: </span> : null}
                   {item.text}
                 </p>
               </div>
             ) : (
-              <p key={`${item.text}-${index}`} className="text-sm font-semibold leading-7 text-[#5A6362]">
+              <p key={`${item.text}-${index}`} className="text-sm font-semibold leading-7 text-[#40576C]">
                 {item.text}
               </p>
             )
@@ -179,13 +179,13 @@ function ProductDescription({ description }: { description: string }) {
 
       {specifications.length > 0 ? (
         <div>
-          <h3 className="text-sm font-black uppercase tracking-[0.18em] text-[#B68A45]">Specifications</h3>
+          <h3 className="text-sm font-black uppercase tracking-[0.18em] text-[#0057C8]">Specifications</h3>
           <div className="mt-3 space-y-2">
             {specifications.map((spec, index) => (
               <div key={`${spec.label}-${index}`} className="grid gap-1 text-sm leading-6 sm:grid-cols-[16rem_1rem_1fr] sm:gap-3">
-                <span className="font-black text-[#1D2D2E]">{spec.label}</span>
-                <span className="hidden text-lg font-black leading-6 text-[#1D2D2E] sm:block">:</span>
-                <span className="font-semibold text-[#5A6362]">{spec.value}</span>
+                <span className="font-black text-[#102033]">{spec.label}</span>
+                <span className="hidden text-lg font-black leading-6 text-[#102033] sm:block">:</span>
+                <span className="font-semibold text-[#40576C]">{spec.value}</span>
               </div>
             ))}
           </div>

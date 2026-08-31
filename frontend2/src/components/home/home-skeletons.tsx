@@ -21,8 +21,8 @@ export function HomeHeroSkeleton() {
           </div>
           <HeroSkeletonBlock className="h-[142px] rounded-xl bg-white/18 md:h-[180px]" />
         </div>
-        <div className="relative left-1/2 mt-3 flex w-screen -translate-x-1/2 justify-center gap-2 border-t border-[#E5D8C7] bg-[#FFF9F1] px-3 py-3">
-          <SkeletonBlock className="h-2 w-7 rounded-full bg-[#0A3A38]/80" />
+        <div className="relative left-1/2 mt-3 flex w-screen -translate-x-1/2 justify-center gap-2 border-t border-[#D8EAF8] bg-[#FFFFFF] px-3 py-3">
+          <SkeletonBlock className="h-2 w-7 rounded-full bg-[#0057C8]/80" />
           <SkeletonBlock className="h-2 w-2 rounded-full bg-[#D8C7AE]" />
           <SkeletonBlock className="h-2 w-2 rounded-full bg-[#D8C7AE]" />
         </div>
@@ -58,14 +58,14 @@ export function HomeHeroSkeleton() {
 }
 export function HomeCategorySkeleton() {
   return (
-    <section className="relative bg-[#F8F3EC] px-4 py-6 md:px-6 md:py-8">
-      <div className="mx-auto max-w-7xl px-0 lg:rounded-[1rem] lg:border lg:border-[#EFE4D5] lg:bg-[#FFF9F1] lg:px-5 lg:pb-7 lg:pt-5 lg:shadow-[0_10px_30px_rgba(80,58,30,0.06)]">
+    <section className="relative bg-[#F3FAFF] px-4 py-6 md:px-6 md:py-8">
+      <div className="mx-auto max-w-7xl px-0 lg:rounded-[1rem] lg:border lg:border-[#EFE4D5] lg:bg-[#FFFFFF] lg:px-5 lg:pb-7 lg:pt-5 lg:shadow-[0_10px_30px_rgba(80,58,30,0.06)]">
         <div className="mb-5 flex justify-center lg:mb-7">
           <SkeletonBlock className="h-8 w-56" />
         </div>
         <div className="-mx-4 flex gap-3 overflow-hidden px-4 pb-2 md:gap-4 lg:mx-0 lg:grid lg:grid-cols-5 lg:px-0 lg:pb-0">
           {Array.from({ length: 5 }).map((_, index) => (
-            <div key={index} className="grid w-24 shrink-0 gap-2 px-1 py-1 text-center md:w-28 lg:w-auto lg:min-h-[134px] lg:grid-cols-[1fr_6.25rem] lg:items-center lg:rounded-[0.8rem] lg:border lg:border-[#E9DDCF] lg:bg-[#FFF8EF] lg:px-4 lg:py-4">
+            <div key={index} className="grid w-24 shrink-0 gap-2 px-1 py-1 text-center md:w-28 lg:w-auto lg:min-h-[134px] lg:grid-cols-[1fr_6.25rem] lg:items-center lg:rounded-[0.8rem] lg:border lg:border-[#D8EAF8] lg:bg-[#FFFFFF] lg:px-4 lg:py-4">
               <SkeletonBlock className="order-1 mx-auto h-20 w-20 rounded-full lg:order-2 lg:h-24 lg:w-24" />
               <div className="order-2 lg:order-1">
                 <SkeletonBlock className="mx-auto h-4 w-20 lg:mx-0" />
@@ -81,7 +81,7 @@ export function HomeCategorySkeleton() {
 
 export function HomeProductSkeleton() {
   return (
-    <section className="bg-[#FFF9F1] px-4 py-10 md:px-6 md:py-12 lg:px-8 lg:py-20">
+    <section className="bg-[#FFFFFF] px-4 py-10 md:px-6 md:py-12 lg:px-8 lg:py-20">
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4 lg:mb-10 lg:gap-6">
           <div>

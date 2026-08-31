@@ -19,7 +19,7 @@ const sans = Manrope({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#F8F3EC",
+  themeColor: "#F3FAFF",
   viewportFit: "cover",
 };
 

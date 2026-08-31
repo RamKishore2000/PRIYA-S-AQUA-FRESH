@@ -39,7 +39,7 @@ export function SearchResultsClient() {
 
   return (
     <>
-      {query ? <p className="mb-6 text-sm font-black text-[#5A6362]">Showing results for: <span className="text-[#0A3A38]">{query}</span></p> : null}
+      {query ? <p className="mb-6 text-sm font-black text-[#40576C]">Showing results for: <span className="text-[#0057C8]">{query}</span></p> : null}
       {loading ? <ProductGridSkeleton /> : <ProductGrid products={filteredProducts} />}
     </>
   );

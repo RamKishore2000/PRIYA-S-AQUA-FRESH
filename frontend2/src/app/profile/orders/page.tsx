@@ -18,7 +18,7 @@ function statusClass(value: string) {
   if (value === "PARTIAL") return "bg-blue-50 text-blue-700 border-blue-200";
   if (value === "PENDING") return "bg-amber-50 text-amber-700 border-amber-200";
   if (value === "CANCELLED" || value === "FAILED") return "bg-red-50 text-red-700 border-red-200";
-  return "bg-[#F5E9D8] text-[#8A5F23] border-[#D8B879]";
+  return "bg-[#EAF6FF] text-[#075985] border-[#28B463]";
 }
 
 function isVisibleOrder(order: Order) {
@@ -41,9 +41,9 @@ export default function OrdersPage() {
     return (
       <SitePage eyebrow="Orders" title="Login Required" description="Please login from the header account icon to view your orders.">
         <section data-native-screen="orders" className="px-4 pb-28 md:px-8">
-          <div className="mx-auto max-w-3xl rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-6 text-center shadow-[0_10px_30px_rgba(84,61,35,0.06)] md:p-10">
-            <UserIcon className="mx-auto h-10 w-10 text-[#0A3A38]" />
-            <Link href="/" className="mt-6 inline-flex rounded-full bg-[#0A3A38] px-6 py-3 text-sm font-black text-white">Back to Home</Link>
+          <div className="mx-auto max-w-3xl rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-6 text-center shadow-[0_10px_30px_rgba(0,87,200,0.07)] md:p-10">
+            <UserIcon className="mx-auto h-10 w-10 text-[#0057C8]" />
+            <Link href="/" className="mt-6 inline-flex rounded-full bg-[#0057C8] px-6 py-3 text-sm font-black text-white">Back to Home</Link>
           </div>
         </section>
       </SitePage>
@@ -56,11 +56,11 @@ export default function OrdersPage() {
         <div className="mx-auto max-w-6xl">
           {loading ? <OrderListSkeleton /> : null}
           {!loading && visibleOrders.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-[#D8B879] bg-[#FFF9F1] p-6 text-center shadow-[0_10px_30px_rgba(84,61,35,0.06)] md:p-8">
-              <Package className="mx-auto h-10 w-10 text-[#B68A45]" />
-              <p className="mt-4 font-black text-[#1D2D2E]">No confirmed orders found yet.</p>
-              <p className="mt-1 text-xs font-semibold text-[#5A6362] sm:text-sm">After payment confirmation, your orders will appear here.</p>
-              <Link href="/products" className="mt-5 inline-flex rounded-full bg-[#0A3A38] px-6 py-3 text-sm font-black text-white">View Products</Link>
+            <div className="rounded-2xl border border-dashed border-[#28B463] bg-[#FFFFFF] p-6 text-center shadow-[0_10px_30px_rgba(0,87,200,0.07)] md:p-8">
+              <Package className="mx-auto h-10 w-10 text-[#0057C8]" />
+              <p className="mt-4 font-black text-[#102033]">No confirmed orders found yet.</p>
+              <p className="mt-1 text-xs font-semibold text-[#40576C] sm:text-sm">After payment confirmation, your orders will appear here.</p>
+              <Link href="/products" className="mt-5 inline-flex rounded-full bg-[#0057C8] px-6 py-3 text-sm font-black text-white">View Products</Link>
             </div>
           ) : null}
 
@@ -68,24 +68,24 @@ export default function OrdersPage() {
             {visibleOrders.map((order) => {
               const firstItem = order.items[0];
               return (
-                <Link key={order.id} href={`/profile/orders/detail?id=${order.id}`} className="group grid grid-cols-[4.75rem_1fr] gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-3 shadow-[0_10px_30px_rgba(84,61,35,0.06)] transition hover:-translate-y-0.5 hover:border-[#C59A55] sm:grid-cols-[96px_1fr_auto] sm:gap-4 sm:p-4">
+                <Link key={order.id} href={`/profile/orders/detail?id=${order.id}`} className="group grid grid-cols-[4.75rem_1fr] gap-3 rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-3 shadow-[0_10px_30px_rgba(0,87,200,0.07)] transition hover:-translate-y-0.5 hover:border-[#0057C8] sm:grid-cols-[96px_1fr_auto] sm:gap-4 sm:p-4">
                   <div className="relative h-20 w-20 overflow-hidden rounded-xl bg-white sm:h-24 sm:w-24">
                     <Image src={orderImageUrl(firstItem?.imageUrl)} alt={firstItem?.productName || order.orderNumber} fill className="object-contain p-2" unoptimized />
                   </div>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                      <p className="font-black text-[#1D2D2E]">{order.orderNumber}</p>
+                      <p className="font-black text-[#102033]">{order.orderNumber}</p>
                       <span className={`rounded-full border px-2 py-0.5 text-[0.68rem] font-black sm:px-2.5 sm:py-1 sm:text-xs ${statusClass(order.paymentStatus)}`}>{order.paymentStatus}</span>
                       <span className={`rounded-full border px-2 py-0.5 text-[0.68rem] font-black sm:px-2.5 sm:py-1 sm:text-xs ${statusClass(order.orderStatus)}`}>{order.orderStatus}</span>
                     </div>
                     <p className="mt-2 line-clamp-2 text-sm font-black text-[#243A3B] sm:line-clamp-1 sm:text-base">{firstItem?.productName || "Order items"}</p>
-                    <p className="mt-1 text-xs font-semibold text-[#5A6362] sm:text-sm">
+                    <p className="mt-1 text-xs font-semibold text-[#40576C] sm:text-sm">
                       {order.items.length} item{order.items.length === 1 ? "" : "s"} - {new Date(order.createdAt).toLocaleDateString("en-IN")}
                     </p>
                   </div>
-                  <div className="col-span-2 flex flex-row items-center justify-between gap-3 border-t border-[#E5D8C7] pt-3 sm:col-span-1 sm:flex-col sm:items-end sm:justify-center sm:border-t-0 sm:pt-0">
-                    <span className="font-black text-[#0A3A38]">{formatPrice(order.totalAmount)}</span>
-                    <span className="inline-flex h-9 items-center justify-center rounded-full bg-[#0A3A38] px-4 text-xs font-black text-white transition group-hover:bg-[#B68A45] sm:h-10 sm:text-sm">
+                  <div className="col-span-2 flex flex-row items-center justify-between gap-3 border-t border-[#D8EAF8] pt-3 sm:col-span-1 sm:flex-col sm:items-end sm:justify-center sm:border-t-0 sm:pt-0">
+                    <span className="font-black text-[#0057C8]">{formatPrice(order.totalAmount)}</span>
+                    <span className="inline-flex h-9 items-center justify-center rounded-full bg-[#0057C8] px-4 text-xs font-black text-white transition group-hover:bg-[#0057C8] sm:h-10 sm:text-sm">
                       Order Details
                     </span>
                   </div>

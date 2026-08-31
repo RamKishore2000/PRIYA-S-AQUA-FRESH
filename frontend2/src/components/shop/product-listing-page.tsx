@@ -129,7 +129,7 @@ export function ProductListingPage({ products, categories, selectedCategory = ""
     <>
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-black">Filters</h2>
-        <button type="button" onClick={clearFilters} className="text-sm font-black text-[#0A3A38]">Reset</button>
+        <button type="button" onClick={clearFilters} className="text-sm font-black text-[#0057C8]">Reset</button>
       </div>
 
       <FilterSection title="Categories">
@@ -149,15 +149,15 @@ export function ProductListingPage({ products, categories, selectedCategory = ""
                     <span>{item.count}</span>
                   </button>
                   {hasSubcategories ? (
-                    <button type="button" onClick={() => toggleCategory(item.slug)} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-[#526161] transition hover:bg-[#F5E9D8]" aria-label={`${expanded ? "Hide" : "Show"} ${item.name} subcategories`}>
+                    <button type="button" onClick={() => toggleCategory(item.slug)} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-[#40576C] transition hover:bg-[#EAF6FF]" aria-label={`${expanded ? "Hide" : "Show"} ${item.name} subcategories`}>
                       {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                     </button>
                   ) : null}
                 </div>
                 {hasSubcategories && expanded ? (
-                  <div className="ml-3 mt-1 grid gap-1 border-l border-[#E5D8C7] pl-3">
+                  <div className="ml-3 mt-1 grid gap-1 border-l border-[#D8EAF8] pl-3">
                     {item.subcategories.map((child) => (
-                      <button key={child.id} type="button" onClick={() => selectSubcategory(item.slug, child.slug)} className={`flex items-center justify-between rounded-lg px-3 py-2 text-left text-xs font-black transition ${subcategory === child.slug ? "bg-[#D6B47A] text-white" : "text-[#526161] hover:bg-[#F5E9D8]"}`}>
+                      <button key={child.id} type="button" onClick={() => selectSubcategory(item.slug, child.slug)} className={`flex items-center justify-between rounded-lg px-3 py-2 text-left text-xs font-black transition ${subcategory === child.slug ? "bg-[#00AEEF] text-white" : "text-[#40576C] hover:bg-[#EAF6FF]"}`}>
                         <span className="flex min-w-0 items-center gap-2">
                           <span className="relative h-6 w-6 shrink-0 overflow-hidden rounded-md bg-white/70">
                             <Image src={child.image} alt={child.name} fill className="object-contain p-1" unoptimized />
@@ -185,8 +185,8 @@ export function ProductListingPage({ products, categories, selectedCategory = ""
             { label: "In Stock", value: "in-stock" as const },
             { label: "Out of Stock", value: "out-of-stock" as const },
           ].map((option) => (
-            <label key={option.value} className="flex cursor-pointer items-center gap-3 text-sm font-black text-[#526161]">
-              <input type="checkbox" checked={availability.includes(option.value)} onChange={() => toggleAvailability(option.value)} className="h-4 w-4 accent-[#0A3A38]" />
+            <label key={option.value} className="flex cursor-pointer items-center gap-3 text-sm font-black text-[#40576C]">
+              <input type="checkbox" checked={availability.includes(option.value)} onChange={() => toggleAvailability(option.value)} className="h-4 w-4 accent-[#0057C8]" />
               {option.label}
             </label>
           ))}
@@ -213,7 +213,7 @@ export function ProductListingPage({ products, categories, selectedCategory = ""
   return (
     <section data-product-listing-section className="px-4 pb-20 md:px-8">
       <div className="mx-auto grid max-w-7xl items-start gap-8 lg:grid-cols-[18rem_1fr]">
-        <aside className="hidden h-max self-start rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-5 shadow-[0_10px_30px_rgba(84,61,35,0.06)] lg:sticky lg:top-24 lg:block">
+        <aside className="hidden h-max self-start rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-5 shadow-[0_10px_30px_rgba(0,87,200,0.07)] lg:sticky lg:top-24 lg:block">
           {filterContent}
         </aside>
 
@@ -221,18 +221,18 @@ export function ProductListingPage({ products, categories, selectedCategory = ""
           <button
             type="button"
             onClick={() => setFilterOpen(true)}
-            className="fixed left-0 top-1/2 z-40 inline-flex -translate-y-1/2 items-center gap-2 rounded-r-full border border-l-0 border-[#D9C5AB] bg-[#0A3A38] px-3.5 py-2.5 text-[0.68rem] font-black uppercase tracking-[0.12em] text-white shadow-[0_10px_24px_rgba(10,36,38,0.18)] lg:hidden"
+            className="fixed left-0 top-1/2 z-40 inline-flex -translate-y-1/2 items-center gap-2 rounded-r-full border border-l-0 border-[#C7E4F8] bg-[#0057C8] px-3.5 py-2.5 text-[0.68rem] font-black uppercase tracking-[0.12em] text-white shadow-[0_10px_24px_rgba(0,87,200,0.16)] lg:hidden"
             aria-label="Open filters"
           >
             <SlidersHorizontal className="h-4 w-4" />
             <span>Filter</span>
           </button>
 
-          <div className="mb-4 flex items-center justify-between gap-3 bg-transparent p-0 lg:mb-8 lg:flex-wrap lg:rounded-2xl lg:border lg:border-[#E8DCCB] lg:bg-[#FFF9F1]/95 lg:p-5 lg:shadow-[0_10px_30px_rgba(84,61,35,0.06)] lg:backdrop-blur">
-            <p className="text-sm font-black text-[#1D2D2E] lg:text-base">{filteredProducts.length} products</p>
-            <label className="flex items-center gap-2 text-xs font-black text-[#526161] lg:text-sm">
+          <div className="mb-4 flex items-center justify-between gap-3 bg-transparent p-0 lg:mb-8 lg:flex-wrap lg:rounded-2xl lg:border lg:border-[#D8EAF8] lg:bg-[#FFFFFF]/95 lg:p-5 lg:shadow-[0_10px_30px_rgba(0,87,200,0.07)] lg:backdrop-blur">
+            <p className="text-sm font-black text-[#102033] lg:text-base">{filteredProducts.length} products</p>
+            <label className="flex items-center gap-2 text-xs font-black text-[#40576C] lg:text-sm">
               Sort By
-              <select value={sort} onChange={(event) => setSort(event.target.value as SortOption)} className="rounded-lg border border-[#D9C5AB] bg-[#FFF9F1] px-3 py-2 text-xs font-black text-[#1D2D2E] outline-none lg:rounded-xl lg:border-[#E5D8C7] lg:bg-white lg:px-4 lg:py-3 lg:text-sm">
+              <select value={sort} onChange={(event) => setSort(event.target.value as SortOption)} className="rounded-lg border border-[#C7E4F8] bg-[#FFFFFF] px-3 py-2 text-xs font-black text-[#102033] outline-none lg:rounded-xl lg:border-[#D8EAF8] lg:bg-white lg:px-4 lg:py-3 lg:text-sm">
                 {sortOptions.map((option) => (
                   <option key={option.value} value={option.value}>{option.label}</option>
                 ))}
@@ -250,21 +250,21 @@ export function ProductListingPage({ products, categories, selectedCategory = ""
           onClick={() => setFilterOpen(false)}
           className={`absolute inset-0 bg-[#061415]/45 transition-opacity duration-300 ${filterOpen ? "opacity-100" : "opacity-0"}`}
         />
-        <aside data-mobile-filter-drawer className={`absolute bottom-0 left-0 top-0 flex w-[88vw] max-w-[420px] flex-col border-r border-[#D9C5AB] bg-[#FFF9F1] shadow-[18px_0_46px_rgba(10,36,38,0.22)] transition-transform duration-300 md:w-[420px] ${filterOpen ? "translate-x-0" : "-translate-x-full"}`}>
-          <div className="flex items-center justify-between border-b border-[#E5D8C7] px-5 py-4">
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#B68A45]">Filters</p>
-            <button type="button" onClick={() => setFilterOpen(false)} className="grid h-10 w-10 place-items-center rounded-full bg-[#0A3A38] text-white" aria-label="Close filters">
+        <aside data-mobile-filter-drawer className={`absolute bottom-0 left-0 top-0 flex w-[88vw] max-w-[420px] flex-col border-r border-[#C7E4F8] bg-[#FFFFFF] shadow-[18px_0_46px_rgba(10,36,38,0.22)] transition-transform duration-300 md:w-[420px] ${filterOpen ? "translate-x-0" : "-translate-x-full"}`}>
+          <div className="flex items-center justify-between border-b border-[#D8EAF8] px-5 py-4">
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#0057C8]">Filters</p>
+            <button type="button" onClick={() => setFilterOpen(false)} className="grid h-10 w-10 place-items-center rounded-full bg-[#0057C8] text-white" aria-label="Close filters">
               <X className="h-5 w-5" />
             </button>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-2">
             {filterContent}
           </div>
-          <div data-mobile-filter-actions className="grid grid-cols-2 gap-3 border-t border-[#E5D8C7] bg-[#FFF9F1] px-5 py-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
-            <button type="button" onClick={clearFilters} className="h-11 rounded-full border border-[#C59A55] bg-white text-sm font-black text-[#9B7137]">
+          <div data-mobile-filter-actions className="grid grid-cols-2 gap-3 border-t border-[#D8EAF8] bg-[#FFFFFF] px-5 py-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+            <button type="button" onClick={clearFilters} className="h-11 rounded-full border border-[#0057C8] bg-white text-sm font-black text-[#0057C8]">
               Clear Filters
             </button>
-            <button type="button" onClick={() => setFilterOpen(false)} className="h-11 rounded-full bg-[#0A3A38] text-sm font-black text-white shadow-[0_10px_24px_rgba(10,58,56,0.18)]">
+            <button type="button" onClick={() => setFilterOpen(false)} className="h-11 rounded-full bg-[#0057C8] text-sm font-black text-white shadow-[0_10px_24px_rgba(0,87,200,0.16)]">
               Apply Filters
             </button>
           </div>
@@ -280,8 +280,8 @@ function isSortOption(value: string | null): value is SortOption {
 
 function FilterSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="mt-6 border-t border-[#E5D8C7] pt-6">
-      <h3 className="mb-3 text-xs font-black uppercase tracking-[0.24em] text-[#B68A45]">{title}</h3>
+    <section className="mt-6 border-t border-[#D8EAF8] pt-6">
+      <h3 className="mb-3 text-xs font-black uppercase tracking-[0.24em] text-[#0057C8]">{title}</h3>
       {children}
     </section>
   );
@@ -306,24 +306,24 @@ function PriceRangeFilter({ min, max, value, onChange }: { min: number; max: num
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between text-sm font-black text-[#526161]">
+      <div className="mb-4 flex items-center justify-between text-sm font-black text-[#40576C]">
         <span>Rs. {currentMin.toLocaleString("en-IN")}</span>
         <span>Rs. {currentMax.toLocaleString("en-IN")}</span>
       </div>
       <div className="relative h-8">
-        <div className="absolute left-0 right-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-[#E5D8C7]" />
-        <div className="absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-[#0A3A38]" style={{ left: `${minPercent}%`, right: `${100 - maxPercent}%` }} />
+        <div className="absolute left-0 right-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-[#D8EAF8]" />
+        <div className="absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-[#0057C8]" style={{ left: `${minPercent}%`, right: `${100 - maxPercent}%` }} />
         <input type="range" min={min} max={safeMax} step={500} value={currentMin} onChange={(event) => updateMin(Number(event.target.value))} className="range-thumb pointer-events-none absolute inset-x-0 top-0 z-20 h-8 w-full appearance-none bg-transparent" aria-label="Minimum price" />
         <input type="range" min={min} max={safeMax} step={500} value={currentMax} onChange={(event) => updateMax(Number(event.target.value))} className="range-thumb pointer-events-none absolute inset-x-0 top-0 z-30 h-8 w-full appearance-none bg-transparent" aria-label="Maximum price" />
       </div>
       <div className="mt-4 grid grid-cols-2 gap-3">
-        <label className="grid gap-1 text-xs font-black text-[#7D7B75]">
+        <label className="grid gap-1 text-xs font-black text-[#74879A]">
           Min Price
-          <input type="number" min={min} max={currentMax} value={currentMin} onChange={(event) => updateMin(Number(event.target.value))} className="h-10 rounded-lg border border-[#E5D8C7] bg-white px-3 text-sm font-black text-[#1D2D2E] outline-none focus:border-[#0A3A38]" />
+          <input type="number" min={min} max={currentMax} value={currentMin} onChange={(event) => updateMin(Number(event.target.value))} className="h-10 rounded-lg border border-[#D8EAF8] bg-white px-3 text-sm font-black text-[#102033] outline-none focus:border-[#0057C8]" />
         </label>
-        <label className="grid gap-1 text-xs font-black text-[#7D7B75]">
+        <label className="grid gap-1 text-xs font-black text-[#74879A]">
           Max Price
-          <input type="number" min={currentMin} max={safeMax} value={currentMax} onChange={(event) => updateMax(Number(event.target.value))} className="h-10 rounded-lg border border-[#E5D8C7] bg-white px-3 text-sm font-black text-[#1D2D2E] outline-none focus:border-[#0A3A38]" />
+          <input type="number" min={currentMin} max={safeMax} value={currentMax} onChange={(event) => updateMax(Number(event.target.value))} className="h-10 rounded-lg border border-[#D8EAF8] bg-white px-3 text-sm font-black text-[#102033] outline-none focus:border-[#0057C8]" />
         </label>
       </div>
     </div>
@@ -331,7 +331,7 @@ function PriceRangeFilter({ min, max, value, onChange }: { min: number; max: num
 }
 
 function filterButtonClass(active: boolean, extra = "justify-between") {
-  return `flex items-center rounded-xl px-4 py-3 text-left text-sm font-black transition ${extra} ${active ? "bg-[#0A3A38] text-white" : "text-[#526161] hover:bg-[#F5E9D8]"}`;
+  return `flex items-center rounded-xl px-4 py-3 text-left text-sm font-black transition ${extra} ${active ? "bg-[#0057C8] text-white" : "text-[#40576C] hover:bg-[#EAF6FF]"}`;
 }
 
 function normalizeSlug(value?: string | null) {

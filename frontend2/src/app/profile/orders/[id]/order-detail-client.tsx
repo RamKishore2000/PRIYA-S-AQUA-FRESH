@@ -25,7 +25,7 @@ function statusClass(value: string) {
   if (value === "PAID" || value === "CONFIRMED" || value === "DELIVERED") return "bg-emerald-50 text-emerald-700 border-emerald-200";
   if (value === "PENDING") return "bg-amber-50 text-amber-700 border-amber-200";
   if (value === "CANCELLED" || value === "FAILED") return "bg-red-50 text-red-700 border-red-200";
-  return "bg-[#F5E9D8] text-[#8A5F23] border-[#D8B879]";
+  return "bg-[#EAF6FF] text-[#075985] border-[#28B463]";
 }
 
 function getProgressIndex(status: Order["orderStatus"]) {
@@ -56,9 +56,9 @@ export default function OrderDetailPage({ orderId }: { orderId?: string }) {
     return (
       <SitePage eyebrow="Order" title="Login Required" description="Please login to view this order.">
         <section data-native-screen="order-detail" className="px-4 pb-28 md:px-8">
-          <div className="mx-auto max-w-3xl rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-6 text-center shadow-[0_10px_30px_rgba(84,61,35,0.06)] md:p-10">
-            <UserIcon className="mx-auto h-10 w-10 text-[#0A3A38]" />
-            <Link href="/" className="mt-6 inline-flex rounded-full bg-[#0A3A38] px-6 py-3 text-sm font-black text-white">Back to Home</Link>
+          <div className="mx-auto max-w-3xl rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-6 text-center shadow-[0_10px_30px_rgba(0,87,200,0.07)] md:p-10">
+            <UserIcon className="mx-auto h-10 w-10 text-[#0057C8]" />
+            <Link href="/" className="mt-6 inline-flex rounded-full bg-[#0057C8] px-6 py-3 text-sm font-black text-white">Back to Home</Link>
           </div>
         </section>
       </SitePage>
@@ -69,7 +69,7 @@ export default function OrderDetailPage({ orderId }: { orderId?: string }) {
     return (
       <SitePage eyebrow="Order" title="Order details" description="Loading your order details.">
         <section data-native-screen="order-detail" className="px-4 pb-28 md:px-8">
-          <p className="mx-auto max-w-5xl rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-4 font-black text-[#5A6362] md:p-5">Loading order...</p>
+          <p className="mx-auto max-w-5xl rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-4 font-black text-[#40576C] md:p-5">Loading order...</p>
         </section>
       </SitePage>
     );
@@ -79,9 +79,9 @@ export default function OrderDetailPage({ orderId }: { orderId?: string }) {
     return (
       <SitePage eyebrow="Order" title="Order not found" description="We could not find this order.">
         <section data-native-screen="order-detail" className="px-4 pb-28 md:px-8">
-          <div className="mx-auto max-w-5xl rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-6 text-center md:p-8">
-            <Package className="mx-auto h-10 w-10 text-[#B68A45]" />
-            <Link href="/profile/orders" className="mt-5 inline-flex rounded-full bg-[#0A3A38] px-6 py-3 text-sm font-black text-white">Back to Orders</Link>
+          <div className="mx-auto max-w-5xl rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-6 text-center md:p-8">
+            <Package className="mx-auto h-10 w-10 text-[#0057C8]" />
+            <Link href="/profile/orders" className="mt-5 inline-flex rounded-full bg-[#0057C8] px-6 py-3 text-sm font-black text-white">Back to Orders</Link>
           </div>
         </section>
       </SitePage>
@@ -96,18 +96,18 @@ export default function OrderDetailPage({ orderId }: { orderId?: string }) {
       <section data-native-screen="order-detail" className="px-4 pb-28 md:px-8">
         <div className="mx-auto grid max-w-7xl gap-4 lg:grid-cols-[1fr_340px] lg:gap-6">
           <div className="space-y-4 lg:space-y-5">
-            <section className="rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-4 shadow-[0_10px_30px_rgba(84,61,35,0.06)] lg:p-5">
+            <section className="rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-4 shadow-[0_10px_30px_rgba(0,87,200,0.07)] lg:p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#B68A45]">Order Progress</p>
-                  <h2 className="mt-1 text-lg font-black text-[#1D2D2E] md:text-xl">{order.orderStatus === "CANCELLED" ? "Order Cancelled" : "Track your order"}</h2>
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#0057C8]">Order Progress</p>
+                  <h2 className="mt-1 text-lg font-black text-[#102033] md:text-xl">{order.orderStatus === "CANCELLED" ? "Order Cancelled" : "Track your order"}</h2>
                 </div>
                 <span className={`rounded-full border px-3 py-1 text-xs font-black ${statusClass(order.orderStatus)}`}>{order.orderStatus}</span>
               </div>
 
               <div className="mt-6 md:mt-8">
                 <div className="relative">
-                  <div className="absolute left-[12.5%] right-[12.5%] top-4 h-1 rounded-full bg-[#E5D8C7] md:top-5" />
+                  <div className="absolute left-[12.5%] right-[12.5%] top-4 h-1 rounded-full bg-[#D8EAF8] md:top-5" />
                   <div className="order-progress-fill-once absolute left-[12.5%] top-4 h-1 rounded-full md:top-5" style={{ "--order-progress-width": `${progressPercent}%` } as CSSProperties} />
                   <div className="relative z-10 grid grid-cols-4 gap-1 md:gap-2">
                     {progressSteps.map((step, index) => {
@@ -115,12 +115,12 @@ export default function OrderDetailPage({ orderId }: { orderId?: string }) {
                       return (
                         <div key={step.key} className="grid justify-items-center gap-1.5 text-center md:gap-2">
                           <span
-                            className={`grid h-9 w-9 place-items-center rounded-full border-2 text-xs font-black transition md:h-11 md:w-11 md:text-sm ${done ? "order-progress-step-done border-[#0A3A38] text-white" : "border-[#E5D8C7] bg-[#FFF9F1] text-[#B68A45]"}`}
+                            className={`grid h-9 w-9 place-items-center rounded-full border-2 text-xs font-black transition md:h-11 md:w-11 md:text-sm ${done ? "order-progress-step-done border-[#0057C8] text-white" : "border-[#D8EAF8] bg-[#FFFFFF] text-[#0057C8]"}`}
                             style={done ? { "--order-step-delay": `${320 + index * 260}ms` } as CSSProperties : undefined}
                           >
                             {done ? <Check className="h-4 w-4 md:h-5 md:w-5" /> : index + 1}
                           </span>
-                          <span className={`text-[0.65rem] font-black leading-tight md:text-xs ${done ? "text-[#0A3A38]" : "text-[#7D7B75]"}`}>{step.label}</span>
+                          <span className={`text-[0.65rem] font-black leading-tight md:text-xs ${done ? "text-[#0057C8]" : "text-[#74879A]"}`}>{step.label}</span>
                         </div>
                       );
                     })}
@@ -132,18 +132,18 @@ export default function OrderDetailPage({ orderId }: { orderId?: string }) {
 
             <section className="grid gap-4">
               {order.items.map((item) => (
-                <Link key={item.id} href={item.productSlug ? getProductDetailHref(item.productSlug) : "/products"} className="grid grid-cols-[5rem_1fr] gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-3 shadow-[0_10px_30px_rgba(84,61,35,0.06)] sm:grid-cols-[112px_1fr_auto] sm:gap-4 sm:p-4">
+                <Link key={item.id} href={item.productSlug ? getProductDetailHref(item.productSlug) : "/products"} className="grid grid-cols-[5rem_1fr] gap-3 rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-3 shadow-[0_10px_30px_rgba(0,87,200,0.07)] sm:grid-cols-[112px_1fr_auto] sm:gap-4 sm:p-4">
                   <div className="relative h-20 w-20 overflow-hidden rounded-xl bg-white sm:h-28 sm:w-28">
                     <Image src={orderImageUrl(item.imageUrl)} alt={item.productName} fill className="object-contain p-2" unoptimized />
                   </div>
                   <div>
-                    <p className="text-sm font-black text-[#1D2D2E] sm:text-base">{item.productName}</p>
-                    <p className="mt-1 text-xs font-semibold text-[#5A6362] sm:text-sm">SKU: {item.productSku}</p>
-                    <p className="mt-2 text-xs font-black text-[#0A3A38] sm:text-sm">Qty: {item.quantity}</p>
+                    <p className="text-sm font-black text-[#102033] sm:text-base">{item.productName}</p>
+                    <p className="mt-1 text-xs font-semibold text-[#40576C] sm:text-sm">SKU: {item.productSku}</p>
+                    <p className="mt-2 text-xs font-black text-[#0057C8] sm:text-sm">Qty: {item.quantity}</p>
                   </div>
-                  <div className="col-span-2 text-right text-sm font-black text-[#1D2D2E] sm:col-span-1 sm:text-base sm:text-right">
+                  <div className="col-span-2 text-right text-sm font-black text-[#102033] sm:col-span-1 sm:text-base sm:text-right">
                     <p>{formatPrice(item.lineTotal)}</p>
-                    <p className="mt-1 text-xs font-semibold text-[#7D7B75]">{formatPrice(item.unitPrice)} each</p>
+                    <p className="mt-1 text-xs font-semibold text-[#74879A]">{formatPrice(item.unitPrice)} each</p>
                   </div>
                 </Link>
               ))}
@@ -151,16 +151,16 @@ export default function OrderDetailPage({ orderId }: { orderId?: string }) {
           </div>
 
           <aside className="h-fit space-y-4">
-            <section className="rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-4 shadow-[0_10px_30px_rgba(84,61,35,0.06)] lg:p-5">
-              <h2 className="text-sm font-black text-[#1D2D2E] sm:text-base">Status</h2>
+            <section className="rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-4 shadow-[0_10px_30px_rgba(0,87,200,0.07)] lg:p-5">
+              <h2 className="text-sm font-black text-[#102033] sm:text-base">Status</h2>
               <div className="mt-4 grid gap-3 text-sm">
                 <Info label="Payment" value={order.paymentStatus} />
                 <Info label="Order" value={order.orderStatus} />
               </div>
             </section>
-            <section className="rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-4 shadow-[0_10px_30px_rgba(84,61,35,0.06)] lg:p-5">
-              <h2 className="flex items-center gap-2 font-black text-[#1D2D2E]"><Truck className="h-4 w-4 text-[#B68A45]" /> Delivery Address</h2>
-              <p className="mt-3 text-sm font-semibold leading-6 text-[#5A6362]">
+            <section className="rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-4 shadow-[0_10px_30px_rgba(0,87,200,0.07)] lg:p-5">
+              <h2 className="flex items-center gap-2 font-black text-[#102033]"><Truck className="h-4 w-4 text-[#0057C8]" /> Delivery Address</h2>
+              <p className="mt-3 text-sm font-semibold leading-6 text-[#40576C]">
                 {order.shippingAddress?.fullName || "-"}<br />
                 {order.shippingAddress?.mobile || "-"}<br />
                 {order.shippingAddress?.addressLine1 || ""}
@@ -168,13 +168,13 @@ export default function OrderDetailPage({ orderId }: { orderId?: string }) {
                 {order.shippingAddress?.city}, {order.shippingAddress?.state} - {order.shippingAddress?.pincode}
               </p>
             </section>
-            <section className="rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-4 shadow-[0_10px_30px_rgba(84,61,35,0.06)] lg:p-5">
-              <h2 className="text-sm font-black text-[#1D2D2E] sm:text-base">Price Details</h2>
+            <section className="rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-4 shadow-[0_10px_30px_rgba(0,87,200,0.07)] lg:p-5">
+              <h2 className="text-sm font-black text-[#102033] sm:text-base">Price Details</h2>
               <div className="mt-4 space-y-3 text-sm font-semibold">
                 <Row label="Subtotal" value={formatPrice(order.subtotalAmount)} />
                 <Row label="Discount" value={`-${formatPrice(order.discountAmount)}`} />
                 <Row label="Shipping" value={formatPrice(order.shippingAmount)} />
-                <div className="border-t border-[#E5D8C7] pt-3">
+                <div className="border-t border-[#D8EAF8] pt-3">
                   <Row label="Total" value={formatPrice(order.totalAmount)} strong />
                 </div>
               </div>
@@ -188,16 +188,16 @@ export default function OrderDetailPage({ orderId }: { orderId?: string }) {
 
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border border-[#E5D8C7] bg-white px-3 py-2">
-      <span className="text-[#5A6362]">{label}</span>
-      <span className="text-sm font-black text-[#1D2D2E] sm:text-base">{value}</span>
+    <div className="flex items-center justify-between gap-3 rounded-xl border border-[#D8EAF8] bg-white px-3 py-2">
+      <span className="text-[#40576C]">{label}</span>
+      <span className="text-sm font-black text-[#102033] sm:text-base">{value}</span>
     </div>
   );
 }
 
 function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
-    <div className={`flex justify-between gap-3 ${strong ? "text-base font-black text-[#1D2D2E]" : "text-[#5A6362]"}`}>
+    <div className={`flex justify-between gap-3 ${strong ? "text-base font-black text-[#102033]" : "text-[#40576C]"}`}>
       <span>{label}</span>
       <span>{value}</span>
     </div>

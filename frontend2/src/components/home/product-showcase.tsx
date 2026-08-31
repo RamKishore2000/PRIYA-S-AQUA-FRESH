@@ -52,14 +52,14 @@ export function ProductShowcase({
   if (!products.length) return null;
 
   return (
-    <section data-home-reveal className={`${tone === "soft" ? "bg-[#F8F3EC]" : "bg-[#FFF9F1]"} px-4 py-10 md:px-6 md:py-12 lg:px-8 lg:py-16`}>
+    <section data-home-reveal className={`${tone === "soft" ? "bg-[#F3FAFF]" : "bg-[#FFFFFF]"} px-4 py-10 md:px-6 md:py-12 lg:px-8 lg:py-16`}>
       <div className="mx-auto max-w-7xl">
         <div data-reveal-item className="mb-6 flex items-end justify-between gap-3 lg:mb-10 lg:gap-6">
           <div className="min-w-0 max-w-2xl">
-            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#B68A45]">{eyebrow}</p>
-            <h2 data-home-section-title className="mt-2 font-serif text-3xl font-semibold text-[#1D2D2E] md:text-4xl lg:mt-3 lg:text-5xl">{title}</h2>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#0057C8]">{eyebrow}</p>
+            <h2 data-home-section-title className="mt-2 font-serif text-3xl font-semibold text-[#102033] md:text-4xl lg:mt-3 lg:text-5xl">{title}</h2>
           </div>
-          <Link href={viewAllHref} className="shrink-0 whitespace-nowrap rounded-lg border border-[#C59A55] px-3 py-2 text-xs font-black text-[#9B7137] transition hover:bg-[#F5E9D8] sm:px-5 sm:text-sm">
+          <Link href={viewAllHref} className="shrink-0 whitespace-nowrap rounded-lg border border-[#0057C8] px-3 py-2 text-xs font-black text-[#0057C8] transition hover:bg-[#EAF6FF] sm:px-5 sm:text-sm">
             View All
           </Link>
         </div>
@@ -74,15 +74,15 @@ export function ProductShowcase({
         {products.length > 1 ? (
           <div className="mt-2 flex items-center justify-between gap-3">
             <div data-home-scroll-cue className="flex justify-center gap-1.5" aria-hidden="true">
-              <span className="h-1.5 w-5 rounded-full bg-[#0A3A38]" />
+              <span className="h-1.5 w-5 rounded-full bg-[#0057C8]" />
               <span className="h-1.5 w-1.5 rounded-full bg-[#CDBB9C]" />
               <span className="h-1.5 w-1.5 rounded-full bg-[#CDBB9C]" />
             </div>
             <div data-home-carousel-controls className="flex items-center gap-2" aria-label="Product carousel controls">
-              <button type="button" onClick={() => scrollProducts("left")} disabled={!canScrollLeft} className={`grid h-9 w-9 place-items-center rounded-full border shadow-[0_8px_18px_rgba(84,61,35,0.1)] transition ${canScrollLeft ? "border-[#0A3A38] bg-[#0A3A38] text-white hover:bg-[#124945]" : "border-[#D8C8B4] bg-[#FFF9F1] text-[#AFA391]"}`} aria-label="Scroll products left" title="Scroll left">
+              <button type="button" onClick={() => scrollProducts("left")} disabled={!canScrollLeft} className={`grid h-9 w-9 place-items-center rounded-full border shadow-[0_8px_18px_rgba(0,87,200,0.10)] transition ${canScrollLeft ? "border-[#0057C8] bg-[#0057C8] text-white hover:bg-[#124945]" : "border-[#D8C8B4] bg-[#FFFFFF] text-[#AFA391]"}`} aria-label="Scroll products left" title="Scroll left">
                 <ChevronLeft className="h-4 w-4" />
               </button>
-              <button type="button" onClick={() => scrollProducts("right")} disabled={!canScrollRight} className={`grid h-9 w-9 place-items-center rounded-full border shadow-[0_8px_18px_rgba(10,58,56,0.2)] transition ${canScrollRight ? "border-[#0A3A38] bg-[#0A3A38] text-white hover:bg-[#124945]" : "border-[#D8C8B4] bg-[#FFF9F1] text-[#AFA391]"}`} aria-label="Scroll products right" title="Scroll right">
+              <button type="button" onClick={() => scrollProducts("right")} disabled={!canScrollRight} className={`grid h-9 w-9 place-items-center rounded-full border shadow-[0_8px_18px_rgba(10,58,56,0.2)] transition ${canScrollRight ? "border-[#0057C8] bg-[#0057C8] text-white hover:bg-[#124945]" : "border-[#D8C8B4] bg-[#FFFFFF] text-[#AFA391]"}`} aria-label="Scroll products right" title="Scroll right">
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>

@@ -26,24 +26,24 @@ export default function ContactPage() {
               const Icon = item.icon;
               const content = (
                 <>
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#0A3A38]/10 text-[#0A3A38] transition group-hover:bg-[#0A3A38] group-hover:text-white">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#0057C8]/10 text-[#0057C8] transition group-hover:bg-[#0057C8] group-hover:text-white">
                     <Icon className="h-5 w-5" />
                   </span>
-                  <h2 className="mt-3 text-lg font-black text-[#1D2D2E]">{item.title}</h2>
-                  <p className="mt-1 text-sm font-semibold leading-6 text-[#5A6362]">{item.text}</p>
+                  <h2 className="mt-3 text-lg font-black text-[#102033]">{item.title}</h2>
+                  <p className="mt-1 text-sm font-semibold leading-6 text-[#40576C]">{item.text}</p>
                 </>
               );
 
               if (item.href) {
                 return (
-                  <a key={item.title} href={item.href} target={item.title === "Address" ? "_blank" : undefined} rel={item.title === "Address" ? "noreferrer" : undefined} className="group block rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-5 shadow-[0_10px_30px_rgba(84,61,35,0.06)] transition hover:-translate-y-1 hover:border-[#D6B47A]">
+                  <a key={item.title} href={item.href} target={item.title === "Address" ? "_blank" : undefined} rel={item.title === "Address" ? "noreferrer" : undefined} className="group block rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-5 shadow-[0_10px_30px_rgba(0,87,200,0.07)] transition hover:-translate-y-1 hover:border-[#00AEEF]">
                     {content}
                   </a>
                 );
               }
 
               return (
-                <div key={item.title} className="rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-5 shadow-[0_10px_30px_rgba(84,61,35,0.06)]">
+                <div key={item.title} className="rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-5 shadow-[0_10px_30px_rgba(0,87,200,0.07)]">
                   {content}
                 </div>
               );
@@ -52,13 +52,13 @@ export default function ContactPage() {
           <ContactForm />
         </div>
 
-        <div className="mx-auto mt-8 max-w-7xl overflow-hidden rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] shadow-[0_14px_38px_rgba(84,61,35,0.08)]">
-          <div className="flex flex-col gap-3 border-b border-[#E8DCCB] px-5 py-4 md:flex-row md:items-center md:justify-between">
+        <div className="mx-auto mt-8 max-w-7xl overflow-hidden rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] shadow-[0_14px_38px_rgba(0,87,200,0.08)]">
+          <div className="flex flex-col gap-3 border-b border-[#D8EAF8] px-5 py-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#B68A45]">Visit Us</p>
-              <h2 className="mt-1 text-xl font-black text-[#1D2D2E]">Find Priya's Aqua Fresh on Map</h2>
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#0057C8]">Visit Us</p>
+              <h2 className="mt-1 text-xl font-black text-[#102033]">Find Priya's Aqua Fresh on Map</h2>
             </div>
-            <a href={mapUrl} target="_blank" rel="noreferrer" className="inline-flex h-10 items-center justify-center rounded-full bg-[#0A3A38] px-5 text-sm font-black text-white transition hover:bg-[#12383A]">
+            <a href={mapUrl} target="_blank" rel="noreferrer" className="inline-flex h-10 items-center justify-center rounded-full bg-[#0057C8] px-5 text-sm font-black text-white transition hover:bg-[#063B7A]">
               Open in Maps
             </a>
           </div>

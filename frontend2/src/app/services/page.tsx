@@ -34,21 +34,21 @@ export default function ServicesPage() {
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#C59A55]/35 bg-[#FFF9F1] px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-[#B68A45] shadow-[0_8px_24px_rgba(84,61,35,0.06)]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#0057C8]/35 bg-[#FFFFFF] px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-[#0057C8] shadow-[0_8px_24px_rgba(0,87,200,0.07)]">
                 <Wrench className="h-4 w-4" />
                 Service Support
               </div>
 
               <div className="mt-8 grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
                 {serviceHighlights.map((item) => (
-                  <div key={item.title} className="group rounded-2xl border border-[#E8DCCB] bg-[#FFF9F1] p-5 shadow-[0_10px_30px_rgba(84,61,35,0.06)] transition duration-500 hover:-translate-y-1 hover:border-[#D6B47A] hover:bg-[#FFFDF8]">
+                  <div key={item.title} className="group rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-5 shadow-[0_10px_30px_rgba(0,87,200,0.07)] transition duration-500 hover:-translate-y-1 hover:border-[#00AEEF] hover:bg-[#F8FCFF]">
                     <div className="flex items-start gap-4">
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#0A3A38]/10 text-[#0A3A38] transition group-hover:bg-[#0A3A38] group-hover:text-white">
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#0057C8]/10 text-[#0057C8] transition group-hover:bg-[#0057C8] group-hover:text-white">
                         <item.icon className="h-5 w-5" />
                       </span>
                       <span>
-                        <span className="block text-base font-black text-[#1D2D2E]">{item.title}</span>
-                        <span className="mt-1 block text-sm font-semibold leading-6 text-[#5A6362]">{item.description}</span>
+                        <span className="block text-base font-black text-[#102033]">{item.title}</span>
+                        <span className="mt-1 block text-sm font-semibold leading-6 text-[#40576C]">{item.description}</span>
                       </span>
                     </div>
                   </div>
@@ -56,14 +56,14 @@ export default function ServicesPage() {
               </div>
             </div>
 
-            <div className="rounded-[1.35rem] border border-[#E8DCCB] bg-[#FFF9F1] p-4 shadow-[0_18px_45px_rgba(84,61,35,0.1)] md:p-6">
+            <div className="rounded-[1.35rem] border border-[#D8EAF8] bg-[#FFFFFF] p-4 shadow-[0_18px_45px_rgba(0,87,200,0.10)] md:p-6">
               <div className="mb-6 grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.22em] text-[#B68A45]">Book a service</p>
-                  <h2 className="mt-2 font-serif text-3xl font-semibold text-[#1D2D2E]">Tell us what you need</h2>
+                  <p className="text-xs font-black uppercase tracking-[0.22em] text-[#0057C8]">Book a service</p>
+                  <h2 className="mt-2 font-serif text-3xl font-semibold text-[#102033]">Tell us what you need</h2>
                 </div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#E5D8C7] bg-white px-4 py-2 text-sm font-black text-[#526161]">
-                  <CalendarCheck className="h-4 w-4 text-[#0A3A38]" />
+                <div className="inline-flex items-center gap-2 rounded-full border border-[#D8EAF8] bg-white px-4 py-2 text-sm font-black text-[#40576C]">
+                  <CalendarCheck className="h-4 w-4 text-[#0057C8]" />
                   Service Request
                 </div>
               </div>
@@ -72,23 +72,23 @@ export default function ServicesPage() {
           </div>
 
           <div className="mt-10 grid gap-5 lg:grid-cols-[1fr_0.72fr]">
-            <div className="rounded-[1.35rem] border border-[#E8DCCB] bg-[#FFF9F1] p-5 shadow-[0_10px_30px_rgba(84,61,35,0.06)] md:p-6">
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#B68A45]">What we support</p>
+            <div className="rounded-[1.35rem] border border-[#D8EAF8] bg-[#FFFFFF] p-5 shadow-[0_10px_30px_rgba(0,87,200,0.07)] md:p-6">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#0057C8]">What we support</p>
               <div className="mt-5 flex flex-wrap gap-3">
                 {services.map((service) => (
-                  <span key={service} className="rounded-full border border-[#C59A55]/35 bg-[#F5E9D8] px-4 py-2 text-sm font-black text-[#526161]">
+                  <span key={service} className="rounded-full border border-[#0057C8]/35 bg-[#EAF6FF] px-4 py-2 text-sm font-black text-[#40576C]">
                     {service}
                   </span>
                 ))}
               </div>
             </div>
 
-            <div className="rounded-[1.35rem] border border-[#E8DCCB] bg-[#FFF9F1] p-5 shadow-[0_10px_30px_rgba(84,61,35,0.06)] md:p-6">
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#B68A45]">How it works</p>
+            <div className="rounded-[1.35rem] border border-[#D8EAF8] bg-[#FFFFFF] p-5 shadow-[0_10px_30px_rgba(0,87,200,0.07)] md:p-6">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#0057C8]">How it works</p>
               <div className="mt-5 grid gap-3">
                 {serviceSteps.map((step, index) => (
-                  <div key={step} className="flex items-center gap-3 text-sm font-black text-[#526161]">
-                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#0A3A38] text-xs font-black text-white">
+                  <div key={step} className="flex items-center gap-3 text-sm font-black text-[#40576C]">
+                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#0057C8] text-xs font-black text-white">
                       {index + 1}
                     </span>
                     {step}

@@ -86,7 +86,7 @@ function buildSocialLinks(settings: SiteSettings) {
     { label: "YouTube", href: settings.youtube, icon: YouTubeIcon, colorClass: "text-[#ff0000]" },
     { label: "Instagram", href: settings.instagram, icon: InstagramIcon, colorClass: "text-[#e4405f]" },
     { label: "LinkedIn", href: settings.linkedin, icon: LinkedInIcon, colorClass: "text-[#0a66c2]" },
-    { label: "X", href: settings.x, icon: XIcon, colorClass: "text-[#1D2D2E]" },
+    { label: "X", href: settings.x, icon: XIcon, colorClass: "text-[#102033]" },
   ].filter((social) => social.href);
 }
 export function Footer() {
@@ -104,8 +104,8 @@ export function Footer() {
   }, []);
 
   return (
-    <footer className="relative z-20 border-t border-[#DFCEB9] bg-[linear-gradient(180deg,#F7EFE5,#EFE2D2)] text-[#243A3B] shadow-[0_-18px_60px_rgba(84,61,35,0.08)]">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_50%_0%,rgba(182,138,69,0.16),transparent_42%)]" />
+    <footer className="relative z-20 border-t border-[#C7E4F8] bg-[linear-gradient(180deg,#FFFFFF,#F3FAFF)] text-[#102033] shadow-[0_-18px_60px_rgba(0,87,200,0.08)]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_50%_0%,rgba(0,174,239,0.14),transparent_42%)]" />
       <div className="relative mx-auto max-w-[96rem] overflow-hidden px-5 pt-10 md:px-8">
         <p className="footer-video-text select-none text-center font-serif text-[clamp(2.4rem,8.6vw,7.4rem)] font-black uppercase leading-none tracking-[0.04em] lg:whitespace-nowrap lg:text-[clamp(3.8rem,6.3vw,7.2rem)] lg:tracking-[0.015em]">
           Priya&apos;s Aqua Fresh
@@ -116,16 +116,16 @@ export function Footer() {
           <Link href="/" className="inline-flex" aria-label="Priya's Aqua Fresh home">
             <Image src="/logo-header.png" alt="Priya's Aquafresh" width={486} height={191} className="h-auto w-[180px] object-contain" />
           </Link>
-          <p className="mt-5 max-w-sm text-sm font-semibold leading-6 text-[#5D6766]">
+          <p className="mt-5 max-w-sm text-sm font-semibold leading-6 text-[#40576C]">
             Premium water purification solutions for homes, businesses, and everyday healthy living.
           </p>
-          <div className="mt-5 space-y-2 text-sm font-semibold text-[#5D6766]">
-            <p className="flex items-center gap-2"><Phone className="h-4 w-4 text-[#B68A45]" /> {settings.phone}</p>
-            <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-[#B68A45]" /> {settings.email}</p>
-            <p className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#B68A45]" /> {settings.address}</p>
+          <div className="mt-5 space-y-2 text-sm font-semibold text-[#40576C]">
+            <p className="flex items-center gap-2"><Phone className="h-4 w-4 text-[#0057C8]" /> {settings.phone}</p>
+            <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-[#0057C8]" /> {settings.email}</p>
+            <p className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#0057C8]" /> {settings.address}</p>
           </div>
           <div className="mt-6">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#B68A45]">Follow Us</p>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#0057C8]">Follow Us</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {dynamicSocialLinks.map((social) => (
                 <Link
@@ -134,7 +134,7 @@ export function Footer() {
                   aria-label={social.label}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex h-10 w-10 items-center justify-center rounded-md border border-[#DFCEB9] bg-white text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:border-[#B68A45] hover:bg-white hover:shadow-md"
+                  className="flex h-10 w-10 items-center justify-center rounded-md border border-[#C7E4F8] bg-white text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:border-[#0057C8] hover:bg-white hover:shadow-md"
                 >
                   <social.icon className={`h-5 w-5 ${social.colorClass}`} />
                 </Link>
@@ -146,10 +146,10 @@ export function Footer() {
         <div className="grid gap-8 sm:grid-cols-2">
           {visibleFooterColumns.map((column) => (
             <div key={column.title}>
-              <h3 className="text-sm font-black tracking-[0.16em] text-[#B68A45]">{column.title}</h3>
+              <h3 className="text-sm font-black tracking-[0.16em] text-[#0057C8]">{column.title}</h3>
               <div className="mt-4 grid gap-3">
                 {column.links.map((link) => (
-                  <Link key={link.href} href={link.href} className="text-sm font-semibold text-[#5D6766] transition hover:text-[#0A3A38]">
+                  <Link key={link.href} href={link.href} className="text-sm font-semibold text-[#40576C] transition hover:text-[#0057C8]">
                     {link.label}
                   </Link>
                 ))}
@@ -158,7 +158,7 @@ export function Footer() {
           ))}
         </div>
       </div>
-      <div className="border-t border-[#DFCEB9] px-5 py-5 text-center text-sm font-semibold text-[#7D7B75]">
+      <div className="border-t border-[#C7E4F8] px-5 py-5 text-center text-sm font-semibold text-[#74879A]">
         Copyright 2026 Priya&apos;s Aqua Fresh. All rights reserved.
       </div>
     </footer>
