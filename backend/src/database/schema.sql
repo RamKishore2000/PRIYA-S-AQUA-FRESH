@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS users (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY uq_users_mobile (mobile),
-  UNIQUE KEY uq_users_email (email),
+  UNIQUE KEY uq_users_mobile_role (mobile, role),
+  UNIQUE KEY uq_users_email_role (email, role),
   CONSTRAINT chk_users_mobile_digits CHECK (mobile REGEXP '^[6-9][0-9]{9}$')
 );
 
@@ -50,6 +50,10 @@ CREATE TABLE IF NOT EXISTS otp_verifications (
 CREATE TABLE IF NOT EXISTS dealers (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id BIGINT UNSIGNED NOT NULL,
+  name VARCHAR(120) NOT NULL,
+  mobile VARCHAR(10) NOT NULL,
+  email VARCHAR(190) NOT NULL,
+  status ENUM('ACTIVE', 'INACTIVE', 'BLOCKED') NOT NULL DEFAULT 'ACTIVE',
   dealer_code VARCHAR(40) NOT NULL,
   business_name VARCHAR(160) NOT NULL,
   gst_number VARCHAR(30) NULL,
@@ -63,8 +67,11 @@ CREATE TABLE IF NOT EXISTS dealers (
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY uq_dealers_user_id (user_id),
+  UNIQUE KEY uq_dealers_mobile (mobile),
+  UNIQUE KEY uq_dealers_email (email),
   UNIQUE KEY uq_dealers_dealer_code (dealer_code),
   UNIQUE KEY uq_dealers_gst_number (gst_number),
+  CONSTRAINT chk_dealers_mobile_digits CHECK (mobile REGEXP '^[6-9][0-9]{9}$'),
   CONSTRAINT chk_dealers_pincode_digits CHECK (pincode REGEXP '^[0-9]{6}$'),
   CONSTRAINT fk_dealers_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

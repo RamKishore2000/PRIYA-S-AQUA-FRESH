@@ -1,22 +1,40 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import { ContactForm } from "@/components/contact/contact-form";
 import { SitePage } from "@/components/layout/site-page";
+import { defaultSiteSettings, fetchSiteSettings, type SiteSettings } from "@/services/settings-service";
 
-const phoneNumber = "+919951078699";
-const emailAddress = "priyasaquafreshsales@gmail.com";
-const businessAddress = "2-4-1082, No.102, Om Sri Sai Nilayam, Nimboliadda, Kachiguda, Hyderabad, Telangana";
-const mapQuery = encodeURIComponent(businessAddress);
-const mapUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
-const mapEmbedUrl = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
+function getPhoneHref(phone: string) {
+  const digits = phone.replace(/\D/g, "");
+  if (!digits) return "";
+  return `tel:+${digits.startsWith("91") ? digits : `91${digits}`}`;
+}
 
-const contactItems = [
-  { icon: Phone, title: "Phone", text: phoneNumber, href: `tel:${phoneNumber}` },
-  { icon: Mail, title: "Email", text: emailAddress, href: `mailto:${emailAddress}` },
-  { icon: Clock, title: "Business Hours", text: "Monday to Saturday, 10:00 AM - 7:00 PM" },
-  { icon: MapPin, title: "Address", text: businessAddress, href: mapUrl },
-];
+function getMailHref(email: string) {
+  const cleanEmail = email.trim();
+  return cleanEmail ? `mailto:${cleanEmail}` : "";
+}
 
 export default function ContactPage() {
+  const [settings, setSettings] = useState<SiteSettings>(defaultSiteSettings);
+
+  useEffect(() => {
+    fetchSiteSettings().then(setSettings).catch(() => setSettings(defaultSiteSettings));
+  }, []);
+
+  const businessAddress = settings.address;
+  const mapQuery = encodeURIComponent(businessAddress);
+  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+  const mapEmbedUrl = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
+  const contactItems = useMemo(() => [
+    { icon: Phone, title: "Phone", text: settings.phone, href: getPhoneHref(settings.phone) },
+    { icon: Mail, title: "Email", text: settings.email, href: getMailHref(settings.email) },
+    { icon: Clock, title: "Business Hours", text: "Monday to Saturday, 10:00 AM - 7:00 PM" },
+    { icon: MapPin, title: "Address", text: businessAddress, href: mapUrl },
+  ], [businessAddress, mapUrl, settings.email, settings.phone]);
+
   return (
     <SitePage eyebrow="Contact" title="Contact Us" description="Reach Priya's Aqua Fresh for product guidance, service support, and business enquiries.">
       <section className="px-5 pb-20 md:px-8">

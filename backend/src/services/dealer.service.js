@@ -1,5 +1,4 @@
 const dealerRepository = require("../repositories/dealer.repository");
-const userRepository = require("../repositories/user.repository");
 const { ApiError } = require("../utils/apiError");
 
 async function listDealers() {
@@ -28,21 +27,22 @@ async function updateDealerStatus(id, status) {
   return dealerRepository.updateStatus(id, status);
 }
 
-async function resetPassword(id, password) {
-  await getDealer(id);
-  await dealerRepository.resetPassword(id, password);
-}
-
 async function ensureUniqueDealer(payload, current = null) {
-  const emailUser = await userRepository.findByEmail(payload.email.trim().toLowerCase());
-  if (emailUser && String(emailUser.id) !== String(current?.userId)) {
-    throw new ApiError(409, "Email is already registered.", { email: "Email is already registered." });
+  const email = payload.email.trim().toLowerCase();
+  const mobile = payload.mobile.trim();
+  const dealerCode = payload.dealerCode.trim().toUpperCase();
+
+  const emailDealer = await dealerRepository.findByEmail(email);
+  if (emailDealer && String(emailDealer.id) !== String(current?.id)) {
+    throw new ApiError(409, "Dealer email is already registered.", { email: "Dealer email is already registered." });
   }
-  const mobileUser = await userRepository.findByMobile(payload.mobile.trim());
-  if (mobileUser && String(mobileUser.id) !== String(current?.userId)) {
-    throw new ApiError(409, "Mobile number is already registered.", { mobile: "Mobile number is already registered." });
+
+  const mobileDealer = await dealerRepository.findByMobile(mobile);
+  if (mobileDealer && String(mobileDealer.id) !== String(current?.id)) {
+    throw new ApiError(409, "Dealer mobile number is already registered.", { mobile: "Dealer mobile number is already registered." });
   }
-  const existingCode = await dealerRepository.findByDealerCode(payload.dealerCode.trim().toUpperCase());
+
+  const existingCode = await dealerRepository.findByDealerCode(dealerCode);
   if (existingCode && String(existingCode.id) !== String(current?.id)) {
     throw new ApiError(409, "Dealer code already exists.", { dealerCode: "Dealer code already exists." });
   }
@@ -60,7 +60,6 @@ function normalizeDealerPayload(payload) {
     city: payload.city.trim(),
     state: payload.state.trim(),
     pincode: payload.pincode.trim(),
-    password: payload.password,
     status: payload.status || "ACTIVE",
   };
 }
@@ -71,5 +70,4 @@ module.exports = {
   createDealer,
   updateDealer,
   updateDealerStatus,
-  resetPassword,
 };

@@ -9,24 +9,38 @@ async function createOtp({ userId, mobile, purpose, otpHash, expiresAt, resendCo
   return result.insertId;
 }
 
-async function findLatestActive(mobile, purpose) {
+async function findLatestActive(mobile, purpose, userId = null) {
+  const filters = ["mobile = ?", "purpose = ?", "verified_at IS NULL", "expires_at > NOW()"];
+  const params = [mobile, purpose];
+  if (userId) {
+    filters.push("user_id = ?");
+    params.push(userId);
+  }
+
   const [rows] = await pool.execute(
     `SELECT id, user_id, mobile, purpose, otp_hash, expires_at, verified_at, attempts, resend_count, last_sent_at, created_at
      FROM otp_verifications
-     WHERE mobile = ? AND purpose = ? AND verified_at IS NULL AND expires_at > NOW()
+     WHERE ${filters.join(" AND ")}
      ORDER BY id DESC
      LIMIT 1`,
-    [mobile, purpose],
+    params,
   );
   return rows[0] || null;
 }
 
-async function countRecentSends(mobile, purpose, windowMinutes) {
+async function countRecentSends(mobile, purpose, windowMinutes, userId = null) {
+  const filters = ["mobile = ?", "purpose = ?", "created_at >= DATE_SUB(NOW(), INTERVAL ? MINUTE)"];
+  const params = [mobile, purpose, windowMinutes];
+  if (userId) {
+    filters.push("user_id = ?");
+    params.push(userId);
+  }
+
   const [rows] = await pool.execute(
     `SELECT COUNT(*) AS total
      FROM otp_verifications
-     WHERE mobile = ? AND purpose = ? AND created_at >= DATE_SUB(NOW(), INTERVAL ? MINUTE)`,
-    [mobile, purpose, windowMinutes],
+     WHERE ${filters.join(" AND ")}`,
+    params,
   );
   return Number(rows[0]?.total || 0);
 }
@@ -35,11 +49,14 @@ async function markVerified(id) {
   await pool.execute("UPDATE otp_verifications SET verified_at = NOW() WHERE id = ? AND verified_at IS NULL", [id]);
 }
 
-async function expireActiveOtps(mobile, purpose) {
-  await pool.execute(
-    "UPDATE otp_verifications SET expires_at = NOW() WHERE mobile = ? AND purpose = ? AND verified_at IS NULL AND expires_at > NOW()",
-    [mobile, purpose],
-  );
+async function expireActiveOtps(mobile, purpose, userId = null) {
+  const filters = ["mobile = ?", "purpose = ?", "verified_at IS NULL", "expires_at > NOW()"];
+  const params = [mobile, purpose];
+  if (userId) {
+    filters.push("user_id = ?");
+    params.push(userId);
+  }
+  await pool.execute(`UPDATE otp_verifications SET expires_at = NOW() WHERE ${filters.join(" AND ")}`, params);
 }
 
 async function incrementAttempts(id) {

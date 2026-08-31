@@ -101,7 +101,7 @@ export function CouponOffersSection({ offers }: { offers: CouponOffer[] }) {
                   type="button"
                   aria-label={`Show offer ${index + 1}`}
                   onClick={() => setActiveIndex(index)}
-                  className={`h-2.5 rounded-full transition-all ${activeIndex === index ? "w-8 bg-[#0057C8]" : "w-2.5 bg-[#D9C5A8]"}`}
+                  className={`h-2.5 rounded-full transition-all ${activeIndex === index ? "w-8 bg-[#0057C8]" : "w-2.5 bg-[#C7E4F8]"}`}
                 />
               ))}
             </div>
@@ -123,7 +123,7 @@ export function CouponOffersSection({ offers }: { offers: CouponOffer[] }) {
 function OfferCard({ offer }: { offer: CouponOffer }) {
   return (
     <article className="group grid grid-cols-[8.25rem_minmax(0,1fr)] overflow-hidden rounded-[1rem] border border-[#C7E4F8] bg-[#F8FCFF] shadow-[0_18px_52px_rgba(0,87,200,0.10)] sm:grid-cols-[11rem_minmax(0,1fr)] md:grid-cols-[0.43fr_0.57fr]">
-      <div className="relative h-[11rem] overflow-hidden border-r border-dashed border-[#28B463] bg-[#F6E8D1] p-1.5 sm:h-[12.5rem] sm:p-2 md:h-auto md:min-h-[360px] md:p-5">
+      <div className="relative h-[11rem] overflow-hidden border-r border-dashed border-[#28B463] bg-[#F3FAFF] p-1.5 sm:h-[12.5rem] sm:p-2 md:h-auto md:min-h-[360px] md:p-5">
         {offer.image ? (
           <Image
             src={offer.image}
@@ -140,7 +140,7 @@ function OfferCard({ offer }: { offer: CouponOffer }) {
         )}
       </div>
 
-      <div className="relative flex h-[11rem] min-w-0 flex-col justify-between overflow-hidden bg-[radial-gradient(circle_at_left,rgba(216,184,121,0.13),transparent_34%),linear-gradient(180deg,#F8FCFF,#FFFFFF)] p-2.5 sm:h-[12.5rem] sm:p-3 md:h-auto md:min-h-[360px] md:p-8">
+      <div className="relative flex h-[11rem] min-w-0 flex-col justify-between overflow-hidden bg-[radial-gradient(circle_at_left,rgba(18,168,230,0.12),transparent_34%),linear-gradient(180deg,#F8FCFF,#FFFFFF)] p-2.5 sm:h-[12.5rem] sm:p-3 md:h-auto md:min-h-[360px] md:p-8">
         <span className="absolute -left-3 top-1/2 hidden h-6 w-6 -translate-y-1/2 rounded-full border border-[#C7E4F8] bg-[#FFFFFF] md:block" />
         <span className="absolute -right-3 top-1/2 hidden h-6 w-6 -translate-y-1/2 rounded-full border border-[#C7E4F8] bg-[#FFFFFF] md:block" />
         <div>
@@ -188,3 +188,5 @@ function OfferCard({ offer }: { offer: CouponOffer }) {
     </article>
   );
 }
+
+

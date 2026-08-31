@@ -26,10 +26,6 @@ async function updateDealerStatus(req, res) {
   return sendSuccess(res, 200, "Dealer status updated successfully.", { dealer });
 }
 
-async function resetPassword(req, res) {
-  await dealerService.resetPassword(req.params.id, req.body.password);
-  return sendSuccess(res, 200, "Dealer password updated successfully.");
-}
 
 module.exports = {
   listDealers,
@@ -37,5 +33,4 @@ module.exports = {
   createDealer,
   updateDealer,
   updateDealerStatus,
-  resetPassword,
 };

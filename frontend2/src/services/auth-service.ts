@@ -48,29 +48,31 @@ export async function loginUser(payload: { email: string; password: string; reme
 }
 
 
-export async function sendLoginOtp(mobile: string) {
+export type LoginType = "CUSTOMER" | "DEALER";
+
+export async function sendLoginOtp(mobile: string, loginType: LoginType = "CUSTOMER") {
   const response = await fetch(`${API_BASE_URL}/api/auth/otp/send`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ mobile }),
+    body: JSON.stringify({ mobile, loginType }),
   });
   const result = (await response.json()) as ApiResponse<{ otp: { mobile: string; expiresInSeconds: number; resendAfterSeconds: number } }>;
   if (!response.ok || !result.success || !result.data) throw new Error(result.message || "Unable to send OTP.");
   return result.data.otp;
 }
 
-export async function resendLoginOtp(mobile: string) {
+export async function resendLoginOtp(mobile: string, loginType: LoginType = "CUSTOMER") {
   const response = await fetch(`${API_BASE_URL}/api/auth/otp/resend`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ mobile }),
+    body: JSON.stringify({ mobile, loginType }),
   });
   const result = (await response.json()) as ApiResponse<{ otp: { mobile: string; expiresInSeconds: number; resendAfterSeconds: number } }>;
   if (!response.ok || !result.success || !result.data) throw new Error(result.message || "Unable to resend OTP.");
   return result.data.otp;
 }
 
-export async function verifyLoginOtp(payload: { mobile: string; otp: string; rememberMe?: boolean }) {
+export async function verifyLoginOtp(payload: { mobile: string; otp: string; rememberMe?: boolean; loginType?: LoginType }) {
   const response = await fetch(`${API_BASE_URL}/api/auth/otp/verify`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

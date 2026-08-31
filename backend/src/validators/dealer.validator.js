@@ -15,19 +15,10 @@ const dealerPayloadValidator = [
   body("city").trim().notEmpty().withMessage("City is required."),
   body("state").trim().notEmpty().withMessage("State is required."),
   body("pincode").trim().matches(/^\d{6}$/).withMessage("Enter a valid 6 digit pincode."),
-  body("password").optional().matches(/^\d{4}$/).withMessage("Password must be a 4 digit number."),
   body("status").optional().isIn(["ACTIVE", "INACTIVE", "BLOCKED"]).withMessage("Status is invalid."),
 ];
 
-const createDealerValidator = [
-  ...dealerPayloadValidator,
-  body("password").notEmpty().withMessage("Password is required.").matches(/^\d{4}$/).withMessage("Password must be a 4 digit number."),
-];
-
-const resetPasswordValidator = [
-  body("password").notEmpty().withMessage("Password is required.").matches(/^\d{4}$/).withMessage("Password must be a 4 digit number."),
-  body("confirmPassword").custom((value, { req }) => value === req.body.password).withMessage("Passwords must match."),
-];
+const createDealerValidator = [...dealerPayloadValidator];
 
 const statusValidator = [
   body("status").isIn(["ACTIVE", "INACTIVE", "BLOCKED"]).withMessage("Status is invalid."),
@@ -37,6 +28,5 @@ module.exports = {
   dealerIdValidator,
   createDealerValidator,
   dealerPayloadValidator,
-  resetPasswordValidator,
   statusValidator,
 };

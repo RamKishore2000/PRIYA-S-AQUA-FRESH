@@ -91,10 +91,10 @@ export function CategoryShowcase({ categories }: { categories: Category[] }) {
               <span className="h-1.5 w-1.5 rounded-full bg-[#CDBB9C]" />
             </div>
             <div data-home-carousel-controls className="flex items-center gap-2" aria-label="Category carousel controls">
-              <button type="button" onClick={() => scrollCategories("left")} disabled={!canScrollLeft} className={`grid h-9 w-9 place-items-center rounded-full border shadow-[0_8px_18px_rgba(0,87,200,0.10)] transition ${canScrollLeft ? "border-[#0057C8] bg-[#0057C8] text-white hover:bg-[#124945]" : "border-[#D8C8B4] bg-[#FFFFFF] text-[#AFA391]"}`} aria-label="Scroll categories left" title="Scroll left">
+              <button type="button" onClick={() => scrollCategories("left")} disabled={!canScrollLeft} className={`grid h-9 w-9 place-items-center rounded-full border shadow-[0_8px_18px_rgba(0,87,200,0.10)] transition ${canScrollLeft ? "border-[#0057C8] bg-[#0057C8] text-white hover:bg-[#124945]" : "border-[#C7E4F8] bg-[#FFFFFF] text-[#6D8FA8]"}`} aria-label="Scroll categories left" title="Scroll left">
                 <ChevronLeft className="h-4 w-4" />
               </button>
-              <button type="button" onClick={() => scrollCategories("right")} disabled={!canScrollRight} className={`grid h-9 w-9 place-items-center rounded-full border shadow-[0_8px_18px_rgba(10,58,56,0.2)] transition ${canScrollRight ? "border-[#0057C8] bg-[#0057C8] text-white hover:bg-[#124945]" : "border-[#D8C8B4] bg-[#FFFFFF] text-[#AFA391]"}`} aria-label="Scroll categories right" title="Scroll right">
+              <button type="button" onClick={() => scrollCategories("right")} disabled={!canScrollRight} className={`grid h-9 w-9 place-items-center rounded-full border shadow-[0_8px_18px_rgba(10,58,56,0.2)] transition ${canScrollRight ? "border-[#0057C8] bg-[#0057C8] text-white hover:bg-[#124945]" : "border-[#C7E4F8] bg-[#FFFFFF] text-[#6D8FA8]"}`} aria-label="Scroll categories right" title="Scroll right">
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>

@@ -37,7 +37,7 @@ export function FaqSection() {
             <div key={faq.question} data-reveal-item className="overflow-hidden rounded-[0.85rem] border border-[#E6DACB] bg-[#FFFFFF] shadow-[0_8px_24px_rgba(0,87,200,0.06)]">
               <button onClick={() => setOpen(open === index ? -1 : index)} className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left text-lg font-black text-[#344344] transition hover:bg-[#F5EBDD]">
                 {faq.question}
-                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#F4EADF] text-[#0057C8]">{open === index ? "-" : "+"}</span>
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#EAF6FF] text-[#0057C8]">{open === index ? "-" : "+"}</span>
               </button>
               <div className={`grid transition-all duration-500 ${open === index ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
                 <div className="overflow-hidden">

@@ -55,6 +55,7 @@ const otpSendValidator = [
     .withMessage("Mobile number is required.")
     .matches(/^[6-9]\d{9}$/)
     .withMessage("Enter a valid 10 digit Indian mobile number."),
+  body("loginType").optional().isIn(["CUSTOMER", "DEALER"]).withMessage("Login type must be Customer or Dealer."),
 ];
 
 const otpVerifyValidator = [
@@ -71,6 +72,7 @@ const otpVerifyValidator = [
     .matches(/^\d{6}$/)
     .withMessage("Enter the 6 digit OTP."),
   body("rememberMe").optional().isBoolean().withMessage("Remember me must be true or false."),
+  body("loginType").optional().isIn(["CUSTOMER", "DEALER"]).withMessage("Login type must be Customer or Dealer."),
 ];
 const logoutValidator = [
   body("refreshToken").optional({ nullable: true, checkFalsy: true }).isString().withMessage("Refresh token is invalid."),

@@ -31,8 +31,8 @@ public class MainActivity extends BridgeActivity {
 
     private void applyLightSystemBars() {
         Window window = getWindow();
-        window.setStatusBarColor(Color.parseColor("#F8F3EC"));
-        window.setNavigationBarColor(Color.parseColor("#FFF9F1"));
+        window.setStatusBarColor(Color.parseColor("#F3FAFF"));
+        window.setNavigationBarColor(Color.parseColor("#FFFFFF"));
         window.getDecorView().setSystemUiVisibility(
             View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         );

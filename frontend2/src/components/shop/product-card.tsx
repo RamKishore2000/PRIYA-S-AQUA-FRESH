@@ -61,10 +61,10 @@ export function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <article data-product-card className="group overflow-hidden rounded-[0.9rem] border border-[#D8EAF8] bg-[#FFFFFF] text-center text-[#253738] shadow-[0_8px_24px_rgba(0,87,200,0.07)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(82,60,30,0.12)]">
+    <article data-product-card className="group overflow-hidden rounded-[0.9rem] border border-[#D8EAF8] bg-[#FFFFFF] text-center text-[#253738] shadow-[0_8px_24px_rgba(0,87,200,0.07)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(0,87,200,0.12)]">
       <div className="relative isolate h-48 overflow-hidden md:h-52 lg:h-56">
         <Link href={productHref} className="absolute inset-0 flex items-center justify-center" aria-label={product.name}>
-          <span data-product-image-area className="relative block aspect-square w-full max-w-[12.25rem] overflow-hidden bg-[#F7F0E7] md:max-w-[13.25rem] lg:max-w-[14.5rem]">
+          <span data-product-image-area className="relative block aspect-square w-full max-w-[12.25rem] overflow-hidden bg-[#F3FAFF] md:max-w-[13.25rem] lg:max-w-[14.5rem]">
 
 
             <span className="absolute inset-x-8 bottom-4 h-12 rounded-[100%] bg-black/20 blur-xl transition duration-500 group-hover:bg-[#0057C8]/12" />
@@ -131,3 +131,4 @@ export function ProductCard({ product }: { product: Product }) {
     </article>
   );
 }
+

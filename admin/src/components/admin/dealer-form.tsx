@@ -17,8 +17,6 @@ type DealerFormState = {
   city: string;
   state: string;
   pincode: string;
-  password: string;
-  confirmPassword: string;
   status: Extract<Status, "Active" | "Inactive">;
 };
 
@@ -42,8 +40,6 @@ function initialState(dealer?: Dealer): DealerFormState {
     city: dealer?.city ?? "",
     state: dealer?.state ?? "",
     pincode: dealer?.pincode ?? "",
-    password: "",
-    confirmPassword: "",
     status: dealer?.status === "Inactive" ? "Inactive" : "Active",
   };
 }
@@ -71,11 +67,6 @@ export function DealerForm({ mode = "add", initialDealer }: DealerFormProps) {
     if (!form.city.trim()) nextErrors.city = "City is required.";
     if (!form.state.trim()) nextErrors.state = "State is required.";
     if (!/^\d{6}$/.test(form.pincode)) nextErrors.pincode = "Enter a valid 6 digit pincode.";
-    if (mode === "add" && !form.password) nextErrors.password = "Password is required.";
-    if (form.password || form.confirmPassword) {
-      if (form.password.length < 4) nextErrors.password = "Password must be at least 4 characters.";
-      if (form.password !== form.confirmPassword) nextErrors.confirmPassword = "Passwords must match.";
-    }
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
@@ -92,7 +83,6 @@ export function DealerForm({ mode = "add", initialDealer }: DealerFormProps) {
       pincode: form.pincode,
       status: form.status === "Active" ? "ACTIVE" : "INACTIVE",
     };
-    if (form.password) payload.password = form.password;
 
     setSaving(true);
     const request = mode === "edit" && initialDealer
@@ -112,7 +102,7 @@ export function DealerForm({ mode = "add", initialDealer }: DealerFormProps) {
         <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
           <div className="mb-5">
             <h2 className="text-base font-bold text-slate-950">{mode === "edit" ? "Edit Dealer" : "Dealer Account Details"}</h2>
-            <p className="text-sm text-slate-500">Dealers are created by admin. They do not self-register from the customer frontend.</p>
+            <p className="text-sm text-slate-500">Dealers are created by admin and login with OTP using the registered dealer mobile number.</p>
           </div>
           <div className="grid gap-4 lg:grid-cols-3">
             {[
@@ -136,16 +126,6 @@ export function DealerForm({ mode = "add", initialDealer }: DealerFormProps) {
               <span className="text-sm font-semibold text-slate-700">Address</span>
               <textarea className={`${textareaClass} mt-2`} value={form.address} onChange={(event) => updateField("address", event.target.value)} placeholder="Full dealer address" />
               {errors.address ? <span className="mt-1 block text-xs font-semibold text-red-600">{errors.address}</span> : null}
-            </label>
-            <label className="block">
-              <span className="text-sm font-semibold text-slate-700">Password</span>
-              <input type="password" className={`${inputClass} mt-2`} value={form.password} onChange={(event) => updateField("password", event.target.value)} placeholder={mode === "edit" ? "Leave blank to keep unchanged" : "Create password"} />
-              {errors.password ? <span className="mt-1 block text-xs font-semibold text-red-600">{errors.password}</span> : null}
-            </label>
-            <label className="block">
-              <span className="text-sm font-semibold text-slate-700">Confirm Password</span>
-              <input type="password" className={`${inputClass} mt-2`} value={form.confirmPassword} onChange={(event) => updateField("confirmPassword", event.target.value)} placeholder="Confirm password" />
-              {errors.confirmPassword ? <span className="mt-1 block text-xs font-semibold text-red-600">{errors.confirmPassword}</span> : null}
             </label>
             <label className="block">
               <span className="text-sm font-semibold text-slate-700">Status</span>

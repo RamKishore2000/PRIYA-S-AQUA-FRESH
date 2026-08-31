@@ -1,9 +1,10 @@
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const env = require("../config/env");
-const { toSafeUser } = require("../models/user.model");
+const { USER_ROLES, toSafeUser } = require("../models/user.model");
 const otpRepository = require("../repositories/otp.repository");
 const userRepository = require("../repositories/user.repository");
+const dealerRepository = require("../repositories/dealer.repository");
 const { ApiError } = require("../utils/apiError");
 const tokenService = require("./token.service");
 
@@ -108,8 +109,14 @@ async function sendOtpToProvider(mobile, otp) {
   throw new ApiError(503, "Live OTP provider is not configured.");
 }
 
-async function getOrCreateOtpUser(mobile) {
-  const existingUser = await userRepository.findByMobile(mobile);
+function normalizeLoginType(value) {
+  if (value === USER_ROLES.DEALER) return USER_ROLES.DEALER;
+  if (value === USER_ROLES.CUSTOMER) return USER_ROLES.CUSTOMER;
+  return null;
+}
+
+async function getOrCreateCustomerOtpUser(mobile) {
+  const existingUser = await userRepository.findByMobileAndRole(mobile, USER_ROLES.CUSTOMER);
   if (existingUser) return existingUser;
 
   const passwordHash = await bcrypt.hash(crypto.randomBytes(24).toString("hex"), 12);
@@ -121,19 +128,44 @@ async function getOrCreateOtpUser(mobile) {
   });
 }
 
+async function getDealerOtpUser(mobile) {
+  const dealer = await dealerRepository.findByMobile(mobile);
+  if (!dealer) {
+    throw new ApiError(404, "Dealer mobile number is not registered.");
+  }
+  if (dealer.status !== "ACTIVE") {
+    throw new ApiError(403, "Your dealer account is not active.");
+  }
+  const user = await userRepository.findById(dealer.userId);
+  if (!user || user.role !== USER_ROLES.DEALER) {
+    throw new ApiError(401, "Dealer login account is not configured correctly.");
+  }
+  return user;
+}
+
+async function getLegacyOtpUser(mobile) {
+  return getOrCreateCustomerOtpUser(mobile);
+}
+
+async function getOtpUser(mobile, loginType) {
+  if (loginType === USER_ROLES.DEALER) return getDealerOtpUser(mobile);
+  if (loginType === USER_ROLES.CUSTOMER) return getOrCreateCustomerOtpUser(mobile);
+  return getLegacyOtpUser(mobile);
+}
 async function issueLoginOtp(input, { resend = false } = {}) {
   const mobile = input.mobile.trim();
-  const user = await getOrCreateOtpUser(mobile);
+  const loginType = normalizeLoginType(input.loginType);
+  const user = await getOtpUser(mobile, loginType);
   if (user.status !== "ACTIVE") {
     throw new ApiError(403, "Your account is not active.");
   }
 
-  const recentSends = await otpRepository.countRecentSends(mobile, LOGIN_PURPOSE, env.otp.rateLimitWindowMinutes);
+  const recentSends = await otpRepository.countRecentSends(mobile, LOGIN_PURPOSE, env.otp.rateLimitWindowMinutes, user.id);
   if (recentSends >= env.otp.maxSendsPerWindow) {
     throw new ApiError(429, `Too many OTP requests. Please try again after ${env.otp.rateLimitWindowMinutes} minutes.`);
   }
 
-  const latestOtp = await otpRepository.findLatestActive(mobile, LOGIN_PURPOSE);
+  const latestOtp = await otpRepository.findLatestActive(mobile, LOGIN_PURPOSE, user.id);
   if (latestOtp) {
     const elapsed = secondsSince(latestOtp.last_sent_at);
     if (elapsed < env.otp.resendCooldownSeconds) {
@@ -146,7 +178,7 @@ async function issueLoginOtp(input, { resend = false } = {}) {
   const expiresAt = addMinutes(env.otp.expiresInMinutes);
   const resendCount = resend && latestOtp ? Number(latestOtp.resend_count || 0) + 1 : 0;
 
-  await otpRepository.expireActiveOtps(mobile, LOGIN_PURPOSE);
+  await otpRepository.expireActiveOtps(mobile, LOGIN_PURPOSE, user.id);
   await otpRepository.createOtp({ userId: user.id, mobile, purpose: LOGIN_PURPOSE, otpHash, expiresAt, resendCount });
   await sendOtpToProvider(mobile, otp);
 
@@ -160,7 +192,9 @@ async function issueLoginOtp(input, { resend = false } = {}) {
 async function verifyLoginOtp(input) {
   const mobile = input.mobile.trim();
   const otp = input.otp.trim();
-  const latestOtp = await otpRepository.findLatestActive(mobile, LOGIN_PURPOSE);
+  const loginType = normalizeLoginType(input.loginType);
+  const user = await getOtpUser(mobile, loginType);
+  const latestOtp = await otpRepository.findLatestActive(mobile, LOGIN_PURPOSE, user.id);
   if (!latestOtp) {
     throw new ApiError(401, "Invalid or expired OTP.");
   }
@@ -175,7 +209,6 @@ async function verifyLoginOtp(input) {
     throw new ApiError(401, "Invalid OTP.");
   }
 
-  const user = await userRepository.findById(latestOtp.user_id);
   if (!user || user.status !== "ACTIVE") {
     throw new ApiError(401, "Invalid OTP login request.");
   }

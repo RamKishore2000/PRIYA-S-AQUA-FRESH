@@ -56,7 +56,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                 const display = getProductDisplayPrice(item.product, user?.role);
                 return (
                 <article key={item.product.id} className="grid grid-cols-[76px_1fr] gap-4 rounded-xl border border-[#D8EAF8] bg-[#FFFFFF] p-3">
-                  <div className="relative h-[76px] w-[76px] rounded-lg bg-[#F7F0E7]">
+                  <div className="relative h-[76px] w-[76px] rounded-lg bg-[#F3FAFF]">
                     <Image src={item.product.image} alt={item.product.name} fill sizes="76px" className="object-contain p-2" unoptimized />
                   </div>
                   <div className="min-w-0">
@@ -98,4 +98,5 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
     </div>
   );
 }
+
 

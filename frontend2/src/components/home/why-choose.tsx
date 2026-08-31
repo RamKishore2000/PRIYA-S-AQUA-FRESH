@@ -101,7 +101,7 @@ export function WhyChoose() {
               <p className="mt-4 max-w-xl text-sm font-semibold leading-7 text-[#D8E4E0] md:text-[0.95rem]">
                 At Priya&apos;s Aqua Fresh, we strive every water to the standard of purity and safety. Our advanced purifiers ensure water of highest quality, 100% pure and safe.
               </p>
-              <Link href="/about" className="mt-5 inline-flex items-center gap-2 rounded-md border border-[#0057C8] bg-[#0057C8]/40 px-4 py-2.5 text-xs font-black text-[#FFE5AF] transition hover:bg-[#0057C8] hover:text-[#06282A]">
+              <Link href="/about" className="mt-5 inline-flex items-center gap-2 rounded-md border border-[#0057C8] bg-[#0057C8]/40 px-4 py-2.5 text-xs font-black text-[#EAF6FF] transition hover:bg-[#0057C8] hover:text-[#06282A]">
                 Know More About Us
                 <ArrowIcon className="h-4 w-4" />
               </Link>

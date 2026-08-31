@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
-import { getStoredUser, logoutUser, resendLoginOtp, sendLoginOtp, verifyLoginOtp, type AuthUser } from "@/services/auth-service";
+import { getStoredUser, logoutUser, resendLoginOtp, sendLoginOtp, verifyLoginOtp, type AuthUser, type LoginType } from "@/services/auth-service";
 import {
   addCartItem,
   addWishlistItem,
@@ -47,6 +47,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const [loginOpen, setLoginOpen] = useState(false);
   const [mode, setMode] = useState<"otp">("otp");
   const [otpSent, setOtpSent] = useState(false);
+  const [loginType, setLoginType] = useState<LoginType>("CUSTOMER");
   const [otpMobile, setOtpMobile] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [message, setMessage] = useState("");
@@ -105,7 +106,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         }
         setOtpBusy(true);
         try {
-          await sendLoginOtp(mobile);
+          await sendLoginOtp(mobile, loginType);
           setOtpSent(true);
           setOtpCode("");
           setMessage("OTP sent successfully.");
@@ -123,7 +124,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       }
       setOtpBusy(true);
       try {
-        const loggedInUser = await verifyLoginOtp({ mobile: otpMobile.trim(), otp: otpCode.trim() });
+        const loggedInUser = await verifyLoginOtp({ mobile: otpMobile.trim(), otp: otpCode.trim(), loginType });
         setUser(loggedInUser);
         setLoginOpen(false);
         setOtpSent(false);
@@ -196,6 +197,28 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     showToast("Added to wishlist", "success");
   }
 
+  const loginCopy = loginType === "DEALER"
+    ? {
+        eyebrow: "Dealer OTP Login",
+        title: "Dealer Login",
+        label: "Dealer mobile number",
+        description: "Enter your registered dealer mobile number to continue.",
+      }
+    : {
+        eyebrow: "Customer OTP Login",
+        title: "Customer Login",
+        label: "Customer mobile number",
+        description: "Enter your customer mobile number to continue.",
+      };
+
+  function selectLoginType(nextType: LoginType) {
+    if (otpBusy || loginType === nextType) return;
+    setLoginType(nextType);
+    setOtpSent(false);
+    setOtpCode("");
+    setMessage("");
+  }
+
   const value: ShopContextValue = {
     user,
     cartItems: user ? cart?.items || [] : [],
@@ -207,6 +230,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       setMode("otp");
       setOtpSent(false);
       setOtpCode("");
+      setLoginType("CUSTOMER");
       setMessage("");
       setLoginOpen(true);
     },
@@ -235,16 +259,32 @@ export function ShopProvider({ children }: { children: ReactNode }) {
             <div className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.24em] text-[#0057C8]">OTP Login</p>
-                <h2 className="mt-2 font-serif text-3xl font-semibold text-[#102033]">Welcome to Priya&apos;s</h2>
+                <p className="text-xs font-black uppercase tracking-[0.24em] text-[#0057C8]">{loginCopy.eyebrow}</p>
+                <h2 className="mt-2 font-serif text-3xl font-semibold text-[#102033]">{loginCopy.title}</h2>
               </div>
               <button onClick={() => setLoginOpen(false)} className="h-10 w-10 rounded-full border border-[#D8EAF8] bg-white text-[#0057C8] transition hover:bg-[#EAF6FF]">x</button>
             </div>
-            <form action={submitLogin} className="mt-6 grid gap-3">
+            <div className="mt-6 grid grid-cols-2 gap-2 rounded-xl border border-[#D8EAF8] bg-[#EAF6FF] p-1">
+              {(["CUSTOMER", "DEALER"] as LoginType[]).map((type) => {
+                const active = loginType === type;
+                return (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => selectLoginType(type)}
+                    disabled={otpBusy}
+                    className={`h-11 rounded-lg text-sm font-black transition ${active ? "bg-[#0057C8] text-white shadow-[0_8px_20px_rgba(0,87,200,0.18)]" : "text-[#40576C] hover:bg-white"}`}
+                  >
+                    {type === "CUSTOMER" ? "Customer Login" : "Dealer Login"}
+                  </button>
+                );
+              })}
+            </div>
+            <form action={submitLogin} className="mt-4 grid gap-3">
               <div className="rounded-xl border border-[#D8EAF8] bg-white/70 px-4 py-3">
-                <p className="text-sm font-black text-[#102033]">Login with OTP</p>
+                <p className="text-sm font-black text-[#102033]">{loginCopy.label}</p>
                 <p className="mt-1 text-xs font-semibold text-[#40576C]">
-                  {otpSent ? `Enter the 6 digit OTP sent to ${otpMobile}.` : "Enter your mobile number to continue."}
+                  {otpSent ? `Enter the 6 digit OTP sent to ${otpMobile}.` : loginCopy.description}
                 </p>
               </div>
               {!otpSent ? (
@@ -252,7 +292,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
                   name="otpMobile"
                   inputMode="numeric"
                   maxLength={10}
-                  placeholder="Mobile number"
+                  placeholder={loginCopy.label}
                   value={otpMobile}
                   onChange={(event) => setOtpMobile(event.target.value.replace(/\D/g, "").slice(0, 10))}
                   className="rounded-xl border border-[#D8EAF8] bg-white px-4 py-3 font-semibold text-[#102033] outline-none placeholder:text-[#74879A]"
@@ -261,7 +301,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
                 <>
                   <OtpBoxes value={otpCode} onChange={setOtpCode} />
                   <div className="flex items-center justify-between text-sm">
-                    <button type="button" className="font-black text-[#0057C8]" onClick={async () => { if (otpBusy) return; setOtpBusy(true); try { await resendLoginOtp(otpMobile.trim()); setOtpCode(""); setMessage("OTP resent successfully."); showToast("OTP resent successfully.", "success"); } catch (error) { const nextMessage = error instanceof Error ? error.message : "Unable to resend OTP."; setMessage(nextMessage); showToast(nextMessage, "error"); } finally { setOtpBusy(false); } }}>Resend OTP</button>
+                    <button type="button" className="font-black text-[#0057C8]" onClick={async () => { if (otpBusy) return; setOtpBusy(true); try { await resendLoginOtp(otpMobile.trim(), loginType); setOtpCode(""); setMessage("OTP resent successfully."); showToast("OTP resent successfully.", "success"); } catch (error) { const nextMessage = error instanceof Error ? error.message : "Unable to resend OTP."; setMessage(nextMessage); showToast(nextMessage, "error"); } finally { setOtpBusy(false); } }}>Resend OTP</button>
                     <button type="button" className="font-bold text-[#74879A]" onClick={() => { setOtpSent(false); setOtpCode(""); setMessage(""); }}>Change mobile</button>
                   </div>
                 </>

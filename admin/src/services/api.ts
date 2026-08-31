@@ -460,9 +460,6 @@ export const adminApi = {
     const data = await apiRequest<{ dealer: ApiDealer }>(`/api/dealers/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) });
     return mapDealer(data.dealer);
   },
-  async resetDealerPassword(id: string, password: string, confirmPassword: string) {
-    await apiRequest(`/api/dealers/${id}/password`, { method: "PATCH", body: JSON.stringify({ password, confirmPassword }) });
-  },
   async listCustomers() {
     const data = await apiRequest<{ customers: ApiCustomer[] }>("/api/customers");
     return data.customers.map(mapCustomer);

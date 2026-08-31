@@ -6,7 +6,6 @@ const {
   createDealerValidator,
   dealerIdValidator,
   dealerPayloadValidator,
-  resetPasswordValidator,
   statusValidator,
 } = require("../validators/dealer.validator");
 
@@ -17,6 +16,5 @@ router.get("/:id", dealerIdValidator, validateRequest, asyncHandler(dealerContro
 router.post("/", createDealerValidator, validateRequest, asyncHandler(dealerController.createDealer));
 router.put("/:id", dealerIdValidator, dealerPayloadValidator, validateRequest, asyncHandler(dealerController.updateDealer));
 router.patch("/:id/status", dealerIdValidator, statusValidator, validateRequest, asyncHandler(dealerController.updateDealerStatus));
-router.patch("/:id/password", dealerIdValidator, resetPasswordValidator, validateRequest, asyncHandler(dealerController.resetPassword));
 
 module.exports = router;

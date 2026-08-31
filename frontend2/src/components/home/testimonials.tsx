@@ -20,7 +20,7 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
               </div>
               <p className="mt-4 min-h-24 text-sm leading-7 text-[#40576C] lg:mt-5 lg:min-h-28 lg:text-base">&quot;{item.review}&quot;</p>
               <div className="mt-6 flex items-center gap-3">
-                <span className="grid h-11 w-11 place-items-center rounded-full bg-[#F4EADF] text-sm font-black text-[#0057C8]">{item.avatar}</span>
+                <span className="grid h-11 w-11 place-items-center rounded-full bg-[#EAF6FF] text-sm font-black text-[#0057C8]">{item.avatar}</span>
                 <span>
                   <span className="block font-bold text-[#3B4343]">{item.name}</span>
                   <span className="block text-sm text-[#74879A]">{item.role}</span>

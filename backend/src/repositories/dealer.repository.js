@@ -1,13 +1,14 @@
+const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const { pool } = require("../config/database");
-const { USER_ROLES, USER_STATUSES } = require("../models/user.model");
+const { USER_ROLES } = require("../models/user.model");
 
 function mapDealer(row) {
   if (!row) return null;
   return {
     id: row.id,
     userId: row.user_id,
-    name: row.full_name,
+    name: row.name || row.full_name,
     mobile: row.mobile,
     email: row.email,
     status: row.status,
@@ -26,11 +27,11 @@ function mapDealer(row) {
 }
 
 const dealerSelect = `
-  SELECT d.id, d.user_id, d.dealer_code, d.business_name, d.gst_number, d.address, d.city, d.state, d.pincode,
-         d.total_orders, d.total_purchase_value, d.created_at, d.updated_at,
-         u.full_name, u.mobile, u.email, u.status
+  SELECT d.id, d.user_id, d.name, d.mobile, d.email, d.status, d.dealer_code, d.business_name, d.gst_number,
+         d.address, d.city, d.state, d.pincode, d.total_orders, d.total_purchase_value, d.created_at, d.updated_at,
+         u.full_name
   FROM dealers d
-  INNER JOIN users u ON u.id = d.user_id
+  LEFT JOIN users u ON u.id = d.user_id
 `;
 
 async function findAll() {
@@ -48,11 +49,21 @@ async function findByDealerCode(dealerCode) {
   return mapDealer(rows[0]);
 }
 
+async function findByMobile(mobile) {
+  const [rows] = await pool.execute(`${dealerSelect} WHERE d.mobile = ? LIMIT 1`, [mobile]);
+  return mapDealer(rows[0]);
+}
+
+async function findByEmail(email) {
+  const [rows] = await pool.execute(`${dealerSelect} WHERE d.email = ? LIMIT 1`, [email]);
+  return mapDealer(rows[0]);
+}
+
 async function createDealer(payload) {
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
-    const passwordHash = await bcrypt.hash(payload.password, 12);
+    const passwordHash = await bcrypt.hash(crypto.randomBytes(24).toString("hex"), 12);
     const [userResult] = await connection.execute(
       `INSERT INTO users (full_name, mobile, email, password_hash, role, status)
        VALUES (?, ?, ?, ?, ?, ?)`,
@@ -60,9 +71,22 @@ async function createDealer(payload) {
     );
 
     const [dealerResult] = await connection.execute(
-      `INSERT INTO dealers (user_id, dealer_code, business_name, gst_number, address, city, state, pincode)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [userResult.insertId, payload.dealerCode, payload.businessName, payload.gstNumber, payload.address, payload.city, payload.state, payload.pincode],
+      `INSERT INTO dealers (user_id, name, mobile, email, status, dealer_code, business_name, gst_number, address, city, state, pincode)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        userResult.insertId,
+        payload.name,
+        payload.mobile,
+        payload.email,
+        payload.status,
+        payload.dealerCode,
+        payload.businessName,
+        payload.gstNumber,
+        payload.address,
+        payload.city,
+        payload.state,
+        payload.pincode,
+      ],
     );
     await connection.commit();
     return findById(dealerResult.insertId);
@@ -85,9 +109,22 @@ async function updateDealer(id, payload) {
     );
     await connection.execute(
       `UPDATE dealers
-       SET dealer_code = ?, business_name = ?, gst_number = ?, address = ?, city = ?, state = ?, pincode = ?
+       SET name = ?, mobile = ?, email = ?, status = ?, dealer_code = ?, business_name = ?, gst_number = ?, address = ?, city = ?, state = ?, pincode = ?
        WHERE id = ?`,
-      [payload.dealerCode, payload.businessName, payload.gstNumber, payload.address, payload.city, payload.state, payload.pincode, id],
+      [
+        payload.name,
+        payload.mobile,
+        payload.email,
+        payload.status,
+        payload.dealerCode,
+        payload.businessName,
+        payload.gstNumber,
+        payload.address,
+        payload.city,
+        payload.state,
+        payload.pincode,
+        id,
+      ],
     );
     await connection.commit();
     return findById(id);
@@ -101,22 +138,28 @@ async function updateDealer(id, payload) {
 
 async function updateStatus(id, status) {
   const dealer = await findById(id);
-  await pool.execute("UPDATE users SET status = ? WHERE id = ?", [status, dealer.userId]);
-  return findById(id);
-}
-
-async function resetPassword(id, password) {
-  const dealer = await findById(id);
-  const passwordHash = await bcrypt.hash(password, 12);
-  await pool.execute("UPDATE users SET password_hash = ? WHERE id = ?", [passwordHash, dealer.userId]);
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+    await connection.execute("UPDATE dealers SET status = ? WHERE id = ?", [status, id]);
+    await connection.execute("UPDATE users SET status = ? WHERE id = ?", [status, dealer.userId]);
+    await connection.commit();
+    return findById(id);
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
 }
 
 module.exports = {
   findAll,
   findById,
   findByDealerCode,
+  findByMobile,
+  findByEmail,
   createDealer,
   updateDealer,
   updateStatus,
-  resetPassword,
 };

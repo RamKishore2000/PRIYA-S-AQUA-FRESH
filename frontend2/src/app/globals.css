@@ -252,7 +252,7 @@ button {
 .brand-gsap-item:hover {
   transform: translateY(-6px) scale(1.03);
   border-color: #d6b47a;
-  box-shadow: 0 16px 34px rgba(182, 138, 69, 0.12);
+  box-shadow: 0 16px 34px rgba(0, 87, 200, 0.12);
 }
 
 .brand-cert-window {
@@ -403,7 +403,7 @@ button {
 }
 
 .order-progress-step-done {
-  background: #fff9f1;
+  background: #FFFFFF;
   animation: orderProgressStepDone 360ms ease forwards;
   animation-delay: var(--order-step-delay, 0ms);
 }
@@ -419,7 +419,7 @@ button {
   appearance: none;
   border-radius: 9999px;
   border: 3px solid #0a3a38;
-  background: #fff9f1;
+  background: #FFFFFF;
   box-shadow: 0 4px 12px rgb(84 61 35 / 0.18);
   cursor: pointer;
 }
@@ -435,7 +435,7 @@ button {
   width: 20px;
   border: 3px solid #0a3a38;
   border-radius: 9999px;
-  background: #fff9f1;
+  background: #FFFFFF;
   box-shadow: 0 4px 12px rgb(84 61 35 / 0.18);
   cursor: pointer;
 }
@@ -449,7 +449,7 @@ button {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 15% 12%, rgba(182, 138, 69, 0.14), transparent 30%),
+    radial-gradient(circle at 15% 12%, rgba(0, 87, 200, 0.14), transparent 30%),
     radial-gradient(circle at 84% 24%, rgba(10, 58, 56, 0.12), transparent 28%);
 }
 
@@ -464,7 +464,7 @@ button {
   place-items: center;
   border: 1px solid #d8b879;
   border-radius: 9999px;
-  background: #fff9f1;
+  background: #FFFFFF;
   box-shadow: 0 16px 40px rgb(84 61 35 / 0.12);
 }
 
@@ -472,7 +472,7 @@ button {
 .about-flow-point,
 .about-number-row {
   border: 1px solid #e5d8c7;
-  background: #fff9f1;
+  background: #FFFFFF;
   box-shadow: 0 14px 44px rgb(84 61 35 / 0.08);
 }
 
@@ -669,7 +669,7 @@ button {
 @keyframes orderProgressStepDone {
   0% {
     transform: scale(0.92);
-    background: #fff9f1;
+    background: #FFFFFF;
     color: transparent;
     box-shadow: 0 0 0 0 rgb(10 58 56 / 0);
   }
@@ -752,8 +752,8 @@ body.priyas-native-app main {
 }
 
 body.priyas-native-app header {
-  background: #f8f3ec !important;
-  box-shadow: 0 10px 28px rgba(84, 61, 35, 0.12);
+  background: #F3FAFF !important;
+  box-shadow: 0 10px 28px rgba(0, 87, 200, 0.10);
 }
 
 body.priyas-native-app [data-native-screen="training"] main,
@@ -765,7 +765,7 @@ body.priyas-native-app [data-native-screen="services"] {
 }
 
 body.priyas-native-app [data-native-screen="training"] .app-training-hero {
-  background: #f8f3ec !important;
+  background: #F3FAFF !important;
   color: #1d2d2e !important;
 }
 
@@ -796,7 +796,7 @@ body.priyas-native-app [data-native-screen="training"] .app-training-hero .sm\:g
 }
 
 body.priyas-native-app [data-native-screen="training"] .app-training-form {
-  background: #f8f3ec !important;
+  background: #F3FAFF !important;
   color: #1d2d2e !important;
   padding: 1rem 1rem calc(6.5rem + env(safe-area-inset-bottom)) !important;
 }
@@ -825,7 +825,7 @@ body.priyas-native-app [data-native-screen="checkout"] .rounded-2xl,
 body.priyas-native-app [data-native-screen="orders"] .rounded-2xl,
 body.priyas-native-app [data-native-screen="order-detail"] .rounded-2xl {
   border-radius: 1rem !important;
-  box-shadow: 0 8px 22px rgba(84, 61, 35, 0.07) !important;
+  box-shadow: 0 8px 22px rgba(0, 87, 200, 0.07) !important;
 }
 
 body.priyas-native-app [data-native-screen="services"] {
@@ -880,7 +880,7 @@ body.priyas-native-app [data-native-screen="training"] .app-training-hero .grid.
   aspect-ratio: 1 / 0.78 !important;
   border-radius: 0.85rem !important;
   border: 1px solid #e5d8c7 !important;
-  box-shadow: 0 8px 22px rgba(84, 61, 35, 0.09) !important;
+  box-shadow: 0 8px 22px rgba(0, 87, 200, 0.09) !important;
 }
 
 body.priyas-native-app [data-native-screen="training"] .app-training-hero .grid.gap-3.sm\:grid-cols-2 > div:first-child {
@@ -893,7 +893,7 @@ body.priyas-native-app [data-native-screen="training"] .app-training-learn,
 body.priyas-native-app [data-native-screen="training"] .app-training-videos {
   display: block !important;
   padding: 1rem !important;
-  background: #f8f3ec !important;
+  background: #F3FAFF !important;
 }
 
 body.priyas-native-app [data-native-screen="training"] .app-training-highlights .grid.gap-4,
@@ -966,7 +966,7 @@ body.priyas-native-app [data-native-screen="training"] .app-training-form {
 
 body.priyas-native-app [data-native-screen="training"] .app-training-form .rounded-2xl {
   border: 1px solid #e5d8c7 !important;
-  background: #fff9f1 !important;
+  background: #FFFFFF !important;
 }
 
 body.priyas-native-app [data-native-screen="services"] > div {
@@ -1018,7 +1018,7 @@ body.priyas-native-app [data-native-screen="services"] .rounded-\[1\.35rem\] .mb
 body.priyas-native-app [data-native-screen="services"] .rounded-\[1\.35rem\]:has(form),
 body.priyas-native-app [data-native-screen="services"] div:has(> form) {
   border: 1px solid #e5d8c7 !important;
-  background: #fff9f1 !important;
+  background: #FFFFFF !important;
   border-radius: 1rem !important;
   padding: 1rem !important;
 }
@@ -1030,7 +1030,7 @@ body.priyas-native-app [data-native-screen="services"] .mt-10 > div {
 
 body.priyas-native-app [data-native-screen="services"] .mt-10 span.rounded-full {
   border-radius: 0.7rem !important;
-  background: #fff9f1 !important;
+  background: #FFFFFF !important;
 }
 
 .native-splash {
@@ -1044,8 +1044,8 @@ body.priyas-native-app [data-native-screen="services"] .mt-10 span.rounded-full 
   overflow: hidden;
   background:
     radial-gradient(circle at 50% 34%, rgba(18, 168, 230, 0.14), transparent 28%),
-    radial-gradient(circle at 50% 60%, rgba(182, 138, 69, 0.16), transparent 30%),
-    linear-gradient(145deg, #fff9f1 0%, #f8f3ec 54%, #efe1cf 100%);
+    radial-gradient(circle at 50% 60%, rgba(0, 87, 200, 0.16), transparent 30%),
+    linear-gradient(145deg, #FFFFFF 0%, #F3FAFF 54%, #EAF6FF 100%);
   animation: nativeSplashExit 420ms ease 1.45s forwards;
 }
 
@@ -1059,7 +1059,7 @@ body.priyas-native-app [data-native-screen="services"] .mt-10 span.rounded-full 
   border: 1px solid rgba(229, 216, 199, 0.86);
   border-radius: 1.35rem;
   background: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 28px 80px rgba(84, 61, 35, 0.14);
+  box-shadow: 0 28px 80px rgba(0, 87, 200, 0.14);
   animation: nativeSplashLogo 980ms cubic-bezier(0.2, 0.88, 0.22, 1) both;
 }
 
@@ -1095,7 +1095,7 @@ body.priyas-native-app [data-native-screen="services"] .mt-10 span.rounded-full 
 }
 
 .native-splash-ripple-two {
-  border-color: rgba(182, 138, 69, 0.24);
+  border-color: rgba(0, 87, 200, 0.18);
   animation-delay: 420ms;
 }
 
@@ -1228,7 +1228,7 @@ body.priyas-native-app [data-native-screen="checkout"] a {
 
 body.priyas-native-app [data-product-image-area] {
   max-width: 10.8rem !important;
-  background: #f7f0e7 !important;
+  background: #F3FAFF !important;
 }
 
 body.priyas-native-app [data-product-image-area] img {
@@ -1451,7 +1451,7 @@ body.priyas-native-app header {
   top: 0 !important;
   min-height: calc(4.7rem + env(safe-area-inset-top)) !important;
   padding-top: env(safe-area-inset-top) !important;
-  background: #f8f3ec !important;
+  background: #F3FAFF !important;
   isolation: isolate;
 }
 
@@ -1499,7 +1499,7 @@ body.priyas-native-app header form[action="/search"].lg\:hidden {
 @media (max-width: 1023px) {
   header {
     min-height: 4.45rem;
-    background: #f8f3ec;
+    background: #F3FAFF;
   }
 
   header > div:nth-child(2) {
@@ -1543,7 +1543,7 @@ body.priyas-native-app .native-splash-mark img {
 
   [data-product-card] [data-product-image-area] {
     max-width: 9.7rem !important;
-    background: #f7f0e7 !important;
+    background: #F3FAFF !important;
   }
 
   [data-product-card] [data-product-image-area] img {
@@ -1625,9 +1625,9 @@ body.priyas-native-app [data-native-screen="services"] form,
 body.priyas-native-app [data-native-screen="services"] div:has(> form) {
   border: 1px solid #e5d8c7 !important;
   border-radius: 1rem !important;
-  background: #fff9f1 !important;
+  background: #FFFFFF !important;
   padding: 0.9rem !important;
-  box-shadow: 0 8px 22px rgba(84, 61, 35, 0.07) !important;
+  box-shadow: 0 8px 22px rgba(0, 87, 200, 0.07) !important;
 }
 
 body.priyas-native-app [data-native-screen="services"] form .mt-5.flex {
@@ -1821,8 +1821,8 @@ body.priyas-native-app [data-native-screen="training"] .app-training-form a[href
     position: sticky !important;
     top: 0 !important;
     min-height: 4.7rem !important;
-    background: #f8f3ec !important;
-    box-shadow: 0 10px 28px rgba(84, 61, 35, 0.12);
+    background: #F3FAFF !important;
+    box-shadow: 0 10px 28px rgba(0, 87, 200, 0.10);
     isolation: isolate;
   }
 
@@ -2047,7 +2047,7 @@ body.priyas-native-app header > div:nth-child(2) {
     height: auto !important;
     min-height: 0 !important;
     border-radius: 0.9rem !important;
-    background: #fffbf6 !important;
+    background: #FFFFFF !important;
   }
 
   [data-native-home-product-card] [data-product-card] > div:first-child,
@@ -2059,7 +2059,7 @@ body.priyas-native-app header > div:nth-child(2) {
   [data-native-home-product-card] [data-product-image-area],
   [data-product-grid] [data-product-image-area] {
     max-width: 9.85rem !important;
-    background: #f7f0e7 !important;
+    background: #F3FAFF !important;
   }
 
   [data-native-home-product-card] [data-product-image-area] img,
@@ -2317,9 +2317,9 @@ body.priyas-native-app header > div:nth-child(2) {
     min-height: 8.6rem !important;
     border-radius: 0.9rem !important;
     border: 1px solid #e9ddcf !important;
-    background: #fff8ef !important;
+    background: #FFFFFF !important;
     padding: 0.85rem 0.65rem !important;
-    box-shadow: 0 8px 22px rgba(84, 61, 35, 0.045) !important;
+    box-shadow: 0 8px 22px rgba(0, 87, 200, 0.045) !important;
   }
 }
 
@@ -2340,7 +2340,7 @@ body.priyas-native-app header > div:nth-child(2) {
     min-height: 9rem !important;
     border-radius: 0.9rem !important;
     border: 1px solid #e9ddcf !important;
-    background: #fff8ef !important;
+    background: #FFFFFF !important;
     padding: 1rem !important;
   }
 }
@@ -2879,7 +2879,7 @@ body.priyas-native-app header > div:nth-child(2) {
 
 /* APK header and splash final polish. Keep this late so it wins over older app overrides. */
 body.priyas-native-app {
-  background: #f8f3ec;
+  background: #F3FAFF;
 }
 
 body.priyas-native-app header {
@@ -2891,8 +2891,8 @@ body.priyas-native-app header {
   max-height: calc(4.25rem + env(safe-area-inset-top)) !important;
   padding-top: env(safe-area-inset-top) !important;
   overflow: visible !important;
-  background: #f8f3ec !important;
-  box-shadow: 0 8px 22px rgba(84, 61, 35, 0.1) !important;
+  background: #F3FAFF !important;
+  box-shadow: 0 8px 22px rgba(0, 87, 200, 0.10) !important;
   contain: layout paint !important;
 }
 
@@ -2968,7 +2968,7 @@ body.priyas-native-app header form[action="/search"].lg\:hidden {
 .native-splash {
   background:
     radial-gradient(circle at 50% 28%, rgba(12, 160, 218, 0.2), transparent 32%),
-    linear-gradient(160deg, #f8fbff 0%, #f0f9ff 42%, #f8f3ec 100%) !important;
+    linear-gradient(160deg, #f8fbff 0%, #f0f9ff 42%, #F3FAFF 100%) !important;
   animation: nativeSplashExit 520ms ease 3.85s forwards !important;
 }
 
@@ -3012,7 +3012,7 @@ body.priyas-native-app header {
   padding-top: env(safe-area-inset-top) !important;
   overflow: visible !important;
   contain: layout !important;
-  background: #f8f3ec !important;
+  background: #F3FAFF !important;
 }
 
 body.priyas-native-app main {
@@ -3959,7 +3959,7 @@ body.priyas-native-app [data-native-screen="product-detail"] {
 
 /* APK final polish: stable header, logo-only splash, and safe app search overlay. */
 body.priyas-native-app {
-  background: #f8f3ec !important;
+  background: #F3FAFF !important;
   color-scheme: light !important;
 }
 
@@ -3974,8 +3974,8 @@ body.priyas-native-app header {
   max-height: calc(3.85rem + env(safe-area-inset-top)) !important;
   padding-top: env(safe-area-inset-top) !important;
   overflow: visible !important;
-  background: #f8f3ec !important;
-  box-shadow: 0 8px 22px rgba(84, 61, 35, 0.1) !important;
+  background: #F3FAFF !important;
+  box-shadow: 0 8px 22px rgba(0, 87, 200, 0.10) !important;
 }
 
 body.priyas-native-app main {
@@ -4053,7 +4053,7 @@ body.priyas-native-app header form[action="/search"].lg\:hidden {
 
 body.priyas-native-app .native-splash,
 .native-splash {
-  background: linear-gradient(160deg, #f8f3ec 0%, #eff9fb 48%, #fff9f1 100%) !important;
+  background: linear-gradient(160deg, #F3FAFF 0%, #eff9fb 48%, #FFFFFF 100%) !important;
   animation: nativeSplashExit 560ms ease 5.7s forwards !important;
 }
 
@@ -4094,7 +4094,7 @@ body.priyas-native-app [data-product-detail-mobile-actions] {
   z-index: 90 !important;
   min-height: calc(4.85rem + env(safe-area-inset-bottom)) !important;
   padding: 0.7rem 1rem calc(env(safe-area-inset-bottom) + 0.65rem) !important;
-  background: #fff9f1 !important;
+  background: #FFFFFF !important;
 }
 
 body.priyas-native-app [data-native-screen="product-detail"] {
@@ -4383,7 +4383,7 @@ body.priyas-native-app [data-product-detail-mobile-actions] {
   z-index: 1200 !important;
   min-height: calc(5.2rem + env(safe-area-inset-bottom)) !important;
   padding: 0.78rem 1rem calc(env(safe-area-inset-bottom) + 0.72rem) !important;
-  background: #fff9f1 !important;
+  background: #FFFFFF !important;
 }
 
 body.priyas-native-app [data-product-detail-mobile-actions] > div {
@@ -4480,7 +4480,7 @@ body.priyas-native-app [data-native-screen="product-detail"] {
     right: 0 !important;
     z-index: 1000 !important;
     min-height: 4.1rem !important;
-    background: #f8f3ec !important;
+    background: #F3FAFF !important;
   }
 
   body:not(.priyas-native-app) main {
@@ -4514,7 +4514,7 @@ body.priyas-native-app .native-splash,
   overflow: hidden !important;
   background:
     radial-gradient(circle at 50% 42%, rgba(18, 168, 230, 0.18), transparent 34%),
-    linear-gradient(160deg, #fff9f1 0%, #f8f3ec 54%, #eef9fb 100%) !important;
+    linear-gradient(160deg, #FFFFFF 0%, #F3FAFF 54%, #eef9fb 100%) !important;
   animation: nativeSplashExit 520ms ease 3.2s forwards !important;
 }
 
@@ -4564,7 +4564,7 @@ body.priyas-native-app .native-splash-ripple,
 
 body.priyas-native-app .native-splash-ripple-two,
 .native-splash-ripple-two {
-  border-color: rgba(182, 138, 69, 0.25) !important;
+  border-color: rgba(0, 87, 200, 0.18) !important;
   animation-delay: 420ms !important;
 }
 
@@ -4611,7 +4611,7 @@ body.priyas-native-app .native-boot-splash {
   overflow: hidden !important;
   background:
     radial-gradient(circle at 50% 42%, rgba(18, 168, 230, 0.22), transparent 35%),
-    linear-gradient(160deg, #fff9f1 0%, #f8f3ec 54%, #eef9fb 100%) !important;
+    linear-gradient(160deg, #FFFFFF 0%, #F3FAFF 54%, #eef9fb 100%) !important;
   opacity: 1 !important;
   visibility: visible !important;
   pointer-events: all !important;
@@ -4660,7 +4660,7 @@ body.priyas-native-app .native-boot-ripple {
 }
 
 body.priyas-native-app .native-boot-ripple-two {
-  border-color: rgba(182, 138, 69, 0.25) !important;
+  border-color: rgba(0, 87, 200, 0.18) !important;
   animation-delay: 420ms !important;
 }
 
@@ -4705,7 +4705,7 @@ body.priyas-native-app .native-boot-splash p {
 @media (max-width: 1023px) {
   header,
   body.priyas-native-app header {
-    background: #f8f3ec !important;
+    background: #F3FAFF !important;
     min-height: calc(3.95rem + env(safe-area-inset-top)) !important;
     padding-top: env(safe-area-inset-top) !important;
   }
@@ -4817,7 +4817,7 @@ body.priyas-native-app .native-boot-splash p {
     right: 0 !important;
     top: 0 !important;
     z-index: 1000 !important;
-    background: #f8f3ec !important;
+    background: #F3FAFF !important;
     min-height: 3.95rem !important;
     padding-top: 0 !important;
   }
@@ -5101,3 +5101,39 @@ body.priyas-native-app [data-home-carousel-controls] {
 body.priyas-native-app [data-home-carousel-controls] {
   display: flex !important;
 }
+/* Absolute final APK color parity: keep every app page on the new website background. */
+body.priyas-native-app,
+body.priyas-native-app main,
+body.priyas-native-app [data-native-screen],
+body.priyas-native-app [data-product-listing-section],
+body.priyas-native-app [data-product-grid],
+body.priyas-native-app [data-related-products-section] {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F3FAFF 52%, #EAF6FF 100%) !important;
+  color-scheme: light !important;
+}
+
+body.priyas-native-app header {
+  background: #F3FAFF !important;
+  border-bottom-color: #C7E4F8 !important;
+  box-shadow: 0 8px 22px rgba(0, 87, 200, 0.10) !important;
+}
+
+body.priyas-native-app nav[data-mobile-bottom-tabs] {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-color: #C7E4F8 !important;
+  box-shadow: 0 -12px 30px rgba(0, 87, 200, 0.10) !important;
+}
+
+body.priyas-native-app .native-splash,
+body.priyas-native-app .native-boot-splash,
+.native-splash {
+  background: linear-gradient(160deg, #FFFFFF 0%, #F3FAFF 54%, #EAF6FF 100%) !important;
+}
+
+body.priyas-native-app [data-home-carousel-controls] button,
+body.priyas-native-app [data-home-carousel-controls] a {
+  border-color: #C7E4F8 !important;
+  box-shadow: 0 12px 28px rgba(0, 87, 200, 0.12) !important;
+}
+
+

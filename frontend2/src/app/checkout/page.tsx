@@ -408,7 +408,7 @@ function CheckoutContent() {
                   const display = getProductDisplayPrice(item.product, user?.role);
                   return (
                   <div key={item.product.id} className="grid grid-cols-[52px_1fr] gap-3 rounded-xl border border-[#D8EAF8] bg-white p-2 text-sm sm:grid-cols-[56px_1fr_auto]">
-                    <div className="relative h-[3.25rem] w-[3.25rem] overflow-hidden rounded-lg bg-[#F7F0E7] sm:h-14 sm:w-14">
+                    <div className="relative h-[3.25rem] w-[3.25rem] overflow-hidden rounded-lg bg-[#F3FAFF] sm:h-14 sm:w-14">
                       <Image src={item.product.image} alt={item.product.name} fill sizes="(max-width: 639px) 52px, 56px" className="object-contain p-1.5" unoptimized />
                     </div>
                     <div className="min-w-0">
@@ -581,4 +581,5 @@ export default function CheckoutPage() {
     </Suspense>
   );
 }
+
 

@@ -17,6 +17,14 @@ async function findByMobile(mobile) {
   return rows[0] || null;
 }
 
+async function findByMobileAndRole(mobile, role) {
+  const [rows] = await pool.execute(
+    "SELECT id, full_name, mobile, email, password_hash, role, status FROM users WHERE mobile = ? AND role = ? LIMIT 1",
+    [mobile, role],
+  );
+  return rows[0] || null;
+}
+
 async function createCustomerUser({ fullName, mobile, email, passwordHash }) {
   const [result] = await pool.execute(
     `INSERT INTO users (full_name, mobile, email, password_hash, role, status)
@@ -62,6 +70,7 @@ async function findById(id) {
 module.exports = {
   findByEmail,
   findByMobile,
+  findByMobileAndRole,
   createCustomerUser,
   createUser,
   findById,

@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { AdminToast } from "@/components/admin/admin-toast";
 import { PageHeader } from "@/components/admin/page-header";
-import { ResetPasswordDialog } from "@/components/admin/reset-password-dialog";
 import { RowActionsDropdown } from "@/components/admin/row-actions-dropdown";
 import { StatsCard } from "@/components/admin/stats-card";
 import { StatusBadge } from "@/components/admin/status-badge";
@@ -16,7 +15,6 @@ import { formatCurrency } from "@/utils/format-currency";
 export default function DealersPage() {
   const router = useRouter();
   const [dealers, setDealers] = useState<Dealer[]>([]);
-  const [resetDealer, setResetDealer] = useState<Dealer | null>(null);
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -95,7 +93,6 @@ export default function DealersPage() {
                         { label: "View Dealer", icon: "view", onClick: () => router.push(`/dealers/detail?id=${dealer.id}`) },
                         { label: "Edit Dealer", icon: "edit", onClick: () => router.push(`/dealers/edit?id=${dealer.id}`) },
                         { label: "View Orders", icon: "orders", onClick: () => router.push(`/orders?dealer=${dealer.id}`) },
-                        { label: "Reset Password", icon: "settings", onClick: () => setResetDealer(dealer) },
                         { label: dealer.status === "Active" ? "Deactivate Dealer" : "Activate Dealer", icon: "settings", onClick: () => toggleDealerStatus(dealer) },
                       ]}
                     />
@@ -108,21 +105,6 @@ export default function DealersPage() {
           {!loading && dealers.length > 0 && filteredDealers.length === 0 ? <p className="p-5 text-sm font-semibold text-slate-500">No dealers match your search.</p> : null}
         </div>
       </section>
-
-      {resetDealer ? (
-        <ResetPasswordDialog
-          dealerName={resetDealer.name}
-          onClose={() => setResetDealer(null)}
-          onSuccess={(password, confirmPassword) => {
-            adminApi.resetDealerPassword(resetDealer.id, password, confirmPassword)
-              .then(() => {
-                setResetDealer(null);
-                setMessage("Dealer password updated successfully.");
-              })
-              .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to reset password."));
-          }}
-        />
-      ) : null}
     </AdminShell>
   );
 }

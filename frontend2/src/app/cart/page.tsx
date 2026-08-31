@@ -50,7 +50,7 @@ export default function CartPage() {
                   const productHref = getProductDetailHref(item.product.slug);
                   return (
                   <article key={item.product.id} data-cart-product-row className="grid grid-cols-[5.5rem_1fr] gap-3 rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-3 shadow-[0_10px_24px_rgba(0,87,200,0.07)] md:grid-cols-[7rem_1fr_auto] md:gap-5 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-5 lg:shadow-none">
-                    <Link href={productHref} className="relative h-24 overflow-hidden rounded-xl bg-[#F7F0E7] md:h-28">
+                    <Link href={productHref} className="relative h-24 overflow-hidden rounded-xl bg-[#F3FAFF] md:h-28">
                       <Image src={item.product.image} alt={item.product.name} fill sizes="(max-width: 767px) 88px, 112px" className="object-contain p-2" unoptimized />
                     </Link>
                     <div className="min-w-0">
@@ -102,3 +102,4 @@ export default function CartPage() {
     </SitePage>
   );
 }
+

@@ -7,7 +7,7 @@ function ProductCardSkeleton() {
     <article className="overflow-hidden rounded-[0.9rem] border border-[#D8EAF8] bg-[#FFFFFF] text-center shadow-[0_8px_24px_rgba(0,87,200,0.07)]">
       <div className="relative isolate h-48 overflow-hidden md:h-52 lg:h-56">
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative block aspect-square w-full max-w-[12.25rem] overflow-hidden bg-[#F7F0E7] md:max-w-[13.25rem] lg:max-w-[14.5rem]">
+          <div className="relative block aspect-square w-full max-w-[12.25rem] overflow-hidden bg-[#F3FAFF] md:max-w-[13.25rem] lg:max-w-[14.5rem]">
             <SkeletonBlock className="absolute left-0 top-4 h-6 w-20 rounded-none" />
             <span className="absolute inset-x-8 bottom-4 h-12 rounded-[100%] bg-black/10 blur-xl" />
             <SkeletonBlock className="absolute inset-5 rounded-xl" />
@@ -219,3 +219,4 @@ export function OrderListSkeleton({ count = 3 }: { count?: number }) {
     </div>
   );
 }
+
