@@ -25,6 +25,25 @@ type CategoryFormDialogProps = {
 const inputClass = "h-10 w-full rounded-md border border-slate-200 px-3 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100";
 const textareaClass = "min-h-32 w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100";
 const acceptedTypes = ["image/jpeg", "image/png", "image/webp"];
+function validateExactImageSize(file: File, width: number, height: number) {
+  return new Promise<void>((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const image = new window.Image();
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      if (image.naturalWidth !== width || image.naturalHeight !== height) {
+        reject(new Error(`Please upload ${width} x ${height} px image. Selected image is ${image.naturalWidth} x ${image.naturalHeight} px.`));
+        return;
+      }
+      resolve();
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Unable to read image size."));
+    };
+    image.src = objectUrl;
+  });
+}
 
 function getInitialForm(initialCategory?: Category | null): CategoryFormState {
   return {
@@ -53,7 +72,8 @@ export function CategoryFormDialog({ mode, open, initialCategory, onClose, onSav
       return;
     }
     try {
-      const imageUrl = await uploadImage(file, "categories");
+      await validateExactImageSize(file, 800, 800);
+      const imageUrl = await uploadImage(file, "categories", 800, 800);
       updateField("image", imageUrl);
     } catch (error) {
       setErrors((current) => ({ ...current, image: error instanceof Error ? error.message : "Image upload failed." }));
@@ -117,7 +137,7 @@ export function CategoryFormDialog({ mode, open, initialCategory, onClose, onSav
                   <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => selectImage(event.target.files?.[0])} />
                 </label>
                 {form.image ? <button type="button" onClick={() => updateField("image", "")} className="w-fit rounded-md border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">Remove</button> : null}
-                <p className="text-xs leading-5 text-slate-500">Recommended size: 800 x 800 px square image. Use PNG/WebP with transparent background where possible.</p>
+                <p className="text-xs leading-5 text-slate-500">Required size: 800 x 800 px square image. Use PNG/WebP with transparent background where possible. Wrong size images will not upload.</p>
                 {errors.image ? <span className="text-xs font-semibold text-red-600">{errors.image}</span> : null}
               </div>
             </div>

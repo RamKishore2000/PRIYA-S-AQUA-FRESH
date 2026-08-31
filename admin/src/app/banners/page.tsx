@@ -12,6 +12,26 @@ import { StatusBadge } from "@/components/admin/status-badge";
 import { adminApi, uploadImage } from "@/services/api";
 import type { Banner } from "@/types/admin";
 
+
+function validateExactImageSize(file: File, width: number, height: number) {
+  return new Promise<void>((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const image = new window.Image();
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      if (image.naturalWidth !== width || image.naturalHeight !== height) {
+        reject(new Error(`Please upload ${width} x ${height} px image. Selected image is ${image.naturalWidth} x ${image.naturalHeight} px.`));
+        return;
+      }
+      resolve();
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Unable to read image size."));
+    };
+    image.src = objectUrl;
+  });
+}
 const emptyBanner: Banner = {
   id: "",
   title: "",
@@ -189,15 +209,18 @@ function BannerFormDialog({
 }) {
   const [form, setForm] = useState<Banner>(initialBanner || emptyBanner);
   const [uploading, setUploading] = useState(false);
+  const [imageError, setImageError] = useState("");
 
   async function handleImage(file?: File) {
     if (!file) return;
     setUploading(true);
+    setImageError("");
     try {
-      const imageUrl = await uploadImage(file, "banners");
+      await validateExactImageSize(file, 1200, 1200);
+      const imageUrl = await uploadImage(file, "banners", 1200, 1200);
       setForm((current) => ({ ...current, imageUrl }));
     } catch (error) {
-      onMessage(error instanceof Error ? error.message : "Unable to upload banner image.");
+      setImageError(error instanceof Error ? error.message : "Unable to upload banner image.");
     } finally {
       setUploading(false);
     }
@@ -239,7 +262,8 @@ function BannerFormDialog({
                 </button>
               ) : null}
             </div>
-            <p className="mt-2 text-xs leading-5 text-slate-500">Recommended size: 1200 x 900 px. Use transparent PNG/WebP product image for best result. Upload converts to WebP without cropping.</p>
+            <p className="mt-2 text-xs leading-5 text-slate-500">Required size: 1200 x 1200 px. Upload only square JPG, PNG, or WebP image. Wrong size images will not upload.</p>
+            {imageError ? <p className="mt-2 text-xs font-semibold text-red-600">{imageError}</p> : null}
           </div>
 
           <div className="grid gap-4">

@@ -26,7 +26,7 @@ export const defaultSiteSettings: SiteSettings = {
   youtube: "https://www.youtube.com/@priyasaquafresh",
   linkedin: "https://www.linkedin.com/company/priyas-aqua-fresh",
   x: "https://x.com/priyasaquafresh",
-  trainingAmount: 4999,
+  trainingAmount: 10000,
   orderAdvanceAmount: 500,
   trainingImages: [
     "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.34 PM.jpeg",
@@ -34,6 +34,10 @@ export const defaultSiteSettings: SiteSettings = {
     "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.35 PM.jpeg",
     "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.36 PM.jpeg",
     "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.37 PM.jpeg",
+    "",
+    "",
+    "",
+    "",
   ],
   trainingVideos: [],
 };
@@ -42,7 +46,13 @@ export async function fetchSiteSettings() {
   const response = await fetch(`${API_BASE_URL}/api/settings/site`, { cache: "no-store" });
   const result = await response.json() as { success: boolean; data?: { settings?: Partial<SiteSettings> } };
   if (!response.ok || !result.success) return defaultSiteSettings;
-  return { ...defaultSiteSettings, ...(result.data?.settings || {}) };
+  const settings = result.data?.settings || {};
+  return {
+    ...defaultSiteSettings,
+    ...settings,
+    trainingImages: Array.from({ length: 9 }, (_, index) => settings.trainingImages?.[index] || defaultSiteSettings.trainingImages[index] || ""),
+    trainingVideos: (settings.trainingVideos || defaultSiteSettings.trainingVideos).filter(Boolean).slice(0, 5),
+  };
 }
 
 export function getWhatsAppHref(value: string) {

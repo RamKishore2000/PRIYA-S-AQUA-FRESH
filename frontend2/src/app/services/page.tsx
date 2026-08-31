@@ -1,23 +1,23 @@
-import { CalendarCheck, Droplets, Headphones, ShieldCheck, Wrench } from "lucide-react";
+import { CalendarCheck, Headphones, ShieldCheck, UserCheck, Wrench } from "lucide-react";
 import { SitePage } from "@/components/layout/site-page";
 import { services } from "@/components/services/service-data";
 import { ServiceRequestForm } from "@/components/services/service-request-form";
 
 const serviceHighlights = [
   {
-    title: "Quick Response",
-    description: "Service support for purifier installation, repairs, and maintenance requests.",
+    title: "Quick Service",
+    description: "Fast and reliable support for RO installation, repairs, maintenance, and service requests.",
     icon: Headphones,
   },
   {
-    title: "Genuine Care",
-    description: "Filter replacement and purifier servicing focused on long-term performance.",
+    title: "Genuine Service",
+    description: "Quality filter replacement and professional RO servicing for long-lasting purifier performance.",
     icon: ShieldCheck,
   },
   {
-    title: "Water Expertise",
-    description: "Water quality consultation for home, business, and commercial requirements.",
-    icon: Droplets,
+    title: "Expert Technicians",
+    description: "Skilled technicians to diagnose RO problems and provide the right repair and maintenance solutions.",
+    icon: UserCheck,
   },
 ];
 
@@ -29,7 +29,7 @@ const serviceSteps = [
 
 export default function ServicesPage() {
   return (
-    <SitePage eyebrow="Services" title="Expert Care for Pure Water" description="From installation and maintenance to filter replacement and commercial RO support, Priya's Aqua Fresh helps keep your purification system performing at its best.">
+    <SitePage eyebrow="Services" title="Reliable RO Service for Pure Water" description="From RO installation and regular maintenance to filter replacement, repairs, and troubleshooting, Priya's Aqua Fresh provides professional service to keep your water purifier working efficiently.">
       <section data-native-screen="services" className="px-5 pb-24 md:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">

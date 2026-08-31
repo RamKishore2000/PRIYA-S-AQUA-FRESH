@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -28,6 +28,28 @@ const preferredCategoryOrder = [
 export function CategoryShowcase({ categories }: { categories: Category[] }) {
   const visibleCategories = getOrderedCategories(categories);
   const rowRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  useEffect(() => {
+    const row = rowRef.current;
+    if (!row) return;
+    const scrollRow = row;
+
+    function updateScrollState() {
+      const maxScroll = scrollRow.scrollWidth - scrollRow.clientWidth;
+      setCanScrollLeft(scrollRow.scrollLeft > 4);
+      setCanScrollRight(scrollRow.scrollLeft < maxScroll - 4);
+    }
+
+    updateScrollState();
+    scrollRow.addEventListener("scroll", updateScrollState, { passive: true });
+    window.addEventListener("resize", updateScrollState);
+    return () => {
+      scrollRow.removeEventListener("scroll", updateScrollState);
+      window.removeEventListener("resize", updateScrollState);
+    };
+  }, [visibleCategories.length]);
 
   function scrollCategories(direction: "left" | "right") {
     rowRef.current?.scrollBy({ left: direction === "left" ? -240 : 240, behavior: "smooth" });
@@ -69,10 +91,10 @@ export function CategoryShowcase({ categories }: { categories: Category[] }) {
               <span className="h-1.5 w-1.5 rounded-full bg-[#CDBB9C]" />
             </div>
             <div data-home-carousel-controls className="flex items-center gap-2" aria-label="Category carousel controls">
-              <button type="button" onClick={() => scrollCategories("left")} className="grid h-9 w-9 place-items-center rounded-full border border-[#D8C8B4] bg-[#FFF9F1] text-[#0A3A38] shadow-[0_8px_18px_rgba(84,61,35,0.1)] transition hover:border-[#0A3A38] hover:bg-white" aria-label="Scroll categories left" title="Scroll left">
+              <button type="button" onClick={() => scrollCategories("left")} disabled={!canScrollLeft} className={`grid h-9 w-9 place-items-center rounded-full border shadow-[0_8px_18px_rgba(84,61,35,0.1)] transition ${canScrollLeft ? "border-[#0A3A38] bg-[#0A3A38] text-white hover:bg-[#124945]" : "border-[#D8C8B4] bg-[#FFF9F1] text-[#AFA391]"}`} aria-label="Scroll categories left" title="Scroll left">
                 <ChevronLeft className="h-4 w-4" />
               </button>
-              <button type="button" onClick={() => scrollCategories("right")} className="grid h-9 w-9 place-items-center rounded-full bg-[#0A3A38] text-white shadow-[0_8px_18px_rgba(10,58,56,0.2)] transition hover:bg-[#124945]" aria-label="Scroll categories right" title="Scroll right">
+              <button type="button" onClick={() => scrollCategories("right")} disabled={!canScrollRight} className={`grid h-9 w-9 place-items-center rounded-full border shadow-[0_8px_18px_rgba(10,58,56,0.2)] transition ${canScrollRight ? "border-[#0A3A38] bg-[#0A3A38] text-white hover:bg-[#124945]" : "border-[#D8C8B4] bg-[#FFF9F1] text-[#AFA391]"}`} aria-label="Scroll categories right" title="Scroll right">
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>

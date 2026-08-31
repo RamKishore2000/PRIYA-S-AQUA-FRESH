@@ -36,6 +36,25 @@ type CouponFormDialogProps = {
 };
 
 const inputClass = "h-10 w-full rounded-md border border-slate-200 px-3 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100";
+function validateExactImageSize(file: File, width: number, height: number) {
+  return new Promise<void>((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const image = new window.Image();
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      if (image.naturalWidth !== width || image.naturalHeight !== height) {
+        reject(new Error(`Please upload ${width} x ${height} px image. Selected image is ${image.naturalWidth} x ${image.naturalHeight} px.`));
+        return;
+      }
+      resolve();
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Unable to read image size."));
+    };
+    image.src = objectUrl;
+  });
+}
 
 function initialState(coupon?: Coupon | null): CouponFormState {
   const applicableProductIds = coupon?.applicableProductIds || [];
@@ -108,7 +127,8 @@ export function CouponFormDialog({ mode, open, initialCoupon, products, onClose,
     setUploading(true);
     setErrors((current) => ({ ...current, imageUrl: undefined }));
     try {
-      const imageUrl = await uploadImage(file, "coupons", 1200, 900);
+      await validateExactImageSize(file, 1200, 1200);
+      const imageUrl = await uploadImage(file, "coupons", 1200, 1200);
       updateField("imageUrl", imageUrl);
     } catch (error) {
       setErrors((current) => ({ ...current, imageUrl: error instanceof Error ? error.message : "Image upload failed." }));
@@ -201,7 +221,7 @@ export function CouponFormDialog({ mode, open, initialCoupon, products, onClose,
                   {form.imageUrl ? <Image src={form.imageUrl} alt="Coupon right-side image" fill className="object-contain p-2" unoptimized /> : <span className="grid h-full place-items-center text-xs font-semibold text-slate-400">No image</span>}
                 </div>
                 <div className="flex flex-col justify-center gap-3">
-                  <p className="text-xs font-semibold leading-5 text-slate-500">Recommended size: 1200 x 900 px. Use product, offer, or festival image with transparent PNG/WebP preferred. Upload converts to WebP without cropping.</p>
+                  <p className="text-xs font-semibold leading-5 text-slate-500">Required size: 1200 x 1200 px. Upload only square JPG, PNG, or WebP image. Wrong size images will not upload.</p>
                   <div className="flex flex-wrap gap-2">
                     <label className="inline-flex cursor-pointer rounded-md bg-slate-950 px-3 py-2 text-xs font-semibold text-white">
                       {uploading ? "Uploading..." : form.imageUrl ? "Replace Image" : "Upload Image"}

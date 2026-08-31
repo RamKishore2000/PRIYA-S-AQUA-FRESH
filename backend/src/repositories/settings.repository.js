@@ -8,6 +8,10 @@ const defaultTrainingImages = [
   "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.35 PM.jpeg",
   "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.36 PM.jpeg",
   "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.37 PM.jpeg",
+  "",
+  "",
+  "",
+  "",
 ];
 
 const defaultSiteSettings = {
@@ -20,7 +24,7 @@ const defaultSiteSettings = {
   youtube: "https://www.youtube.com/@priyasaquafresh",
   linkedin: "https://www.linkedin.com/company/priyas-aqua-fresh",
   x: "https://x.com/priyasaquafresh",
-  trainingAmount: 4999,
+  trainingAmount: 10000,
   orderAdvanceAmount: 500,
   trainingImages: defaultTrainingImages,
   trainingVideos: [],
@@ -36,10 +40,9 @@ function parseSettings(value) {
   }
 }
 
-function normalizeList(value, fallback) {
-  const source = Array.isArray(value) ? value : fallback;
-  const cleaned = source.map((item) => String(item || "").trim()).filter(Boolean).slice(0, 5);
-  return cleaned.length ? cleaned : fallback.slice(0, 5);
+function normalizeList(value, fallback, limit = 5) {
+  const source = Array.isArray(value) ? value : [];
+  return Array.from({ length: limit }, (_, index) => String(source[index] || fallback[index] || "").trim());
 }
 
 function normalizeOptionalList(value) {
@@ -60,7 +63,7 @@ function normalizeSettings(input = {}) {
     x: String(input.x ?? defaultSiteSettings.x).trim(),
     trainingAmount: Math.max(1, Number(input.trainingAmount ?? defaultSiteSettings.trainingAmount) || defaultSiteSettings.trainingAmount),
     orderAdvanceAmount: Math.max(1, Number(input.orderAdvanceAmount ?? defaultSiteSettings.orderAdvanceAmount) || defaultSiteSettings.orderAdvanceAmount),
-    trainingImages: normalizeList(input.trainingImages, defaultTrainingImages),
+    trainingImages: normalizeList(input.trainingImages, defaultTrainingImages, 9),
     trainingVideos: normalizeOptionalList(input.trainingVideos),
   };
 }

@@ -5013,9 +5013,9 @@ body.priyas-native-app .native-boot-splash p {
   }
 }
 
-/* Keep web-only home carousel controls out of the native app shell. */
+/* Home carousel controls must be visible in the native app too. */
 body.priyas-native-app [data-home-carousel-controls] {
-  display: none !important;
+  display: flex !important;
 }
 
 /* Final web product-page mobile nav stability and coupon mobile card layout. */
@@ -5095,4 +5095,9 @@ body.priyas-native-app [data-home-carousel-controls] {
   [data-cart-drawer-panel] {
     z-index: 2601 !important;
   }
+}
+
+/* Home carousel controls must be visible in the native app too. */
+body.priyas-native-app [data-home-carousel-controls] {
+  display: flex !important;
 }

@@ -17,9 +17,25 @@ const defaultTrainingImages = [
   "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.35 PM.jpeg",
   "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.36 PM.jpeg",
   "/images/ro training institue/WhatsApp Image 2026-08-26 at 6.57.37 PM.jpeg",
+  "",
+  "",
+  "",
+  "",
 ];
 
 const defaultTrainingVideos: string[] = [];
+
+const trainingImageLabels = [
+  "Banner Big Image",
+  "Banner Small Image 1",
+  "Banner Small Image 2",
+  "Banner Small Image 3",
+  "Banner Small Image 4",
+  "Practical Card Image 1",
+  "Practical Card Image 2",
+  "Practical Card Image 3",
+  "Practical Card Image 4",
+];
 
 const defaultSettings: SiteSettings = {
   phone: "+919951078699",
@@ -31,7 +47,7 @@ const defaultSettings: SiteSettings = {
   youtube: "https://www.youtube.com/@priyasaquafresh",
   linkedin: "https://www.linkedin.com/company/priyas-aqua-fresh",
   x: "https://x.com/priyasaquafresh",
-  trainingAmount: 4999,
+  trainingAmount: 10000,
   orderAdvanceAmount: 500,
   trainingImages: defaultTrainingImages,
   trainingVideos: defaultTrainingVideos,
@@ -42,10 +58,41 @@ function applyTheme(theme: ThemeMode) {
   localStorage.setItem("priyas-admin-theme", theme);
 }
 
-function ensureFive(values: string[], fallback: string[]) {
-  return Array.from({ length: 5 }, (_, index) => values[index] || fallback[index] || "");
+function ensureSlots(values: string[], fallback: string[], count: number) {
+  return Array.from({ length: count }, (_, index) => values[index] || fallback[index] || "");
 }
 
+
+type TrainingImageSize = {
+  width: number;
+  height: number;
+};
+
+function getTrainingImageSize(index: number): TrainingImageSize {
+  if (index === 0) return { width: 1600, height: 1000 };
+  if (index >= 1 && index <= 4) return { width: 1200, height: 900 };
+  return { width: 1600, height: 900 };
+}
+
+function validateExactImageSize(file: File, width: number, height: number) {
+  return new Promise<void>((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const image = new window.Image();
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      if (image.naturalWidth !== width || image.naturalHeight !== height) {
+        reject(new Error(`Please upload ${width} x ${height} px image. Selected image is ${image.naturalWidth} x ${image.naturalHeight} px.`));
+        return;
+      }
+      resolve();
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Unable to read image size."));
+    };
+    image.src = objectUrl;
+  });
+}
 function toAdminYouTubeUrl(value: string) {
   const text = value.trim();
   if (!text) return "";
@@ -63,14 +110,15 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [uploadingImageIndex, setUploadingImageIndex] = useState<number | null>(null);
+  const [trainingImageErrors, setTrainingImageErrors] = useState<Record<number, string>>({});
 
   useEffect(() => {
     adminApi.getSiteSettings()
       .then((data) => setSettings({
         ...defaultSettings,
         ...data,
-        trainingImages: ensureFive(data.trainingImages || [], defaultTrainingImages),
-        trainingVideos: ensureFive(data.trainingVideos || [], defaultTrainingVideos).map(toAdminYouTubeUrl),
+        trainingImages: ensureSlots(data.trainingImages || [], defaultTrainingImages, 9),
+        trainingVideos: ensureSlots(data.trainingVideos || [], defaultTrainingVideos, 5).map(toAdminYouTubeUrl),
       }))
       .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to load website settings."))
       .finally(() => setLoading(false));
@@ -88,7 +136,7 @@ export default function SettingsPage() {
 
   function updateTrainingImage(index: number, value: string) {
     setSettings((current) => {
-      const trainingImages = ensureFive(current.trainingImages || [], defaultTrainingImages);
+      const trainingImages = ensureSlots(current.trainingImages || [], defaultTrainingImages, 9);
       trainingImages[index] = value;
       return { ...current, trainingImages };
     });
@@ -96,7 +144,7 @@ export default function SettingsPage() {
 
   function updateTrainingVideo(index: number, value: string) {
     setSettings((current) => {
-      const trainingVideos = ensureFive(current.trainingVideos || [], defaultTrainingVideos);
+      const trainingVideos = ensureSlots(current.trainingVideos || [], defaultTrainingVideos, 5);
       trainingVideos[index] = value;
       return { ...current, trainingVideos };
     });
@@ -104,14 +152,17 @@ export default function SettingsPage() {
 
   async function uploadTrainingImage(index: number, file?: File) {
     if (!file) return;
+    const size = getTrainingImageSize(index);
     setUploadingImageIndex(index);
     setMessage("");
+    setTrainingImageErrors((current) => ({ ...current, [index]: "" }));
     try {
-      const imageUrl = await uploadImage(file, "training", 1200, 900);
+      await validateExactImageSize(file, size.width, size.height);
+      const imageUrl = await uploadImage(file, "training", size.width, size.height);
       updateTrainingImage(index, imageUrl);
       setMessage(`Training image ${index + 1} uploaded.`);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Training image upload failed.");
+      setTrainingImageErrors((current) => ({ ...current, [index]: error instanceof Error ? error.message : "Training image upload failed." }));
     } finally {
       setUploadingImageIndex(null);
     }
@@ -123,11 +174,16 @@ export default function SettingsPage() {
     try {
       const payload = {
         ...settings,
-        trainingImages: ensureFive(settings.trainingImages || [], defaultTrainingImages).filter(Boolean).slice(0, 5),
-        trainingVideos: ensureFive(settings.trainingVideos || [], defaultTrainingVideos).map((video) => video.trim()).filter(Boolean).slice(0, 5),
+        trainingImages: ensureSlots(settings.trainingImages || [], defaultTrainingImages, 9).slice(0, 9),
+        trainingVideos: ensureSlots(settings.trainingVideos || [], defaultTrainingVideos, 5).map((video) => video.trim()).filter(Boolean).slice(0, 5),
       };
       const saved = await adminApi.updateSiteSettings(payload);
-      setSettings({ ...defaultSettings, ...saved, trainingVideos: ensureFive(saved.trainingVideos || [], defaultTrainingVideos).map(toAdminYouTubeUrl) });
+      setSettings({
+        ...defaultSettings,
+        ...saved,
+        trainingImages: ensureSlots(saved.trainingImages || [], defaultTrainingImages, 9),
+        trainingVideos: ensureSlots(saved.trainingVideos || [], defaultTrainingVideos, 5).map(toAdminYouTubeUrl),
+      });
       setMessage("Website settings updated successfully.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to update website settings.");
@@ -136,8 +192,8 @@ export default function SettingsPage() {
     }
   }
 
-  const trainingImages = ensureFive(settings.trainingImages || [], defaultTrainingImages);
-  const trainingVideos = ensureFive(settings.trainingVideos || [], defaultTrainingVideos).map(toAdminYouTubeUrl);
+  const trainingImages = ensureSlots(settings.trainingImages || [], defaultTrainingImages, 9);
+  const trainingVideos = ensureSlots(settings.trainingVideos || [], defaultTrainingVideos, 5).map(toAdminYouTubeUrl);
 
   return (
     <AdminShell>
@@ -171,24 +227,96 @@ export default function SettingsPage() {
           </div>
         </SettingsCard>
 
-        <SettingsCard title="RO Training Images" description="Set exactly five images used on the public training page.">
-          <p className="mb-4 text-xs font-semibold leading-5 text-slate-500">Recommended size: 1200 x 900 px. Use clear RO training classroom/service images. Upload converts to WebP without cropping.</p>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-            {trainingImages.map((imageUrl, index) => (
-              <div key={index} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <div className="relative aspect-[4/3] overflow-hidden rounded-md border border-slate-200 bg-white">
-                  <TrainingImagePreview imageUrl={imageUrl} index={index} />
-                </div>
-                <input value={imageUrl} onChange={(event) => updateTrainingImage(index, event.target.value)} className="mt-3 h-10 w-full rounded-md border border-slate-200 px-3 text-xs font-semibold text-slate-900 outline-none focus:border-teal-500" placeholder={`Training image ${index + 1} URL`} />
-                <label className="mt-2 inline-flex cursor-pointer rounded-md bg-slate-950 px-3 py-2 text-xs font-semibold text-white">
-                  {uploadingImageIndex === index ? "Uploading..." : "Upload"}
-                  <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" className="sr-only" disabled={uploadingImageIndex !== null} onChange={(event) => uploadTrainingImage(index, event.target.files?.[0])} />
-                </label>
+        <SettingsCard title="RO Training Images" description="Text is fixed on the public RO training page. Admin can change only these images.">
+          <div className="grid gap-8">
+            <div>
+              <div className="mb-4 rounded-md border border-blue-100 bg-blue-50 px-4 py-3">
+                <h3 className="text-sm font-black text-blue-950">Banner Big Image</h3>
+                <p className="mt-1 text-xs font-semibold leading-5 text-blue-800">Used as the main hero/background image and the big left image in the gallery.</p>
+                <p className="mt-1 text-xs font-black leading-5 text-blue-700">Required size: 1600 x 1000 px.</p>
               </div>
-            ))}
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {[trainingImages[0]].map((imageUrl) => {
+                  const index = 0;
+                  const size = getTrainingImageSize(index);
+                  return (
+                    <div key={index} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                      <div className="relative aspect-[4/3] overflow-hidden rounded-md border border-slate-200 bg-white">
+                        <TrainingImagePreview imageUrl={imageUrl} index={index} />
+                      </div>
+                      <p className="mt-3 text-xs font-black uppercase tracking-[0.12em] text-slate-500">{trainingImageLabels[index]}</p>
+                      <p className="mt-1 text-xs font-bold text-teal-700">Required: {size.width} x {size.height} px</p>
+                      <input value={imageUrl} onChange={(event) => updateTrainingImage(index, event.target.value)} className="mt-3 h-10 w-full rounded-md border border-slate-200 px-3 text-xs font-semibold text-slate-900 outline-none focus:border-teal-500" placeholder={`${trainingImageLabels[index]} URL`} />
+                      <label className="mt-2 inline-flex cursor-pointer rounded-md bg-slate-950 px-3 py-2 text-xs font-semibold text-white">
+                        {uploadingImageIndex === index ? "Uploading..." : "Upload"}
+                        <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" className="sr-only" disabled={uploadingImageIndex !== null} onChange={(event) => uploadTrainingImage(index, event.target.files?.[0])} />
+                      </label>
+                      {trainingImageErrors[index] ? <p className="mt-2 text-xs font-semibold text-red-600">{trainingImageErrors[index]}</p> : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <div className="mb-4 rounded-md border border-cyan-100 bg-cyan-50 px-4 py-3">
+                <h3 className="text-sm font-black text-cyan-950">Banner Small Images</h3>
+                <p className="mt-1 text-xs font-semibold leading-5 text-cyan-800">Used as the four small right-side gallery images below the hero section.</p>
+                <p className="mt-1 text-xs font-black leading-5 text-cyan-700">Required size: 1200 x 900 px.</p>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                {trainingImages.slice(1, 5).map((imageUrl, offset) => {
+                  const index = offset + 1;
+                  const size = getTrainingImageSize(index);
+                  return (
+                    <div key={index} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                      <div className="relative aspect-[4/3] overflow-hidden rounded-md border border-slate-200 bg-white">
+                        <TrainingImagePreview imageUrl={imageUrl} index={index} />
+                      </div>
+                      <p className="mt-3 text-xs font-black uppercase tracking-[0.12em] text-slate-500">{trainingImageLabels[index]}</p>
+                      <p className="mt-1 text-xs font-bold text-teal-700">Required: {size.width} x {size.height} px</p>
+                      <input value={imageUrl} onChange={(event) => updateTrainingImage(index, event.target.value)} className="mt-3 h-10 w-full rounded-md border border-slate-200 px-3 text-xs font-semibold text-slate-900 outline-none focus:border-teal-500" placeholder={`${trainingImageLabels[index]} URL`} />
+                      <label className="mt-2 inline-flex cursor-pointer rounded-md bg-slate-950 px-3 py-2 text-xs font-semibold text-white">
+                        {uploadingImageIndex === index ? "Uploading..." : "Upload"}
+                        <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" className="sr-only" disabled={uploadingImageIndex !== null} onChange={(event) => uploadTrainingImage(index, event.target.files?.[0])} />
+                      </label>
+                      {trainingImageErrors[index] ? <p className="mt-2 text-xs font-semibold text-red-600">{trainingImageErrors[index]}</p> : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <div className="mb-4 rounded-md border border-amber-100 bg-amber-50 px-4 py-3">
+                <h3 className="text-sm font-black text-amber-950">Practical Training Card Images</h3>
+                <p className="mt-1 text-xs font-semibold leading-5 text-amber-800">Used only inside the four Practical Training Cards. If empty, the frontend shows an upload placeholder instead of reusing banner images.</p>
+                <p className="mt-1 text-xs font-black leading-5 text-amber-700">Required size: 1600 x 900 px.</p>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                {trainingImages.slice(5, 9).map((imageUrl, offset) => {
+                  const index = offset + 5;
+                  const size = getTrainingImageSize(index);
+                  return (
+                    <div key={index} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                      <div className="relative aspect-[4/3] overflow-hidden rounded-md border border-slate-200 bg-white">
+                        <TrainingImagePreview imageUrl={imageUrl} index={index} />
+                      </div>
+                      <p className="mt-3 text-xs font-black uppercase tracking-[0.12em] text-slate-500">{trainingImageLabels[index]}</p>
+                      <p className="mt-1 text-xs font-bold text-teal-700">Required: {size.width} x {size.height} px</p>
+                      <input value={imageUrl} onChange={(event) => updateTrainingImage(index, event.target.value)} className="mt-3 h-10 w-full rounded-md border border-slate-200 px-3 text-xs font-semibold text-slate-900 outline-none focus:border-teal-500" placeholder={`${trainingImageLabels[index]} URL`} />
+                      <label className="mt-2 inline-flex cursor-pointer rounded-md bg-slate-950 px-3 py-2 text-xs font-semibold text-white">
+                        {uploadingImageIndex === index ? "Uploading..." : "Upload"}
+                        <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" className="sr-only" disabled={uploadingImageIndex !== null} onChange={(event) => uploadTrainingImage(index, event.target.files?.[0])} />
+                      </label>
+                      {trainingImageErrors[index] ? <p className="mt-2 text-xs font-semibold text-red-600">{trainingImageErrors[index]}</p> : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </SettingsCard>
-
         <SettingsCard title="RO Training Videos" description="Set exactly five YouTube videos used on the public training page.">
           <p className="mb-4 text-xs font-semibold leading-5 text-slate-500">Paste the full YouTube video URL. Admin keeps the full URL visible after save.</p>
           <div className="grid gap-4 md:grid-cols-2">

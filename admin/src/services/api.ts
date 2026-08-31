@@ -1,4 +1,4 @@
-import type { Banner, Category, Coupon, Customer, Dealer, Order, OrderStatus, Product, Subcategory, ContactMessage, Review, ServiceRequest, SiteSettings, Status, Testimonial, TrainingEnquiry } from "@/types/admin";
+import type { Banner, Category, Coupon, Customer, Dealer, Order, OrderStatus, Product, Subcategory, ContactMessage, PolicyPage, Review, ServiceRequest, SiteSettings, Status, Testimonial, TrainingEnquiry } from "@/types/admin";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
@@ -157,6 +157,14 @@ type ApiTestimonial = {
 
 
 type ApiSiteSettings = SiteSettings;
+
+type ApiPolicyPage = {
+  slug: string;
+  title: string;
+  description: string;
+  sections: { title: string; body: string }[] | string;
+  status: "ACTIVE" | "INACTIVE";
+};
 
 type ApiContactMessage = {
   id: number;
@@ -318,6 +326,17 @@ export const adminApi = {
       body: JSON.stringify(settings),
     });
     return data.settings;
+  },
+  async listPolicies() {
+    const data = await apiRequest<{ policies: ApiPolicyPage[] }>("/api/policies?includeInactive=true");
+    return data.policies.map(mapPolicyPage);
+  },
+  async updatePolicy(policy: PolicyPage) {
+    const data = await apiRequest<{ policy: ApiPolicyPage }>(`/api/policies/${policy.slug}`, {
+      method: "PUT",
+      body: JSON.stringify(toPolicyPayload(policy)),
+    });
+    return mapPolicyPage(data.policy);
   },
   async listContactMessages() {
     const data = await apiRequest<{ messages: ApiContactMessage[] }>("/api/contact-messages");
@@ -549,6 +568,34 @@ export const adminApi = {
 };
 
 
+function parsePolicySections(value: ApiPolicyPage["sections"]) {
+  if (Array.isArray(value)) return value;
+  try {
+    const parsed = JSON.parse(value || "[]") as { title: string; body: string }[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function mapPolicyPage(policy: ApiPolicyPage): PolicyPage {
+  return {
+    slug: policy.slug,
+    title: policy.title,
+    description: policy.description,
+    sections: parsePolicySections(policy.sections),
+    status: policy.status === "ACTIVE" ? "Active" : "Inactive",
+  };
+}
+
+function toPolicyPayload(policy: PolicyPage) {
+  return {
+    title: policy.title,
+    description: policy.description,
+    sections: policy.sections.map((section) => ({ title: section.title, body: section.body })),
+    status: policy.status === "Active" ? "ACTIVE" : "INACTIVE",
+  };
+}
 function mapTrainingAction(action: ApiTrainingEnquiry["actionType"]): TrainingEnquiry["actionType"] {
   return action === "PAYMENT" ? "Payment" : "Interested";
 }

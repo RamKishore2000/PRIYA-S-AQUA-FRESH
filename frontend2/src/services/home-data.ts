@@ -35,22 +35,54 @@ export async function getHomeData() {
 }
 
 function getCategoryProductSections(products: Product[], categories: Category[]) {
-  return homeCategorySections
-    .map((section, index) => {
+  const usedCategoryKeys = new Set<string>();
+  const sections = homeCategorySections
+    .map((section) => {
       const category = categories.find((item) => section.slugs.includes(normalizeSlug(item.slug)) || section.slugs.includes(normalizeSlug(item.name)));
       const matchedSlugs = new Set([...(category ? [category.slug, category.name] : []), ...section.slugs].map(normalizeSlug));
       const sectionProducts = products.filter((product) => matchedSlugs.has(normalizeSlug(product.categorySlug || product.category)) || matchedSlugs.has(normalizeSlug(product.category)));
+
+      for (const slug of matchedSlugs) {
+        usedCategoryKeys.add(slug);
+      }
 
       return {
         id: category?.id || section.slugs[0],
         title: category?.name || section.title,
         eyebrow: section.eyebrow,
         viewAllHref: `/products?category=${encodeURIComponent(category?.slug || section.slugs[0])}`,
-        tone: index % 2 === 0 ? "light" as const : "soft" as const,
         products: sectionProducts,
       };
     })
     .filter((section) => section.products.length > 0);
+
+  const dynamicSections = categories
+    .filter((category) => {
+      const keys = [category.slug, category.name].map(normalizeSlug).filter(Boolean);
+      return keys.length > 0 && !keys.some((key) => usedCategoryKeys.has(key));
+    })
+    .map((category) => {
+      const keys = new Set([category.slug, category.name].map(normalizeSlug).filter(Boolean));
+      const sectionProducts = products.filter((product) => keys.has(normalizeSlug(product.categorySlug || product.category)) || keys.has(normalizeSlug(product.category)));
+
+      for (const key of keys) {
+        usedCategoryKeys.add(key);
+      }
+
+      return {
+        id: category.id,
+        title: category.name,
+        eyebrow: "Shop Products",
+        viewAllHref: `/products?category=${encodeURIComponent(category.slug || category.name)}`,
+        products: sectionProducts,
+      };
+    })
+    .filter((section) => section.products.length > 0);
+
+  return [...sections, ...dynamicSections].map((section, index) => ({
+    ...section,
+    tone: index % 2 === 0 ? "light" as const : "soft" as const,
+  }));
 }
 
 function getBalancedTopProducts(products: Product[], limit: number) {

@@ -2,6 +2,7 @@ const fs = require("fs/promises");
 const path = require("path");
 const env = require("../config/env");
 const { createServerConnection } = require("../config/database");
+const policyRepository = require("../repositories/policy.repository");
 
 async function initDatabase() {
   let connection;
@@ -37,6 +38,7 @@ async function initDatabase() {
     await normalizeTestimonialsTable(connection);
     await normalizeSettingsTable(connection);
     await normalizeTrainingEnquiriesTable(connection);
+    await policyRepository.ensureDefaultPolicyPages(connection);
 
     console.log(`Database initialized: ${env.db.database}`);
   } finally {

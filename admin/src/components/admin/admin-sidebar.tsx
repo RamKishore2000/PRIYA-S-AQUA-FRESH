@@ -43,6 +43,7 @@ const groups = [
   {
     title: "System",
     items: [
+      { label: "Policy Pages", href: "/policies", icon: "settings" },
       { label: "Settings", href: "/settings", icon: "settings" },
     ],
   },

@@ -61,7 +61,7 @@ export function HomePageClient() {
       <Header overlay />
       {loading ? <HomeHeroSkeleton /> : <Hero banners={data.banners} categories={data.categories} />}
       {loading ? <HomeCategorySkeleton /> : <CategoryShowcase categories={data.categories} />}
-      <div className="native-app-hidden"><CouponOffersSection offers={data.couponOffers} /></div>
+      <CouponOffersSection offers={data.couponOffers} />
       {loading ? (
         <>
           <HomeProductSkeleton />

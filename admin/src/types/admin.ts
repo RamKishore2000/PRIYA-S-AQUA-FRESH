@@ -203,6 +203,14 @@ export type Review = {
   createdDate: string;
 };
 
+
+export type PolicyPage = {
+  slug: string;
+  title: string;
+  description: string;
+  sections: { title: string; body: string }[];
+  status: Extract<Status, "Active" | "Inactive">;
+};
 export type SiteSettings = {
   phone: string;
   whatsapp: string;

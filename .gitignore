@@ -55,3 +55,8 @@ frontend2/android-cap8-backup-*/
 *.apk
 *.zip
 *-check.png
+# Android release signing secrets
+*.jks
+*.keystore
+**/keystore.properties
+.tmp/
