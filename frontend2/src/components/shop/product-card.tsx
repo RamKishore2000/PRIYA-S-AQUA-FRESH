@@ -83,7 +83,7 @@ export function ProductCard({ product, onWishlistChange }: { product: Product; o
   return (
     <article data-product-card className="group overflow-hidden rounded-[0.9rem] border border-[#D8EAF8] bg-[#FFFFFF] text-center text-[#253738] shadow-[0_8px_24px_rgba(0,87,200,0.07)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(0,87,200,0.12)]">
       <div className="relative isolate h-48 overflow-hidden md:h-52 lg:h-56">
-        <Link href={productHref} className="absolute inset-0 flex items-center justify-center" aria-label={product.name}>
+        <Link href={productHref} prefetch={false} className="absolute inset-0 flex items-center justify-center" aria-label={product.name}>
           <span data-product-image-area className="relative block aspect-square w-full max-w-[12.25rem] overflow-hidden bg-[#F3FAFF] md:max-w-[13.25rem] lg:max-w-[14.5rem]">
 
 
@@ -133,7 +133,7 @@ export function ProductCard({ product, onWishlistChange }: { product: Product; o
 
       <div data-product-card-body className="mx-auto w-full max-w-full px-3 pb-2 pt-1 lg:max-w-[18rem] lg:px-4 lg:pb-4 lg:pt-2">
         <p data-product-category-label className="mx-auto block w-full max-w-full truncate text-[0.56rem] font-black uppercase leading-none tracking-[0.12em] text-[#0057C8] lg:text-[0.68rem] lg:tracking-[0.18em]">{product.category}</p>
-        <Link href={productHref} className="mx-auto mt-1 block min-w-0 max-w-full overflow-hidden text-[0.78rem] font-black leading-[0.95rem] text-[#253738] transition hover:text-[#0057C8] md:text-sm lg:mt-2 lg:text-base lg:leading-5">
+        <Link href={productHref} prefetch={false} className="mx-auto mt-1 block min-w-0 max-w-full overflow-hidden text-[0.78rem] font-black leading-[0.95rem] text-[#253738] transition hover:text-[#0057C8] md:text-sm lg:mt-2 lg:text-base lg:leading-5">
           <span data-product-name-text className="line-clamp-2 min-h-[2.24rem] leading-[1.12rem] lg:min-h-0 lg:truncate">{product.name}</span>
         </Link>
         <PriceDisplay product={product} center stacked mobileInline className="mt-1 lg:mt-2" priceClassName="text-base md:text-lg lg:text-2xl" originalClassName="text-[0.68rem] md:text-sm" />

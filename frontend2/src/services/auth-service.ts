@@ -158,9 +158,13 @@ export async function apiRequest<T>(path: string, init?: RequestInit) {
   let { response, result } = await fetchWithToken<T>(path, init, token);
   if (response.status === 401) {
     const nextToken = await refreshSession();
-    if (nextToken) {
-      ({ response, result } = await fetchWithToken<T>(path, init, nextToken));
-    }
+    if (!nextToken) throw new Error("Please login to continue.");
+    ({ response, result } = await fetchWithToken<T>(path, init, nextToken));
+  }
+
+  if (response.status === 401) {
+    clearStoredSession();
+    throw new Error("Please login to continue.");
   }
 
   if (!response.ok || !result.success || !result.data) throw new Error(result.message || "Request failed.");
