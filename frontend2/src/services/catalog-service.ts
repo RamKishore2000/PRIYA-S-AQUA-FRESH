@@ -1,4 +1,4 @@
-import type { Banner, Category, CouponOffer, Product, Review, Subcategory, Testimonial } from "@/types/product";
+import type { AboutAward, Banner, Category, CouponOffer, Product, ProductImageVariant, Review, Subcategory, Testimonial } from "@/types/product";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
@@ -25,6 +25,14 @@ type ApiSubcategory = {
   slug: string;
   imageUrl: string | null;
   productsCount: number;
+};
+
+type ApiAboutAward = {
+  id: number;
+  title: string;
+  description: string;
+  imageUrl: string;
+  sortOrder: number;
 };
 type ApiBanner = {
   id: number;
@@ -71,7 +79,7 @@ type ApiProduct = {
     dealerOriginalPrice: number;
     dealerSellingPrice: number;
   };
-  images: { imageUrl: string }[];
+  images: { imageUrl: string; colorName?: string | null; colorCode?: string | null; isPrimary?: boolean }[];
   createdAt?: string;
 };
 
@@ -90,7 +98,7 @@ type ApiReview = {
   role: "CUSTOMER" | "DEALER";
   rating: number;
   message: string;
-  status: "VISIBLE" | "HIDDEN";
+  status: "PENDING" | "APPROVED" | "REJECTED" | "VISIBLE" | "HIDDEN";
   createdAt: string;
 };
 
@@ -108,6 +116,11 @@ async function request<T>(path: string) {
 export async function getCategories() {
   const data = await request<{ categories: ApiCategory[] }>("/api/categories");
   return data.categories.map(mapCategory);
+}
+
+export async function getAboutAwards() {
+  const data = await request<{ awards: ApiAboutAward[] }>("/api/about-awards");
+  return data.awards.map(mapAboutAward);
 }
 
 export async function getBanners() {
@@ -189,6 +202,16 @@ function mapSubcategory(subcategory: ApiSubcategory): Subcategory {
   };
 }
 
+function mapAboutAward(award: ApiAboutAward): AboutAward {
+  return {
+    id: String(award.id),
+    title: award.title,
+    description: award.description,
+    image: withApiUrl(award.imageUrl),
+    sortOrder: Number(award.sortOrder || 0),
+  };
+}
+
 function mapBanner(banner: ApiBanner): Banner {
   return {
     id: String(banner.id),
@@ -225,8 +248,33 @@ function mapCouponOffer(coupon: ApiCoupon): CouponOffer {
   };
 }
 
+function groupProductImageVariants(images: ApiProduct["images"]) {
+  const common = images.find((image) => image.isPrimary && !image.colorName && !image.colorCode) || images[0];
+  const groups = new Map<string, ProductImageVariant>();
+
+  images.forEach((image) => {
+    const imageUrl = withApiUrl(image.imageUrl);
+    const colorName = image.colorName || "";
+    const colorCode = image.colorCode || "";
+    if (image === common && !colorName && !colorCode) return;
+    if (!colorName && !colorCode && image.isPrimary) return;
+    const key = `${colorName.toLowerCase()}|${colorCode.toLowerCase()}`;
+    const existing = groups.get(key);
+    if (existing) {
+      existing.images = [...(existing.images || [existing.imageUrl]), imageUrl];
+      return;
+    }
+    groups.set(key, { imageUrl, colorName, colorCode, isPrimary: false, images: [imageUrl] });
+  });
+
+  return {
+    commonImage: common ? withApiUrl(common.imageUrl) : "",
+    variants: Array.from(groups.values()),
+  };
+}
 function mapProduct(product: ApiProduct): Product {
-  const image = withApiUrl(product.images[0]?.imageUrl);
+  const { commonImage, variants: imageVariants } = groupProductImageVariants(product.images);
+  const image = commonImage || imageVariants[0]?.imageUrl || withApiUrl(product.images[0]?.imageUrl);
   const price = Number(product.prices.customerSellingPrice);
   const originalPrice = Number(product.prices.customerOriginalPrice);
   const dealerPrice = Number(product.prices.dealerSellingPrice);
@@ -253,13 +301,13 @@ function mapProduct(product: ApiProduct): Product {
     rating: Number(product.rating || 0),
     reviewCount: Number(product.reviewCount || 0),
     image,
-    images: product.images.length ? product.images.map((item) => withApiUrl(item.imageUrl)) : [image],
+    images: imageVariants.length ? imageVariants.flatMap((item) => item.images?.length ? item.images : [item.imageUrl]) : [image],
+    imageVariants: imageVariants.length ? imageVariants : [{ imageUrl: image, isPrimary: true, images: [image] }],
     stock: "in-stock",
     createdAt: product.createdAt,
     sortOrder: Number(product.sortOrder ?? 999),
   };
 }
-
 function mapTestimonial(testimonial: ApiTestimonial): Testimonial {
   return {
     id: String(testimonial.id),
@@ -280,7 +328,7 @@ function mapReview(review: ApiReview): Review {
     role: review.role === "DEALER" ? "Dealer" : "Customer",
     rating: Number(review.rating || 0),
     message: review.message,
-    status: review.status === "HIDDEN" ? "Hidden" : "Visible",
+    status: review.status === "APPROVED" || review.status === "VISIBLE" ? "Approved" : review.status === "REJECTED" || review.status === "HIDDEN" ? "Rejected" : "Pending",
     createdAt: review.createdAt,
   };
 }

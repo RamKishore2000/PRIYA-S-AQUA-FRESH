@@ -84,6 +84,51 @@ function buildSocialLinks(settings: SiteSettings) {
 }
 const dealerSupportNumbers = ["8885449044", "8498831081"];
 
+const nativeMainRoutes = new Set(["/", "/products", "/services", "/ro-training-institute", "/profile", "/about", "/contact", "/categories"]);
+
+const nativeStaticTitles: Record<string, string> = {
+  "/cart": "Cart",
+  "/wishlist": "Wishlist",
+  "/checkout": "Checkout",
+  "/search": "Search",
+  "/profile/orders": "Orders",
+  "/profile/orders/detail": "Order Details",
+  "/shipping-policy": "Shipping Policy",
+  "/refund-policy": "Returns",
+  "/warranty": "Warranty",
+  "/privacy-policy": "Privacy Policy",
+  "/terms": "Terms & Conditions",
+  "/faqs": "FAQs",
+};
+
+function titleFromSlug(slug: string, fallback: string) {
+  const cleanSlug = decodeURIComponent(slug || "").replace(/-/g, " ").trim();
+  if (!cleanSlug) return fallback;
+  return cleanSlug.replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function getNativeHeaderTitle(pathname: string, querySlug?: string | null) {
+  const normalizedPathname = pathname.replace(/\.html$/, "").replace(/\/$/, "") || "/";
+  pathname = normalizedPathname;
+  if (nativeMainRoutes.has(pathname)) return null;
+  if (nativeStaticTitles[pathname]) return nativeStaticTitles[pathname];
+
+  if (pathname === "/product-detail") return titleFromSlug(querySlug || "", "Product Details");
+  if (pathname.startsWith("/products/")) return titleFromSlug(pathname.replace("/products/", ""), "Product Details");
+  if (pathname.startsWith("/categories/")) return titleFromSlug(pathname.replace("/categories/", ""), "Category");
+  if (pathname.startsWith("/profile/orders/")) return "Order Details";
+
+  return null;
+}
+function getNativeBackFallback(pathname: string) {
+  const normalizedPathname = pathname.replace(/\.html$/, "").replace(/\/$/, "") || "/";
+  if (normalizedPathname.startsWith("/products/") || normalizedPathname === "/product-detail") return "/products";
+  if (normalizedPathname.startsWith("/categories/")) return "/categories";
+  if (normalizedPathname.startsWith("/profile/orders/") || normalizedPathname === "/profile/orders/detail") return "/profile/orders";
+  if (normalizedPathname === "/profile/orders") return "/profile";
+  if (normalizedPathname === "/checkout") return "/cart";
+  return "/";
+}
 export function Header({ overlay = false }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -96,7 +141,10 @@ export function Header({ overlay = false }: HeaderProps) {
   const visibleNavLinks = isDealer ? navLinks.filter((link) => link.href !== "/services") : navLinks;
   const isActiveLink = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
   const dynamicSocialLinks = buildSocialLinks(settings);
-
+  const nativeHeaderTitle = getNativeHeaderTitle(pathname);
+  const handleNativeBack = () => {
+    router.replace(getNativeBackFallback(pathname));
+  };
   useEffect(() => {
     fetchSiteSettings().then(setSettings).catch(() => setSettings(defaultSiteSettings));
   }, []);
@@ -120,13 +168,15 @@ export function Header({ overlay = false }: HeaderProps) {
   return (
     <>
     <header
+      data-native-back-page={nativeHeaderTitle ? "true" : "false"}
       className={`inset-x-0 top-0 z-50 bg-[#F3FAFF] transition-shadow duration-300 ${
         overlay && scrolled
           ? "fixed shadow-[0_14px_36px_rgba(0,87,200,0.14)]"
           : "sticky"
       }`}
     >
-      <div className="hidden border-b border-[#D8EAF8] bg-[#063B7A] text-[#FFFFFF] lg:block">
+
+      <div data-standard-header className="hidden border-b border-[#D8EAF8] bg-[#063B7A] text-[#FFFFFF] lg:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-6 py-1.5 text-xs font-semibold">
           {isDealer ? (
             <div className="flex items-center gap-4">
@@ -157,13 +207,13 @@ export function Header({ overlay = false }: HeaderProps) {
           </div>
         </div>
       </div>
-      <div className="mx-auto grid w-full max-w-7xl grid-cols-[120px_1fr_auto] items-center gap-2 px-3 py-2.5 md:grid-cols-[150px_1fr_auto] md:px-5 lg:grid-cols-[190px_1fr_auto] lg:gap-4 lg:px-6 lg:py-3">
+      <div data-standard-header className="mx-auto grid w-full max-w-7xl grid-cols-[120px_1fr_auto] items-center gap-2 px-3 py-2.5 md:grid-cols-[150px_1fr_auto] md:px-5 lg:grid-cols-[190px_1fr_auto] lg:gap-4 lg:px-6 lg:py-3">
         <Link href="/" className="relative flex h-10 w-28 shrink-0 items-center overflow-visible md:h-12 md:w-36 lg:h-14 lg:w-48" aria-label="Priya's Aqua Fresh">
           <Image
-            src="/logo-header.png"
+            src="/images/brand/priyas-aqua-fresh-logo-transparent.png"
             alt="Priya's Aqua Fresh"
-            width={486}
-            height={191}
+            width={1180}
+            height={445}
             className="h-full w-full object-contain"
             priority
           />
@@ -253,7 +303,7 @@ export function Header({ overlay = false }: HeaderProps) {
           </button>
         </div>
       </div>
-      <form action="/search" onSubmit={handleSearchSubmit} data-mobile-search-panel className={`mx-3 grid overflow-hidden transition-all duration-300 md:mx-5 lg:hidden ${searchOpen ? "max-h-20 pb-3 opacity-100" : "max-h-0 pb-0 opacity-0"}`}>
+      <form data-standard-header action="/search" onSubmit={handleSearchSubmit} data-mobile-search-panel className={`mx-3 grid overflow-hidden transition-all duration-300 md:mx-5 lg:hidden ${searchOpen ? "max-h-20 pb-3 opacity-100" : "max-h-0 pb-0 opacity-0"}`}>
         <div className="flex items-center gap-2 rounded-xl border border-[#C7E4F8] bg-white px-3 py-2 shadow-[0_8px_22px_rgba(0,87,200,0.08)]">
           <SearchIcon className="h-4 w-4 shrink-0 text-[#0057C8]" />
           <input name="q" placeholder="Search products..." className="min-w-0 flex-1 bg-transparent text-sm font-bold text-[#102033] outline-none placeholder:text-[#74879A]" autoComplete="off" />
@@ -262,9 +312,14 @@ export function Header({ overlay = false }: HeaderProps) {
           </button>
         </div>
       </form>
+      <div data-native-back-header={nativeHeaderTitle ? "true" : "false"} className="hidden items-center gap-3 px-3 py-2.5">
+        <button type="button" onClick={handleNativeBack} className="grid h-11 w-11 shrink-0 place-items-center bg-transparent p-0" aria-label="Go back">
+          <img src="/arrow_left_alt_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="" className="h-9 w-9 object-contain" />
+        </button>
+        <p className="min-w-0 flex-1 truncate text-base font-black text-[#102033]">{nativeHeaderTitle}</p>
+      </div>
     </header>
     <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </>
   );
 }
-

@@ -1,7 +1,8 @@
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight, Award, Droplets, MapPin, Navigation, Phone, ShieldCheck, Sparkles } from "lucide-react";
+﻿import Link from "next/link";
+import { ArrowRight, Droplets, MapPin, Navigation, Phone, ShieldCheck, Sparkles } from "lucide-react";
 import { AboutGsapAnimations } from "@/components/about/about-gsap-animations";
+import { AboutAwardsSlider } from "@/components/about/about-awards-slider";
+import { AboutManagedImage } from "@/components/about/about-managed-image";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { MobileBottomTabs } from "@/components/layout/mobile-bottom-tabs";
@@ -71,7 +72,7 @@ export default function AboutPage() {
             <div className="relative grid gap-4 sm:grid-cols-[0.8fr_1.2fr] sm:items-center">
               <div className="relative mx-auto aspect-square w-full max-w-[260px]">
                 <span className="absolute inset-x-8 bottom-5 h-12 rounded-full bg-[#0057C8]/20 blur-2xl" />
-                <Image src="/Untitled-design-10-2048x2048.png" alt="Priya's Aqua Fresh purifier" fill sizes="260px" className="object-contain" priority />
+                <AboutManagedImage index={0} fallback="/Untitled-design-10-2048x2048.png" alt="Priya's Aqua Fresh purifier" sizes="260px" className="object-contain" priority />
               </div>
               <div>
                 <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#0057C8]/10 text-[#0057C8]">
@@ -106,7 +107,7 @@ export default function AboutPage() {
             <span className="text-3xl font-black leading-none text-[#102033]">No. 1</span>
             <span className="text-[10px] font-black uppercase tracking-[0.12em] text-[#74879A]">Purifiers</span>
           </div>
-          <Image src="/Untitled-design-10-2048x2048.png" alt="Priya's Aqua Fresh purifier" fill sizes="(min-width: 1024px) 520px, 100vw" className="object-contain" priority />
+          <AboutManagedImage index={1} fallback="/Untitled-design-10-2048x2048.png" alt="Priya's Aqua Fresh purifier" sizes="(min-width: 1024px) 520px, 100vw" className="object-contain" priority />
         </div>
         <div data-about-reveal>
           <p className="text-sm font-black uppercase tracking-[0.22em] text-[#0057C8]">Who We Are</p>
@@ -196,7 +197,7 @@ export default function AboutPage() {
           <div data-about-mask className="grid gap-4 sm:grid-cols-2">
             <div className="group relative overflow-hidden rounded-2xl border border-[#D8EAF8] bg-[#EAF6FF] shadow-[0_18px_45px_rgba(0,87,200,0.12)]">
               <div className="relative aspect-[4/5]">
-                <Image src="/WhatsApp Image 2026-08-28 at 5.03.19 PM.jpeg" alt="Priya's Aqua Fresh leadership" fill sizes="(min-width: 1024px) 280px, (min-width: 640px) 45vw, 100vw" className="object-cover object-center transition duration-500 group-hover:scale-[1.03]" />
+                <AboutManagedImage index={2} fallback="/WhatsApp Image 2026-08-28 at 5.03.19 PM.jpeg" alt="Priya's Aqua Fresh leadership" sizes="(min-width: 1024px) 280px, (min-width: 640px) 45vw, 100vw" className="object-cover object-center transition duration-500 group-hover:scale-[1.03]" />
               </div>
               <div className="absolute inset-x-0 bottom-0 bg-[linear-gradient(180deg,transparent,rgba(10,36,38,0.82))] px-4 pb-4 pt-16 text-white">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-[#28B463]">Founder Vision</p>
@@ -205,7 +206,7 @@ export default function AboutPage() {
             </div>
             <div className="group relative overflow-hidden rounded-2xl border border-[#D8EAF8] bg-[#EAF6FF] shadow-[0_18px_45px_rgba(0,87,200,0.12)] sm:mt-8">
               <div className="relative aspect-[4/5]">
-                <Image src="/WhatsApp Image 2026-08-28 at 5.04.41 PM.jpeg" alt="Priya's Aqua Fresh leadership team" fill sizes="(min-width: 1024px) 280px, (min-width: 640px) 45vw, 100vw" className="object-cover object-center transition duration-500 group-hover:scale-[1.03]" />
+                <AboutManagedImage index={3} fallback="/WhatsApp Image 2026-08-28 at 5.04.41 PM.jpeg" alt="Priya's Aqua Fresh leadership team" sizes="(min-width: 1024px) 280px, (min-width: 640px) 45vw, 100vw" className="object-cover object-center transition duration-500 group-hover:scale-[1.03]" />
               </div>
               <div className="absolute inset-x-0 bottom-0 bg-[linear-gradient(180deg,transparent,rgba(10,36,38,0.82))] px-4 pb-4 pt-16 text-white">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-[#28B463]">Customer Trust</p>
@@ -215,22 +216,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-
-      <section className="px-5 pb-16 md:px-8">
-        <div className="mx-auto grid max-w-7xl gap-8 rounded-2xl bg-[#0057C8] p-6 text-white shadow-[0_24px_80px_rgba(0,87,200,0.16)] md:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <div data-about-mask className="relative min-h-[420px] overflow-hidden rounded-2xl bg-white/8 shadow-2xl md:min-h-[520px]">
-            <Image src="/images/about/award-excellence.jpg" alt="Priya's Aqua Fresh excellence award with Telugu Film Actor Ali Garu" fill sizes="(min-width: 1024px) 460px, 100vw" className="object-cover" />
-          </div>
-          <div data-about-reveal>
-            <Award className="h-10 w-10 text-[#28B463]" />
-            <h2 className="mt-5 font-serif text-3xl font-semibold md:text-5xl">Honored with Excellence Award by Telugu Film Actor Ali Garu</h2>
-            <p className="mt-5 font-semibold leading-8 text-[#FFFFFF]">
-              This recognition celebrates Priya&apos;s Aqua Fresh commitment to water purification, product quality and customer trust.
-            </p>
-          </div>
-        </div>
-      </section>
-
+      <AboutAwardsSlider />
 
       <section className="px-5 pb-16 md:px-8">
         <div className="mx-auto grid max-w-7xl gap-7 overflow-hidden rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-5 shadow-[0_18px_60px_rgba(0,87,200,0.08)] md:p-8 lg:grid-cols-[0.86fr_1.14fr] lg:items-stretch">
@@ -269,3 +255,5 @@ export default function AboutPage() {
     </>
   );
 }
+
+

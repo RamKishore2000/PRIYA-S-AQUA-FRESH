@@ -13,6 +13,7 @@ import { getProductDisplayPrice } from "@/lib/pricing";
 import { getProductById } from "@/services/catalog-service";
 import { createAddress, createOrder, createRazorpayOrder, fetchAddresses, markOrderPaymentFailed, validateCoupon, verifyRazorpayPayment, type Address } from "@/services/order-service";
 import { defaultSiteSettings, fetchSiteSettings } from "@/services/settings-service";
+import { normalizeApiUploadUrl } from "@/services/shop-service";
 import type { Product } from "@/types/product";
 
 type RazorpayResponse = {
@@ -61,6 +62,12 @@ function CheckoutContent() {
   const searchParams = useSearchParams();
   const buyNowId = searchParams.get("buyNow");
   const requestedBuyNowQuantity = Number(searchParams.get("qty") || 1);
+  const buyNowSelection = {
+    selectedImageUrl: normalizeApiUploadUrl(searchParams.get("selectedImageUrl")),
+    selectedColorName: searchParams.get("selectedColorName") || "",
+    selectedColorCode: searchParams.get("selectedColorCode") || "",
+    selectedVariantKey: searchParams.get("selectedVariantKey") || "",
+  };
   const buyNowQuantity = Number.isFinite(requestedBuyNowQuantity) ? Math.max(1, Math.min(Math.floor(requestedBuyNowQuantity), 99)) : 1;
   const isBuyNow = Boolean(buyNowId);
   const { user, cartItems, subtotal, refreshCart, clearCartState, openLogin } = useShop();
@@ -135,7 +142,15 @@ function CheckoutContent() {
       try {
         const product = await getProductById(buyNowId);
         if (mounted) {
-          setBuyNowProduct(product);
+                    const selectedDisplayImage =
+            product.imageVariants.find((variant) => normalizeApiUploadUrl(variant.imageUrl) === buyNowSelection.selectedImageUrl)?.imageUrl ||
+            product.images.find((image) => normalizeApiUploadUrl(image) === buyNowSelection.selectedImageUrl) ||
+            product.image;
+          setBuyNowProduct(
+            buyNowSelection.selectedImageUrl
+              ? { ...product, image: selectedDisplayImage, images: [selectedDisplayImage, ...product.images.filter((image) => image !== selectedDisplayImage)] }
+              : product,
+          );
           setMessage("");
         }
       } catch (error) {
@@ -151,7 +166,7 @@ function CheckoutContent() {
     return () => {
       mounted = false;
     };
-  }, [buyNowId, user]);
+  }, [buyNowId, buyNowSelection.selectedImageUrl, user]);
 
   function updateAddress<K extends keyof AddressForm>(field: K, value: AddressForm[K]) {
     setAddressForm((current) => ({ ...current, [field]: value }));
@@ -218,7 +233,7 @@ function CheckoutContent() {
       const selectedAddress = addresses.find((address) => address.id === selectedAddressId);
       const order = await createOrder(
         isBuyNow && buyNowId
-          ? { addressId: selectedAddressId, paymentMethod, buyNow: { productId: buyNowId, quantity: buyNowQuantity } }
+          ? { addressId: selectedAddressId, paymentMethod, buyNow: { productId: buyNowId, quantity: buyNowQuantity, ...buyNowSelection } }
           : { addressId: selectedAddressId, paymentMethod },
         couponCode || undefined,
       );
@@ -271,7 +286,7 @@ function CheckoutContent() {
   }
 
   const checkoutItems = isBuyNow && buyNowProduct
-    ? [{ product: buyNowProduct, quantity: buyNowQuantity }]
+    ? [{ product: buyNowProduct, quantity: buyNowQuantity, ...buyNowSelection }]
     : cartItems;
   const checkoutSubtotal = isBuyNow
     ? checkoutItems.reduce((sum, item) => sum + getProductDisplayPrice(item.product, user?.role).price * item.quantity, 0)
@@ -285,8 +300,8 @@ function CheckoutContent() {
   function buildOrderShareDetails(order: Awaited<ReturnType<typeof verifyRazorpayPayment>>): CheckoutShareState {
     const address = order.shippingAddress ?? selectedAddress;
     const products = order.items.length > 0
-      ? order.items.map((item) => `${item.productName} x ${item.quantity}`).join(", ")
-      : checkoutItems.map((item) => `${item.product.name} x ${item.quantity}`).join(", ");
+      ? order.items.map((item) => `${item.productName}${item.selectedColorName ? ` (${item.selectedColorName})` : ""} x ${item.quantity}`).join(", ")
+      : checkoutItems.map((item) => `${item.product.name}${"selectedColorName" in item && item.selectedColorName ? ` (${item.selectedColorName})` : ""} x ${item.quantity}`).join(", ");
     const addressText = address
       ? [
           address.addressLine1,
@@ -414,6 +429,12 @@ function CheckoutContent() {
                     <div className="min-w-0">
                       <p className="line-clamp-2 font-black leading-5 text-[#102033]">{item.product.name}</p>
                       <p className="mt-1 text-xs font-bold text-[#40576C]">Qty: {item.quantity}</p>
+                      {"selectedColorName" in item && item.selectedColorName ? (
+                        <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-[#EAF6FF] px-2 py-1 text-[0.68rem] font-black text-[#0057C8]">
+                          {item.selectedColorCode ? <span className="h-3 w-3 rounded-full border border-[#D8EAF8]" style={{ backgroundColor: item.selectedColorCode }} /> : null}
+                          {item.selectedColorName}
+                        </p>
+                      ) : null}
                     </div>
                     <span data-current-price className="col-span-2 text-right font-black text-[#0057C8] sm:col-span-1">Rs. {(display.price * item.quantity).toLocaleString("en-IN")}</span>
                   </div>
@@ -581,5 +602,3 @@ export default function CheckoutPage() {
     </Suspense>
   );
 }
-
-

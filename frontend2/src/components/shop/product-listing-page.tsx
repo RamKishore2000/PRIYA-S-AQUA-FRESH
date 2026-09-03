@@ -10,8 +10,6 @@ import { getProductDisplayPrice } from "@/lib/pricing";
 import type { Category, Product } from "@/types/product";
 
 type SortOption = "featured" | "price-asc" | "price-desc" | "top-rated" | "newest";
-type AvailabilityFilter = "in-stock" | "out-of-stock";
-
 type ProductListingPageProps = {
   products: Product[];
   categories: Category[];
@@ -42,7 +40,6 @@ export function ProductListingPage({ products, categories, selectedCategory = ""
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
   const [activeQuery, setActiveQuery] = useState(query);
   const [priceRange, setPriceRange] = useState<[number, number]>(priceBounds);
-  const [availability, setAvailability] = useState<AvailabilityFilter[]>([]);
   const [rating, setRating] = useState<number | null>(null);
   const [sort, setSort] = useState<SortOption>("featured");
   const [filterOpen, setFilterOpen] = useState(false);
@@ -82,24 +79,18 @@ export function ProductListingPage({ products, categories, selectedCategory = ""
         : true;
       const productPrice = getProductDisplayPrice(product, user?.role).price;
       const priceMatch = productPrice >= priceRange[0] && productPrice <= priceRange[1];
-      const availabilityMatch =
-        availability.length === 0 ||
-        (product.stock === "out-of-stock"
-          ? availability.includes("out-of-stock")
-          : availability.includes("in-stock"));
       const ratingMatch = rating === null || product.rating >= rating;
 
-      return categoryMatch && subcategoryMatch && queryMatch && priceMatch && availabilityMatch && ratingMatch;
+      return categoryMatch && subcategoryMatch && queryMatch && priceMatch && ratingMatch;
     });
 
     return sortProducts(nextProducts, sort, user?.role);
-  }, [activeQuery, availability, category, priceRange, products, rating, sort, subcategory, user?.role]);
+  }, [activeQuery, category, priceRange, products, rating, sort, subcategory, user?.role]);
 
   function clearFilters() {
     setCategory("");
     setSubcategory("");
     setPriceRange(priceBounds);
-    setAvailability([]);
     setRating(null);
     setSort("featured");
   }
@@ -119,11 +110,6 @@ export function ProductListingPage({ products, categories, selectedCategory = ""
     setExpandedCategories((current) => current.includes(slug) ? current.filter((item) => item !== slug) : [...current, slug]);
   }
 
-  function toggleAvailability(value: AvailabilityFilter) {
-    setAvailability((current) => (
-      current.includes(value) ? current.filter((item) => item !== value) : [...current, value]
-    ));
-  }
 
   const filterContent = (
     <>
@@ -179,19 +165,6 @@ export function ProductListingPage({ products, categories, selectedCategory = ""
         <PriceRangeFilter min={priceBounds[0]} max={priceBounds[1]} value={priceRange} onChange={setPriceRange} />
       </FilterSection>
 
-      <FilterSection title="Availability">
-        <div className="grid gap-3">
-          {[
-            { label: "In Stock", value: "in-stock" as const },
-            { label: "Out of Stock", value: "out-of-stock" as const },
-          ].map((option) => (
-            <label key={option.value} className="flex cursor-pointer items-center gap-3 text-sm font-black text-[#40576C]">
-              <input type="checkbox" checked={availability.includes(option.value)} onChange={() => toggleAvailability(option.value)} className="h-4 w-4 accent-[#0057C8]" />
-              {option.label}
-            </label>
-          ))}
-        </div>
-      </FilterSection>
 
       <FilterSection title="Rating">
         <div className="grid gap-2">
@@ -295,14 +268,51 @@ function PriceRangeFilter({ min, max, value, onChange }: { min: number; max: num
   const denominator = safeMax - min;
   const minPercent = Math.max(0, Math.min(100, ((currentMin - min) / denominator) * 100));
   const maxPercent = Math.max(0, Math.min(100, ((currentMax - min) / denominator) * 100));
+  const [minInput, setMinInput] = useState(String(currentMin));
+  const [maxInput, setMaxInput] = useState(String(currentMax));
+
+  useEffect(() => {
+    setMinInput(String(currentMin));
+    setMaxInput(String(currentMax));
+  }, [currentMin, currentMax]);
+
+  function clampPrice(nextValue: number, low: number, high: number) {
+    if (!Number.isFinite(nextValue)) return low;
+    return Math.max(low, Math.min(nextValue, high));
+  }
 
   function updateMin(nextValue: number) {
-    onChange([Math.min(nextValue, currentMax), currentMax]);
+    const nextMin = clampPrice(nextValue, min, currentMax);
+    onChange([nextMin, currentMax]);
   }
 
   function updateMax(nextValue: number) {
-    onChange([currentMin, Math.max(nextValue, currentMin)]);
+    const nextMax = clampPrice(nextValue, currentMin, safeMax);
+    onChange([currentMin, nextMax]);
   }
+
+  function commitMinInput(nextValue = minInput) {
+    if (!nextValue.trim()) {
+      setMinInput(String(currentMin));
+      return;
+    }
+    updateMin(Number(nextValue));
+  }
+
+  function commitMaxInput(nextValue = maxInput) {
+    if (!nextValue.trim()) {
+      setMaxInput(String(currentMax));
+      return;
+    }
+    updateMax(Number(nextValue));
+  }
+
+  const quickRanges = [
+    { label: "Under Rs. 5,000", min: min, max: Math.min(5000, safeMax) },
+    { label: "Rs. 5,000 - Rs. 15,000", min: Math.max(min, 5000), max: Math.min(15000, safeMax) },
+    { label: "Rs. 15,000 - Rs. 30,000", min: Math.max(min, 15000), max: Math.min(30000, safeMax) },
+    { label: "Above Rs. 30,000", min: Math.max(min, 30000), max: safeMax },
+  ].filter((range) => range.min <= range.max);
 
   return (
     <div>
@@ -310,26 +320,59 @@ function PriceRangeFilter({ min, max, value, onChange }: { min: number; max: num
         <span>Rs. {currentMin.toLocaleString("en-IN")}</span>
         <span>Rs. {currentMax.toLocaleString("en-IN")}</span>
       </div>
-      <div className="relative h-8">
+      <div className="relative h-10 touch-none">
         <div className="absolute left-0 right-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-[#D8EAF8]" />
         <div className="absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-[#0057C8]" style={{ left: `${minPercent}%`, right: `${100 - maxPercent}%` }} />
-        <input type="range" min={min} max={safeMax} step={500} value={currentMin} onChange={(event) => updateMin(Number(event.target.value))} className="range-thumb pointer-events-none absolute inset-x-0 top-0 z-20 h-8 w-full appearance-none bg-transparent" aria-label="Minimum price" />
-        <input type="range" min={min} max={safeMax} step={500} value={currentMax} onChange={(event) => updateMax(Number(event.target.value))} className="range-thumb pointer-events-none absolute inset-x-0 top-0 z-30 h-8 w-full appearance-none bg-transparent" aria-label="Maximum price" />
+        <input type="range" min={min} max={safeMax} step={500} value={currentMin} onChange={(event) => updateMin(Number(event.target.value))} className="range-thumb absolute inset-x-0 top-0 z-20 h-10 w-full appearance-none bg-transparent" aria-label="Minimum price" />
+        <input type="range" min={min} max={safeMax} step={500} value={currentMax} onChange={(event) => updateMax(Number(event.target.value))} className="range-thumb absolute inset-x-0 top-0 z-30 h-10 w-full appearance-none bg-transparent" aria-label="Maximum price" />
       </div>
       <div className="mt-4 grid grid-cols-2 gap-3">
         <label className="grid gap-1 text-xs font-black text-[#74879A]">
           Min Price
-          <input type="number" min={min} max={currentMax} value={currentMin} onChange={(event) => updateMin(Number(event.target.value))} className="h-10 rounded-lg border border-[#D8EAF8] bg-white px-3 text-sm font-black text-[#102033] outline-none focus:border-[#0057C8]" />
+          <input
+            type="number"
+            inputMode="numeric"
+            min={min}
+            max={currentMax}
+            value={minInput}
+            onChange={(event) => setMinInput(event.target.value)}
+            onBlur={() => commitMinInput()}
+            onKeyDown={(event) => { if (event.key === "Enter") commitMinInput(); }}
+            placeholder="Min"
+            className="h-11 rounded-lg border border-[#D8EAF8] bg-white px-3 text-sm font-black text-[#102033] outline-none focus:border-[#0057C8]"
+          />
         </label>
         <label className="grid gap-1 text-xs font-black text-[#74879A]">
           Max Price
-          <input type="number" min={currentMin} max={safeMax} value={currentMax} onChange={(event) => updateMax(Number(event.target.value))} className="h-10 rounded-lg border border-[#D8EAF8] bg-white px-3 text-sm font-black text-[#102033] outline-none focus:border-[#0057C8]" />
+          <input
+            type="number"
+            inputMode="numeric"
+            min={currentMin}
+            max={safeMax}
+            value={maxInput}
+            onChange={(event) => setMaxInput(event.target.value)}
+            onBlur={() => commitMaxInput()}
+            onKeyDown={(event) => { if (event.key === "Enter") commitMaxInput(); }}
+            placeholder="Max"
+            className="h-11 rounded-lg border border-[#D8EAF8] bg-white px-3 text-sm font-black text-[#102033] outline-none focus:border-[#0057C8]"
+          />
         </label>
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        {quickRanges.map((range) => (
+          <button
+            key={range.label}
+            type="button"
+            onClick={() => onChange([range.min, range.max])}
+            className="rounded-full border border-[#C7E4F8] bg-[#F3FAFF] px-3 py-2 text-[0.68rem] font-black text-[#0057C8] transition hover:border-[#0057C8] hover:bg-[#EAF6FF]"
+          >
+            {range.label}
+          </button>
+        ))}
       </div>
     </div>
   );
 }
-
 function filterButtonClass(active: boolean, extra = "justify-between") {
   return `flex items-center rounded-xl px-4 py-3 text-left text-sm font-black transition ${extra} ${active ? "bg-[#0057C8] text-white" : "text-[#40576C] hover:bg-[#EAF6FF]"}`;
 }

@@ -10,6 +10,8 @@ const tokenService = require("./token.service");
 
 const LOGIN_PURPOSE = "LOGIN";
 const DEFAULT_OTP_TEMPLATE = "Your Priya's Aqua Fresh login OTP is {OTP}. This OTP is valid for 5 minutes. Please do not share it with anyone.";
+const PLAY_STORE_REVIEW_MOBILE = "9999999992";
+const PLAY_STORE_REVIEW_OTP = "123456";
 
 function generateOtp() {
   return String(crypto.randomInt(100000, 1000000));
@@ -17,6 +19,14 @@ function generateOtp() {
 
 function hashOtp(mobile, otp) {
   return crypto.createHash("sha256").update(`${mobile}:${otp}:${env.jwt.accessSecret}`).digest("hex");
+}
+
+function isPlayStoreReviewMobile(mobile) {
+  return mobile === PLAY_STORE_REVIEW_MOBILE;
+}
+
+function getOtpForMobile(mobile) {
+  return isPlayStoreReviewMobile(mobile) ? PLAY_STORE_REVIEW_OTP : generateOtp();
 }
 
 function secondsUntil(dateValue) {
@@ -173,14 +183,16 @@ async function issueLoginOtp(input, { resend = false } = {}) {
     }
   }
 
-  const otp = generateOtp();
+  const otp = getOtpForMobile(mobile);
   const otpHash = hashOtp(mobile, otp);
   const expiresAt = addMinutes(env.otp.expiresInMinutes);
   const resendCount = resend && latestOtp ? Number(latestOtp.resend_count || 0) + 1 : 0;
 
   await otpRepository.expireActiveOtps(mobile, LOGIN_PURPOSE, user.id);
   await otpRepository.createOtp({ userId: user.id, mobile, purpose: LOGIN_PURPOSE, otpHash, expiresAt, resendCount });
-  await sendOtpToProvider(mobile, otp);
+  if (!isPlayStoreReviewMobile(mobile)) {
+    await sendOtpToProvider(mobile, otp);
+  }
 
   return {
     mobile,

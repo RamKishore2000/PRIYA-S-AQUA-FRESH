@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Priya Aqua Fresh</string>
-    <string name="title_activity_main">Priya Aqua Fresh</string>
+    <string name="app_name">Priyas Aquafresh</string>
+    <string name="title_activity_main">Priyas Aquafresh</string>
     <string name="package_name">com.priyasaquafresh.app</string>
     <string name="custom_url_scheme">com.priyasaquafresh.app</string>
 </resources>

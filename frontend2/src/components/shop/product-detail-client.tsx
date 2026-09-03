@@ -3,6 +3,7 @@
 import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Heart, MapPin, Truck } from "lucide-react";
 import { SitePage } from "@/components/layout/site-page";
@@ -12,24 +13,26 @@ import { ProductDetailSkeleton } from "@/components/ui/skeletons";
 import { ProductCard } from "@/components/shop/product-card";
 import { StarIcon } from "@/components/shop/star-icon";
 import { getProductBySlug, getProducts } from "@/services/catalog-service";
-import type { Product } from "@/types/product";
+import type { Product, ProductImageVariant } from "@/types/product";
 
 type LoadState = "loading" | "ready" | "not-found" | "error";
 type DetailItem = { kind: "paragraph" | "point"; label?: string; text: string };
 type SpecItem = { label: string; value: string };
 
 export function ProductDetailClient() {
-  const [slug, setSlug] = useState("");
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const slug = useMemo(() => {
+    const querySlug = searchParams.get("slug");
+    const pathSlug = pathname.match(/^\/products\/([^/]+)/)?.[1];
+    return decodeURIComponent(querySlug || pathSlug || "");
+  }, [pathname, searchParams]);
   const [status, setStatus] = useState<LoadState>("loading");
   const [product, setProduct] = useState<Product | null>(null);
+  const [selectedVariant, setSelectedVariant] = useState<ProductImageVariant | null>(null);
+  const [previewImage, setPreviewImage] = useState("");
   const [allProducts, setAllProducts] = useState<Product[]>([]);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const querySlug = params.get("slug");
-    const pathSlug = window.location.pathname.match(/^\/products\/([^/]+)/)?.[1];
-    setSlug(decodeURIComponent(querySlug || pathSlug || ""));
-  }, []);
 
   useEffect(() => {
     if (!slug) return;
@@ -45,7 +48,10 @@ export function ProductDetailClient() {
           setStatus("not-found");
           return;
         }
+        const firstVariant = nextProduct.imageVariants[0] || { imageUrl: nextProduct.image, isPrimary: true, images: [nextProduct.image] };
         setProduct(nextProduct);
+        setSelectedVariant(firstVariant);
+        setPreviewImage(firstVariant.imageUrl || nextProduct.image);
         setAllProducts(nextProducts);
         setStatus("ready");
       })
@@ -90,7 +96,9 @@ export function ProductDetailClient() {
     );
   }
 
-  const galleryImages = product.images.length ? product.images : [product.image];
+  const colorVariants: ProductImageVariant[] = product.imageVariants.length ? product.imageVariants : [{ imageUrl: product.image, isPrimary: true, images: product.images.length ? product.images : [product.image] }];
+  const selectedGalleryImages = selectedVariant?.images?.length ? selectedVariant.images : selectedVariant?.imageUrl ? [selectedVariant.imageUrl] : [product.image];
+  const displayImage = previewImage || selectedVariant?.imageUrl || product.image;
 
   return (
     <SitePage eyebrow={product.category} title={product.name} description="Review product details, pricing and support options before checkout." compactHero>
@@ -107,32 +115,59 @@ export function ProductDetailClient() {
           </nav>
 
           <div className="grid gap-5 lg:grid-cols-[1.12fr_0.88fr] lg:items-start lg:gap-8">
-            <div className="grid gap-4 lg:gap-5">
-              <div className="grid gap-3 md:grid-cols-[5.5rem_1fr] lg:gap-4">
-                <div className="flex gap-3 overflow-x-auto pb-1 md:flex-col md:pb-0">
-                  {galleryImages.map((image) => (
-                    <span key={image} className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] shadow-[0_8px_24px_rgba(0,87,200,0.07)]">
-                      <Image src={image} alt="" fill sizes="80px" className="object-contain p-1.5" unoptimized />
-                    </span>
-                  ))}
-                </div>
-                <div data-product-detail-image className="relative min-h-[20rem] overflow-hidden rounded-2xl border-0 bg-transparent shadow-none md:min-h-[24rem] lg:min-h-[28rem] lg:rounded-[2rem] lg:border lg:border-[#D8EAF8] lg:bg-[#FFFFFF] lg:shadow-[0_24px_70px_rgba(0,87,200,0.12)]">
+            <div className="order-1 flex flex-col gap-5 lg:order-1">
+              <div className="grid grid-cols-[4rem_minmax(0,1fr)] gap-2 md:grid-cols-[6.25rem_minmax(0,1fr)] md:gap-3 lg:gap-4">
+                {selectedGalleryImages.length > 0 ? (
+                  <div className="grid content-start gap-2 lg:gap-3">
+                    {selectedGalleryImages.map((imageUrl, index) => {
+                      const active = displayImage === imageUrl;
+                      return (
+                        <button key={`${imageUrl}-gallery-${index}`} type="button" onClick={() => setPreviewImage(imageUrl)} className={`relative h-16 overflow-hidden rounded-xl border-2 bg-[#F3FAFF] md:h-auto md:aspect-square shadow-[0_8px_22px_rgba(0,87,200,0.08)] transition ${active ? "border-[#0057C8] ring-4 ring-[#0057C8]/15" : "border-[#D8EAF8] hover:border-[#0057C8]"}`} aria-label={`Preview image ${index + 1}`}>
+                          <Image src={imageUrl} alt="" fill sizes="110px" className="object-contain p-1.5" unoptimized />
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : <div />}
+                <div data-product-detail-image className="relative h-[17.5rem] min-h-0 overflow-hidden rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] md:h-auto md:min-h-[24rem] shadow-[0_24px_70px_rgba(0,87,200,0.12)] lg:min-h-[28rem] lg:rounded-[2rem]">
                   <span className="absolute inset-x-16 bottom-10 h-16 rounded-full bg-[#0057C8]/12 blur-2xl" />
-                  <Image src={product.image} alt={product.name} fill sizes="620px" className="object-contain p-5 md:p-6 lg:p-8" unoptimized />
+                  <Image src={displayImage} alt={product.name} fill sizes="620px" className="object-contain p-5 md:p-6 lg:p-8" unoptimized />
                   <div className="absolute right-3 top-3 z-20 lg:hidden">
-                    <ProductDetailIconActions product={product} />
+                    <ProductDetailIconActions product={product} selectedVariant={selectedVariant} />
                   </div>
                 </div>
               </div>
-              <div className="rounded-none border-0 bg-transparent p-0 shadow-none lg:rounded-2xl lg:border lg:border-[#D8EAF8] lg:bg-[#FFFFFF] lg:p-5 lg:shadow-[0_14px_42px_rgba(0,87,200,0.08)]">
+              <div className="order-3 hidden rounded-none border-0 bg-transparent p-0 shadow-none lg:order-none lg:block lg:rounded-2xl lg:border lg:border-[#D8EAF8] lg:bg-[#FFFFFF] lg:p-5 lg:shadow-[0_14px_42px_rgba(0,87,200,0.08)]">
                 <h2 className="text-sm font-black uppercase tracking-[0.2em] text-[#0057C8]">Product Details</h2>
                 <ProductDescription description={product.description} />
               </div>
             </div>
 
-            <div className="rounded-none border-0 bg-transparent p-0 shadow-none md:p-0 lg:sticky lg:top-28 lg:rounded-2xl lg:border lg:border-[#D8EAF8] lg:bg-[#FFFFFF] lg:p-6 lg:shadow-[0_18px_60px_rgba(0,87,200,0.08)]">
+            <div className="order-2 rounded-none border-0 bg-transparent p-0 shadow-none md:p-0 lg:order-2 lg:sticky lg:top-28 lg:rounded-2xl lg:border lg:border-[#D8EAF8] lg:bg-[#FFFFFF] lg:p-6 lg:shadow-[0_18px_60px_rgba(0,87,200,0.08)]">
               <p className="text-xs font-black uppercase tracking-[0.22em] text-[#0057C8]">{product.category}</p>
               <h1 className="mt-2 font-serif text-2xl font-semibold leading-tight text-[#102033] md:text-3xl lg:mt-3 lg:text-4xl">{product.name}</h1>
+
+              {colorVariants.length > 1 ? (
+                <div className="mt-5">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#0057C8]">Select Colour</p>
+                  <div className="mt-3 flex gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none]">
+                    {colorVariants.map((variant, index) => {
+                      const active = (selectedVariant?.imageUrl || product.image) === variant.imageUrl;
+                      return (
+                        <button key={`${variant.imageUrl}-info-${index}`} type="button" onClick={() => { setSelectedVariant(variant); setPreviewImage(variant.imageUrl); }} className="group w-[4.35rem] shrink-0 text-center sm:w-[5.25rem]" aria-label={variant.colorName ? `Select ${variant.colorName}` : `Select image ${index + 1}`} title={variant.colorName || `Image ${index + 1}`}>
+                          <span className={`relative block h-[3.95rem] w-full shrink-0 overflow-hidden rounded-xl border-2 bg-[#F3FAFF] shadow-[0_8px_22px_rgba(0,87,200,0.08)] transition sm:h-[4.75rem] ${active ? "border-[#0057C8] ring-4 ring-[#0057C8]/15" : "border-[#D8EAF8] group-hover:border-[#0057C8]"}`}>
+                            <Image src={variant.imageUrl} alt="" fill sizes="84px" className="object-contain p-1 transition group-hover:scale-105 sm:p-1.5" unoptimized />
+                          </span>
+                          <span className="mt-1.5 flex min-h-[1.5rem] w-full items-center justify-center gap-1 px-0.5 text-center text-[0.56rem] font-black leading-tight text-[#0057C8] sm:text-[0.62rem]">
+                            {variant.colorCode ? <span className="h-2.5 w-2.5 shrink-0 rounded-full border border-[#D8EAF8]" style={{ backgroundColor: variant.colorCode }} /> : null}
+                            <span className="line-clamp-2">{variant.colorName || `Image ${index + 1}`}</span>
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : null}
               <div className="mt-3 flex flex-wrap items-center gap-2 text-sm font-bold text-[#40576C]">
                 <span className="inline-flex items-center gap-1 rounded-full bg-[#0057C8] px-3 py-1 text-white">
                   <StarIcon className="h-4 w-4 fill-[#28B463] text-[#28B463]" />
@@ -142,19 +177,23 @@ export function ProductDetailClient() {
               </div>
 
               <PriceDisplay product={product} className="mt-4 lg:mt-5" priceClassName="text-2xl md:text-3xl lg:text-4xl" originalClassName="pb-1 text-sm md:text-base lg:text-xl" />
-
               <div className="mt-5 border-y border-[#D8EAF8] py-4 lg:mt-7 lg:py-5">
                 <p className="font-black text-[#102033]">Category: <span className="text-[#0057C8]">{product.category}</span></p>
                 {product.sku ? <p className="mt-3 font-black text-[#40576C]">Product Code: {product.sku}</p> : null}
               </div>
 
-              <ProductDetailActions product={product} />
+              <ProductDetailActions product={product} selectedVariant={selectedVariant} />
 
               <div className="mt-5 grid gap-2 pb-16 text-sm lg:mt-6 lg:gap-3 lg:pb-0">
                 <InfoLine icon={<Truck className="mt-0.5 h-4 w-4 shrink-0 text-[#0057C8]" />} text="Enjoy free delivery and free returns on selected orders." />
                 <InfoLine icon={<MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#0057C8]" />} text="Installation support available for eligible purifier models." />
                 <InfoLine icon={<Heart className="mt-0.5 h-4 w-4 shrink-0 text-[#0057C8]" />} text="Genuine Priya's Aqua Fresh products and spare parts." />
               </div>
+            </div>
+
+            <div className="order-3 rounded-none border-0 bg-transparent p-0 shadow-none lg:hidden">
+              <h2 className="text-sm font-black uppercase tracking-[0.2em] text-[#0057C8]">Product Details</h2>
+              <ProductDescription description={product.description} />
             </div>
           </div>
 
@@ -164,7 +203,7 @@ export function ProductDetailClient() {
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.22em] text-[#0057C8]">Recommended</p>
                   <h2 className="mt-2 font-serif text-2xl font-semibold tracking-tight text-[#102033] md:text-5xl">You May Also Like This Product</h2>
-                  <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-[#40576C]">Similar Priya's Aqua Fresh products selected from the catalog.</p>
+                  <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-[#40576C]">Similar Priya&apos;s Aqua Fresh products selected from the catalog.</p>
                 </div>
                 <Link href="/products" className="inline-flex w-fit rounded-full border border-[#0057C8] bg-[#FFFFFF] px-5 py-2.5 text-sm font-black text-[#0057C8] transition hover:bg-[#EAF6FF]">View All Products</Link>
               </div>

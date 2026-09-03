@@ -51,6 +51,12 @@ const defaultSettings: SiteSettings = {
   orderAdvanceAmount: 500,
   trainingImages: defaultTrainingImages,
   trainingVideos: defaultTrainingVideos,
+  aboutImages: [
+    "/Untitled-design-10-2048x2048.png",
+    "/Untitled-design-10-2048x2048.png",
+    "/WhatsApp Image 2026-08-28 at 5.03.19 PM.jpeg",
+    "/WhatsApp Image 2026-08-28 at 5.04.41 PM.jpeg",
+  ],
 };
 
 function applyTheme(theme: ThemeMode) {
@@ -429,3 +435,4 @@ function ThemeButton({ active, icon, title, text, onClick, darkIcon = false }: {
     </button>
   );
 }
+

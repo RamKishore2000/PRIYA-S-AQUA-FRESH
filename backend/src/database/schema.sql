@@ -158,6 +158,8 @@ CREATE TABLE IF NOT EXISTS product_images (
   alt_text VARCHAR(180) NULL,
   sort_order TINYINT UNSIGNED NOT NULL DEFAULT 0,
   is_primary BOOLEAN NOT NULL DEFAULT FALSE,
+  color_name VARCHAR(60) NULL,
+  color_code VARCHAR(20) NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   KEY idx_product_images_product_id (product_id),
@@ -199,10 +201,14 @@ CREATE TABLE IF NOT EXISTS cart_items (
   cart_id BIGINT UNSIGNED NOT NULL,
   product_id BIGINT UNSIGNED NOT NULL,
   quantity INT UNSIGNED NOT NULL DEFAULT 1,
+  selected_color_name VARCHAR(60) NULL,
+  selected_color_code VARCHAR(20) NULL,
+  selected_image_url VARCHAR(500) NULL,
+  selected_variant_key VARCHAR(255) NOT NULL DEFAULT '',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY uq_cart_items_cart_product (cart_id, product_id),
+  UNIQUE KEY uq_cart_items_cart_product_variant (cart_id, product_id, selected_variant_key),
   KEY idx_cart_items_product_id (product_id),
   CONSTRAINT chk_cart_items_quantity CHECK (quantity > 0),
   CONSTRAINT fk_cart_items_cart_id FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
@@ -222,9 +228,13 @@ CREATE TABLE IF NOT EXISTS wishlist_items (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   wishlist_id BIGINT UNSIGNED NOT NULL,
   product_id BIGINT UNSIGNED NOT NULL,
+  selected_color_name VARCHAR(60) NULL,
+  selected_color_code VARCHAR(20) NULL,
+  selected_image_url VARCHAR(500) NULL,
+  selected_variant_key VARCHAR(255) NOT NULL DEFAULT '',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY uq_wishlist_items_wishlist_product (wishlist_id, product_id),
+  UNIQUE KEY uq_wishlist_items_wishlist_product_variant (wishlist_id, product_id, selected_variant_key),
   KEY idx_wishlist_items_product_id (product_id),
   CONSTRAINT fk_wishlist_items_wishlist_id FOREIGN KEY (wishlist_id) REFERENCES wishlists(id) ON DELETE CASCADE,
   CONSTRAINT fk_wishlist_items_product_id FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
@@ -299,6 +309,10 @@ CREATE TABLE IF NOT EXISTS order_items (
   product_id BIGINT UNSIGNED NOT NULL,
   product_name VARCHAR(180) NOT NULL,
   product_sku VARCHAR(80) NOT NULL,
+  selected_color_name VARCHAR(60) NULL,
+  selected_color_code VARCHAR(20) NULL,
+  selected_image_url VARCHAR(500) NULL,
+  selected_variant_key VARCHAR(255) NOT NULL DEFAULT '',
   unit_price DECIMAL(12,2) NOT NULL,
   quantity INT UNSIGNED NOT NULL,
   line_total DECIMAL(12,2) NOT NULL,
@@ -406,7 +420,7 @@ CREATE TABLE IF NOT EXISTS reviews (
   role ENUM('CUSTOMER', 'DEALER') NOT NULL,
   rating DECIMAL(2,1) NOT NULL DEFAULT 5.0,
   message TEXT NOT NULL,
-  status ENUM('VISIBLE', 'HIDDEN') NOT NULL DEFAULT 'VISIBLE',
+  status ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
@@ -447,6 +461,19 @@ CREATE TABLE IF NOT EXISTS banners (
   KEY idx_banners_status_sort (status, sort_order)
 );
 
+
+CREATE TABLE IF NOT EXISTS about_awards (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  title VARCHAR(160) NOT NULL,
+  description VARCHAR(500) NOT NULL,
+  image_url VARCHAR(500) NOT NULL,
+  sort_order INT UNSIGNED NOT NULL DEFAULT 0,
+  status ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_about_awards_status_sort (status, sort_order)
+);
 CREATE TABLE IF NOT EXISTS settings (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   setting_key VARCHAR(100) NOT NULL,
@@ -468,3 +495,6 @@ CREATE TABLE IF NOT EXISTS policy_pages (
   PRIMARY KEY (id),
   UNIQUE KEY uq_policy_pages_slug (slug)
 );
+
+
+

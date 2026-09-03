@@ -14,6 +14,7 @@ export type SiteSettings = {
   orderAdvanceAmount: number;
   trainingImages: string[];
   trainingVideos: string[];
+  aboutImages: string[];
 };
 
 export const defaultSiteSettings: SiteSettings = {
@@ -40,6 +41,12 @@ export const defaultSiteSettings: SiteSettings = {
     "",
   ],
   trainingVideos: [],
+  aboutImages: [
+    "/Untitled-design-10-2048x2048.png",
+    "/Untitled-design-10-2048x2048.png",
+    "/WhatsApp Image 2026-08-28 at 5.03.19 PM.jpeg",
+    "/WhatsApp Image 2026-08-28 at 5.04.41 PM.jpeg",
+  ],
 };
 
 export async function fetchSiteSettings() {
@@ -52,6 +59,7 @@ export async function fetchSiteSettings() {
     ...settings,
     trainingImages: Array.from({ length: 9 }, (_, index) => settings.trainingImages?.[index] || defaultSiteSettings.trainingImages[index] || ""),
     trainingVideos: (settings.trainingVideos || defaultSiteSettings.trainingVideos).filter(Boolean).slice(0, 5),
+    aboutImages: Array.from({ length: 4 }, (_, index) => settings.aboutImages?.[index] || defaultSiteSettings.aboutImages[index] || ""),
   };
 }
 
@@ -60,3 +68,5 @@ export function getWhatsAppHref(value: string) {
   if (!digits) return "";
   return `https://wa.me/${digits.startsWith("91") ? digits : `91${digits}`}`;
 }
+
+

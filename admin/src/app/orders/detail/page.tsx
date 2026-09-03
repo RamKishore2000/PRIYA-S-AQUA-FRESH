@@ -69,7 +69,7 @@ export default function AdminOrderDetailsPage() {
                   <div className="relative h-20 w-20 overflow-hidden rounded-md border border-slate-200 bg-slate-50">
                     <Image src={product.imageUrl || "/admin/file.svg"} alt={product.productName} fill className="object-contain p-1.5" unoptimized />
                   </div>
-                  <div><p className="font-bold text-slate-950">{product.productName}</p><p className="mt-1 text-sm text-slate-500">SKU: {product.productSku}</p><p className="mt-2 text-sm font-semibold text-slate-700">Qty: {product.quantity}</p></div>
+                  <div><p className="font-bold text-slate-950">{product.productName}</p><p className="mt-1 text-sm text-slate-500">SKU: {product.productSku}</p>{product.selectedColorName ? <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700">{product.selectedColorCode ? <span className="h-3 w-3 rounded-full border border-blue-100" style={{ backgroundColor: product.selectedColorCode }} /> : null}Colour: {product.selectedColorName}</p> : null}<p className="mt-2 text-sm font-semibold text-slate-700">Qty: {product.quantity}</p></div>
                   <div className="font-bold text-slate-950 sm:text-right"><p>{formatCurrency(product.lineTotal)}</p><p className="mt-1 text-xs text-slate-500">{formatCurrency(product.unitPrice)} each</p></div>
                 </div>
               ))}

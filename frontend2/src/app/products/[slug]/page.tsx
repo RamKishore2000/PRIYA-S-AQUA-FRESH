@@ -1,341 +1,101 @@
-import type { CSSProperties } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { Heart, MapPin, Truck } from "lucide-react";
-import { SitePage } from "@/components/layout/site-page";
-import { PriceDisplay } from "@/components/shop/price-display";
-import { ProductDetailActions, ProductDetailIconActions } from "@/components/shop/product-detail-actions";
-import { ProductCard } from "@/components/shop/product-card";
-import { StarIcon } from "@/components/shop/star-icon";
-import { getProductBySlug, getProducts } from "@/services/catalog-service";
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import { ProductDetailClient } from "@/components/shop/product-detail-client";
+import { getProducts } from "@/services/catalog-service";
 
 export const dynamicParams = false;
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.priyasaquafresh.com";
+const SITE_ORIGIN = "https://priyasaquafresh.com";
+
+type ProductDetailPageProps = {
+  params: Promise<{ slug: string }>;
+};
+
+type MetadataProduct = {
+  slug: string;
+  name: string;
+  description?: string | null;
+  image?: string;
+  images?: { imageUrl?: string | null; isPrimary?: boolean; colorName?: string | null; colorCode?: string | null }[];
+};
+
+function cleanDescription(description?: string | null) {
+  return String(description || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 180);
+}
+
+function absoluteImageUrl(url?: string | null) {
+  if (!url) return `${SITE_ORIGIN}/share-card.png`;
+  if (url.startsWith("http")) return url;
+  if (url.startsWith("/uploads")) return `${API_BASE_URL}${url}`;
+  if (url.startsWith("/")) return `${SITE_ORIGIN}${url}`;
+  return `${API_BASE_URL}/${url}`;
+}
+
+async function getMetadataProduct(slug: string): Promise<MetadataProduct | null> {
+  const response = await fetch(`${API_BASE_URL}/api/products`, { cache: "force-cache" }).catch(() => null);
+  if (!response?.ok) return null;
+  const result = await response.json().catch(() => null);
+  const products = result?.data?.products || [];
+  return products.find((product: MetadataProduct) => product.slug === slug) || null;
+}
+
+export async function generateMetadata({ params }: ProductDetailPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getMetadataProduct(slug);
+
+  if (!product) {
+    return {
+      title: "Priya's Aqua Fresh",
+      description: "Premium water purifiers, RO systems, alkaline water solutions and home purification support.",
+      openGraph: {
+        title: "Priya's Aqua Fresh",
+        description: "Premium water purifiers, RO systems, alkaline water solutions and home purification support.",
+        images: [{ url: `${SITE_ORIGIN}/share-card.png`, width: 1200, height: 630, alt: "Priya's Aqua Fresh" }],
+      },
+      twitter: { card: "summary_large_image", images: [`${SITE_ORIGIN}/share-card.png`] },
+    };
+  }
+
+  const description = cleanDescription(product.description) || "Premium Priya's Aqua Fresh water purifier.";
+  const primaryImage = product.images?.find((image) => image.isPrimary)?.imageUrl || product.images?.[0]?.imageUrl || product.image;
+  const image = absoluteImageUrl(primaryImage);
+  const productUrl = `${SITE_ORIGIN}/products/${product.slug}`;
+
+  return {
+    title: `${product.name} | Priya's Aqua Fresh`,
+    description,
+    alternates: { canonical: productUrl },
+    openGraph: {
+      title: product.name,
+      description,
+      url: productUrl,
+      siteName: "Priya's Aqua Fresh",
+      images: [{ url: image, width: 1200, height: 630, alt: product.name }],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.name,
+      description,
+      images: [image],
+    },
+  };
+}
 
 export async function generateStaticParams() {
   const products = await getProducts().catch(() => []);
   return products.map((product) => ({ slug: product.slug }));
 }
 
-export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  const [product, allProducts] = await Promise.all([getProductBySlug(slug).catch(() => null), getProducts().catch(() => [])]);
-
-  if (!product) {
-    return (
-      <SitePage eyebrow="Product" title="Product not found" description="The product you are looking for is not available.">
-        <section data-native-screen="product-detail" className="px-4 pb-20 md:px-6 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <Link href="/products" className="font-black text-[#0057C8]">Browse products</Link>
-          </div>
-        </section>
-      </SitePage>
-    );
-  }
-
-  const related = allProducts
-    .filter((item) => item.slug !== product.slug)
-    .sort((first, second) => {
-      const firstMatchesCategory = first.category === product.category ? 0 : 1;
-      const secondMatchesCategory = second.category === product.category ? 0 : 1;
-      return firstMatchesCategory - secondMatchesCategory;
-    })
-    .slice(0, 4);
-
+export default function ProductDetailPage() {
   return (
-    <SitePage eyebrow={product.category} title={product.name} description="Review product details, pricing and support options before checkout." compactHero>
-      <section data-native-screen="product-detail" className="px-4 pb-20 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <nav className="mb-4 hidden flex-wrap items-center gap-2 text-xs font-bold text-[#74879A] md:flex lg:mb-6">
-            <Link href="/" className="hover:text-[#0057C8]">Home</Link>
-            <span>/</span>
-            <Link href="/products" className="hover:text-[#0057C8]">Products</Link>
-            <span>/</span>
-            <span>{product.category}</span>
-            <span>/</span>
-            <span className="max-w-[280px] truncate text-[#102033]">{product.name}</span>
-          </nav>
-
-          <div className="grid gap-5 lg:grid-cols-[1.12fr_0.88fr] lg:items-start lg:gap-8">
-            <div className="grid gap-4 lg:gap-5">
-              <div className="grid gap-3 md:grid-cols-[5.5rem_1fr] lg:gap-4">
-                <div className="flex gap-3 overflow-x-auto pb-1 md:flex-col md:pb-0">
-                  {product.images.map((image) => (
-                    <span key={image} className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] shadow-[0_8px_24px_rgba(0,87,200,0.07)]">
-                      <Image src={image} alt="" fill sizes="80px" className="object-contain p-1.5" unoptimized />
-                    </span>
-                  ))}
-                </div>
-                <div data-product-detail-image className="relative min-h-[20rem] overflow-hidden rounded-2xl border-0 bg-transparent shadow-none md:min-h-[24rem] lg:min-h-[28rem] lg:border lg:border-[#D8EAF8] lg:bg-[#FFFFFF] lg:rounded-[2rem] lg:shadow-[0_24px_70px_rgba(0,87,200,0.12)]">
-                  <span className="absolute inset-x-16 bottom-10 h-16 rounded-full bg-[#0057C8]/12 blur-2xl" />
-                  <Image src={product.image} alt={product.name} fill sizes="620px" className="object-contain p-5 md:p-6 lg:p-8" unoptimized />
-                  <div className="absolute right-3 top-3 z-20 lg:hidden">
-                    <ProductDetailIconActions product={product} />
-                  </div>
-                </div>
-              </div>
-              <div className="rounded-none border-0 bg-transparent p-0 shadow-none lg:rounded-2xl lg:border lg:border-[#D8EAF8] lg:bg-[#FFFFFF] lg:p-5 lg:shadow-[0_14px_42px_rgba(0,87,200,0.08)]">
-                <h2 className="text-sm font-black uppercase tracking-[0.2em] text-[#0057C8]">Product Details</h2>
-                <ProductDescription description={product.description} />
-              </div>
-            </div>
-
-            <div className="rounded-none border-0 bg-transparent p-0 shadow-none md:p-0 lg:sticky lg:top-28 lg:rounded-2xl lg:border lg:border-[#D8EAF8] lg:bg-[#FFFFFF] lg:p-6 lg:shadow-[0_18px_60px_rgba(0,87,200,0.08)]">
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#0057C8]">{product.category}</p>
-              <h1 className="mt-2 font-serif text-2xl font-semibold leading-tight text-[#102033] md:text-3xl lg:mt-3 lg:text-4xl">{product.name}</h1>
-              <div className="mt-3 flex flex-wrap items-center gap-2 text-sm font-bold text-[#40576C]">
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#0057C8] px-3 py-1 text-white">
-                  <StarIcon className="h-4 w-4 fill-[#28B463] text-[#28B463]" />
-                  {(product.rating || 4.8).toFixed(1)}
-                </span>
-                <span>({product.reviewCount || 0} reviews)</span>
-              </div>
-
-              <PriceDisplay product={product} className="mt-4 lg:mt-5" priceClassName="text-2xl md:text-3xl lg:text-4xl" originalClassName="pb-1 text-sm md:text-base lg:text-xl" />
-
-              <div className="mt-5 border-y border-[#D8EAF8] py-4 lg:mt-7 lg:py-5">
-                <p className="font-black text-[#102033]">Category: <span className="text-[#0057C8]">{product.category}</span></p>
-                {product.sku ? <p className="mt-3 font-black text-[#40576C]">Product Code: {product.sku}</p> : null}
-              </div>
-
-              <ProductDetailActions product={product} />
-
-              <div className="mt-5 grid gap-2 text-sm pb-16 lg:mt-6 lg:gap-3 lg:pb-0">
-                <div className="flex items-start gap-3 rounded-none border-0 bg-transparent p-0 font-semibold text-[#40576C] lg:rounded-xl lg:border lg:border-[#D8EAF8] lg:bg-white lg:p-3">
-                  <Truck className="mt-0.5 h-4 w-4 shrink-0 text-[#0057C8]" />
-                  <p>Enjoy free delivery and free returns on selected orders.</p>
-                </div>
-                <div className="flex items-start gap-3 rounded-none border-0 bg-transparent p-0 font-semibold text-[#40576C] lg:rounded-xl lg:border lg:border-[#D8EAF8] lg:bg-white lg:p-3">
-                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#0057C8]" />
-                  <p>Installation support available for eligible purifier models.</p>
-                </div>
-                <div className="flex items-start gap-3 rounded-none border-0 bg-transparent p-0 font-semibold text-[#40576C] lg:rounded-xl lg:border lg:border-[#D8EAF8] lg:bg-white lg:p-3">
-                  <Heart className="mt-0.5 h-4 w-4 shrink-0 text-[#0057C8]" />
-                  <p>Genuine Priya&apos;s Aqua Fresh products and spare parts.</p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          {related.length > 0 ? (
-            <section data-related-products-section className="mt-12 border-t border-[#D8EAF8] pt-8 lg:mt-16 lg:pt-10">
-              <div className="mb-5 flex flex-col justify-between gap-3 md:mb-7 md:flex-row md:items-end">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.22em] text-[#0057C8]">Recommended</p>
-                  <h2 className="mt-2 font-serif text-2xl font-semibold tracking-tight text-[#102033] md:text-5xl">
-                    You May Also Like This Product
-                  </h2>
-                  <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-[#40576C]">
-                    Similar Priya&apos;s Aqua Fresh products selected from the catalog.
-                  </p>
-                </div>
-                <Link href="/products" className="inline-flex w-fit rounded-full border border-[#0057C8] bg-[#FFFFFF] px-5 py-2.5 text-sm font-black text-[#0057C8] transition hover:bg-[#EAF6FF]">
-                  View All Products
-                </Link>
-              </div>
-              <div data-related-product-rail data-native-home-product-row className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-3 [scrollbar-width:none] md:-mx-6 md:px-6 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0">
-                {related.map((item) => (
-                  <div key={item.id} data-related-product-card data-native-home-product-card className="w-[var(--home-product-card-width)] max-w-none shrink-0 snap-start sm:max-w-[18rem] md:w-[31vw] lg:w-auto lg:max-w-none" style={{ "--home-product-card-width": "calc((100vw - 3.1rem) / 2)" } as CSSProperties}>
-                    <ProductCard product={item} />
-                  </div>
-                ))}
-              </div>
-            </section>
-          ) : null}
-        </div>
-      </section>
-    </SitePage>
+    <Suspense fallback={null}>
+      <ProductDetailClient />
+    </Suspense>
   );
-}
-
-function ProductDescription({ description }: { description: string }) {
-  const { details, specifications } = parseProductDescriptionClean(description);
-
-  if (details.length === 0 && specifications.length === 0) {
-    return <p className="mt-3 text-sm font-semibold leading-7 text-[#40576C]">Product information will be updated soon.</p>;
-  }
-
-  return (
-    <div className="mt-4 space-y-5">
-      {details.length > 0 ? (
-        <div className="space-y-3">
-          {details.map((item, index) => (
-            item.kind === "point" ? (
-              <div key={`${item.text}-${index}`} className="flex gap-3 text-sm font-semibold leading-7 text-[#40576C]">
-                <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-[#0057C8]" />
-                <p>
-                  {item.label ? <span className="font-black text-[#102033]">{item.label}: </span> : null}
-                  {item.text}
-                </p>
-              </div>
-            ) : (
-              <p key={`${item.text}-${index}`} className="text-sm font-semibold leading-7 text-[#40576C]">
-                {item.text}
-              </p>
-            )
-          ))}
-        </div>
-      ) : null}
-
-      {specifications.length > 0 ? (
-        <div>
-          <h3 className="text-sm font-black uppercase tracking-[0.18em] text-[#0057C8]">Specifications</h3>
-          <div className="mt-3 space-y-2">
-            {specifications.map((spec, index) => (
-              <div key={`${spec.label}-${index}`} className="grid gap-1 text-sm leading-6 sm:grid-cols-[16rem_1rem_1fr] sm:gap-3">
-                <span className="font-black text-[#102033]">{spec.label}</span>
-                <span className="hidden text-lg font-black leading-6 text-[#102033] sm:block">:</span>
-                <span className="font-semibold text-[#40576C]">{spec.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-type DetailItem = { kind: "paragraph" | "point"; label?: string; text: string };
-type SpecItem = { label: string; value: string };
-
-function parseProductDescriptionClean(description: string): { details: DetailItem[]; specifications: SpecItem[] } {
-  const normalized = String(description || "")
-    .replace(/\r\n?/g, "\n")
-    .replace(/\u00e2\u20ac\u00a2/g, "\u2022")
-    .replace(/\s*SPECIFICATIONS\s*:/gi, "\nSPECIFICATIONS:\n")
-    .trim();
-  const specMatch = normalized.match(/\bSPECIFICATIONS\s*:/i);
-  const detailsText = specMatch ? normalized.slice(0, specMatch.index).trim() : normalized;
-  const specsText = specMatch ? normalized.slice((specMatch.index ?? 0) + specMatch[0].length).trim() : "";
-
-  return {
-    details: parseCleanDetails(detailsText),
-    specifications: parseCleanSpecifications(specsText),
-  };
-}
-
-function parseCleanDetails(value: string): DetailItem[] {
-  return value
-    .split("\n")
-    .map((line) => line.trim().replace(/\u00e2\u20ac\u00a2/g, "\u2022"))
-    .filter(Boolean)
-    .map((line) => {
-      const isBullet = /^(?:-|\?|\u2022)\s+/.test(line);
-      const cleanLine = line.replace(/^(?:-|\?|\u2022)\s+/, "").trim();
-      const labelMatch = cleanLine.match(/^([A-Z][A-Z0-9\s&/-]{2,}):\s*(.+)$/);
-      if (isBullet || labelMatch) {
-        return {
-          kind: "point" as const,
-          label: labelMatch?.[1]?.trim(),
-          text: labelMatch?.[2]?.trim() || cleanLine,
-        };
-      }
-      return { kind: "paragraph" as const, text: cleanLine };
-    })
-    .filter((item) => item.text.length > 0);
-}
-
-function parseCleanSpecifications(value: string): SpecItem[] {
-  return value
-    .split("\n")
-    .map((line) => line.trim().replace(/\u00e2\u20ac\u00a2/g, "\u2022").replace(/^(?:-|\?|\u2022)\s+/, ""))
-    .filter(Boolean)
-    .map((line) => {
-      const [label, ...rest] = line.split(":");
-      return { label: label.trim(), value: rest.join(":").trim() };
-    })
-    .filter((item) => item.label && item.value);
-}
-
-const detailHeadings = [
-  "ADVANCED PURIFICATION",
-  "PRIYAS AQUAFRESH STORAGE CAPACITY",
-  "STORAGE CAPACITY",
-  "LED INDICATOR",
-  "COMPACT DIMENSIONS",
-  "HIGH FLOW RATE",
-  "AUTOMATIC SHUT-OFF",
-];
-
-const specificationKeys = [
-  "Brand",
-  "Special Feature",
-  "Product Dimensions",
-  "Material",
-  "Capacity",
-  "Flow Rate",
-];
-
-function parseProductDescription(description: string): { details: DetailItem[]; specifications: SpecItem[] } {
-  const normalized = normalizeProductDescription(description);
-  const specMatch = normalized.match(/\bSPECIFICATIONS\s*:/i);
-  const detailsText = specMatch ? normalized.slice(0, specMatch.index).trim() : normalized.trim();
-  const specsText = specMatch ? normalized.slice((specMatch.index ?? 0) + specMatch[0].length).trim() : "";
-
-  return {
-    details: parseDetails(detailsText),
-    specifications: parseSpecifications(specsText),
-  };
-}
-
-function normalizeProductDescription(value: string) {
-  let text = String(value || "").replace(/\r\n?/g, "\n").replace(/\u2022/g, "\nâ€¢ ");
-  text = text.replace(/\s*SPECIFICATIONS\s*:/gi, "\nSPECIFICATIONS:\n");
-
-  for (const heading of detailHeadings) {
-    const pattern = new RegExp(`\\s+(${escapeRegExp(heading)}\\s*:)`, "gi");
-    text = text.replace(pattern, "\n$1");
-  }
-
-  for (const key of specificationKeys) {
-    const pattern = new RegExp(`\\s+(${escapeRegExp(key)}\\s*:)`, "g");
-    text = text.replace(pattern, "\n$1");
-  }
-
-  return text
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .join("\n");
-}
-
-function parseDetails(value: string): DetailItem[] {
-  return value
-    .split("\n")
-    .map((line) => line.trim())
-    .map((line) => line.replace(/^[-?]\s+/, "\u00e2\u20ac\u00a2 "))
-    .filter(Boolean)
-    .map((line) => {
-      const cleanLine = line.replace(/^â€¢\s*/, "").trim();
-      const labelMatch = cleanLine.match(/^([A-Z][A-Z0-9\s&/-]{2,}):\s*(.+)$/);
-      if (line.startsWith("â€¢") || labelMatch) {
-        return {
-          kind: "point" as const,
-          label: labelMatch?.[1]?.trim(),
-          text: labelMatch?.[2]?.trim() || cleanLine,
-        };
-      }
-      return { kind: "paragraph" as const, text: cleanLine };
-    })
-    .filter((item) => item.text.trim().length > 0);
-}
-
-function parseSpecifications(value: string): SpecItem[] {
-  return value
-    .split("\n")
-    .map((line) => line.replace(/^[-?]\s+/, "\u00e2\u20ac\u00a2 "))
-    .map((line) => line.replace(/^â€¢\s*/, "").trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [label, ...rest] = line.split(":");
-      return {
-        label: label.trim(),
-        value: rest.join(":").trim(),
-      };
-    })
-    .filter((item) => item.label && item.value);
-}
-
-function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

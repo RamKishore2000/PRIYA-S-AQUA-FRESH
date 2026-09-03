@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -7,6 +7,7 @@ import { Icon } from "@/components/admin/icon";
 const titles: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/categories": "Categories",
+  "/about-awards": "About Page",
   "/products": "Products",
   "/products/new": "Add Product",
   "/customers": "Customers",
@@ -109,3 +110,4 @@ export function AdminHeader({ onMenuClick, onToggleSidebar }: { onMenuClick: () 
     </header>
   );
 }
+

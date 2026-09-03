@@ -410,17 +410,19 @@ button {
 
 .range-thumb {
   pointer-events: none;
+  touch-action: none;
 }
 
 .range-thumb::-webkit-slider-thumb {
   pointer-events: auto;
-  height: 20px;
-  width: 20px;
+  height: 24px;
+  width: 24px;
   appearance: none;
+  -webkit-appearance: none;
   border-radius: 9999px;
   border: 3px solid #0a3a38;
   background: #FFFFFF;
-  box-shadow: 0 4px 12px rgb(84 61 35 / 0.18);
+  box-shadow: 0 4px 12px rgba(0, 87, 200, 0.18);
   cursor: pointer;
 }
 
@@ -436,7 +438,7 @@ button {
   border: 3px solid #0a3a38;
   border-radius: 9999px;
   background: #FFFFFF;
-  box-shadow: 0 4px 12px rgb(84 61 35 / 0.18);
+  box-shadow: 0 4px 12px rgba(0, 87, 200, 0.18);
   cursor: pointer;
 }
 
@@ -4392,8 +4394,8 @@ body.priyas-native-app [data-product-detail-mobile-actions] > div {
 
 @media (max-width: 639px) {
   body.priyas-native-app [data-native-screen="product-detail"] [data-product-detail-image] {
-    min-height: 16rem !important;
-    max-height: 16rem !important;
+    min-height: 17.5rem !important;
+    max-height: 17.5rem !important;
   }
 }
 
@@ -5135,5 +5137,54 @@ body.priyas-native-app [data-home-carousel-controls] a {
   border-color: #C7E4F8 !important;
   box-shadow: 0 12px 28px rgba(0, 87, 200, 0.12) !important;
 }
+@media (max-width: 1023px) {
+  .range-thumb::-webkit-slider-thumb {
+    height: 30px;
+    width: 30px;
+  }
+
+  .range-thumb::-moz-range-thumb {
+    height: 30px;
+    width: 30px;
+  }
+}
 
 
+body.priyas-native-app header[data-native-back-page="true"] [data-native-back-header="true"] {
+  display: flex !important;
+}
+
+body.priyas-native-app header[data-native-back-page="true"] [data-standard-header] {
+  display: none !important;
+}
+
+body.priyas-native-app header[data-native-back-page="true"] {
+  min-height: calc(3.75rem + env(safe-area-inset-top));
+  border-bottom: 1px solid #C7E4F8;
+}
+
+/* APK back-header final fix: keep main header compact and show only back title on sub pages. */
+body.priyas-native-app header {
+  padding-top: 0 !important;
+  min-height: 3.95rem !important;
+}
+
+body.priyas-native-app header > [data-standard-header]:nth-of-type(2) {
+  padding-left: 0.6rem !important;
+  padding-right: 0.6rem !important;
+}
+
+body.priyas-native-app header[data-native-back-page="true"] {
+  min-height: 3.95rem !important;
+  padding-top: 0 !important;
+}
+
+body.priyas-native-app header[data-native-back-page="true"] [data-standard-header] {
+  display: none !important;
+}
+
+body.priyas-native-app header[data-native-back-page="true"] [data-native-back-header="true"] {
+  display: flex !important;
+  min-height: 3.95rem !important;
+  padding: 0.55rem 0.75rem !important;
+}

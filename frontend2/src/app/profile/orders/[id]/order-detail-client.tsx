@@ -139,6 +139,7 @@ export default function OrderDetailPage({ orderId }: { orderId?: string }) {
                   <div>
                     <p className="text-sm font-black text-[#102033] sm:text-base">{item.productName}</p>
                     <p className="mt-1 text-xs font-semibold text-[#40576C] sm:text-sm">SKU: {item.productSku}</p>
+                    {item.selectedColorName ? <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#EAF6FF] px-2.5 py-1 text-xs font-black text-[#0057C8]">{item.selectedColorCode ? <span className="h-3 w-3 rounded-full border border-[#D8EAF8]" style={{ backgroundColor: item.selectedColorCode }} /> : null}Colour: {item.selectedColorName}</p> : null}
                     <p className="mt-2 text-xs font-black text-[#0057C8] sm:text-sm">Qty: {item.quantity}</p>
                   </div>
                   <div className="col-span-2 text-right text-sm font-black text-[#102033] sm:col-span-1 sm:text-base sm:text-right">
@@ -203,4 +204,5 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
     </div>
   );
 }
+
 

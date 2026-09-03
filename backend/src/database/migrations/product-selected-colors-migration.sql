@@ -1,0 +1,18 @@
+ALTER TABLE product_images ADD COLUMN IF NOT EXISTS color_name VARCHAR(60) NULL AFTER is_primary;
+ALTER TABLE product_images ADD COLUMN IF NOT EXISTS color_code VARCHAR(20) NULL AFTER color_name;
+ALTER TABLE cart_items ADD COLUMN IF NOT EXISTS selected_color_name VARCHAR(60) NULL AFTER quantity;
+ALTER TABLE cart_items ADD COLUMN IF NOT EXISTS selected_color_code VARCHAR(20) NULL AFTER selected_color_name;
+ALTER TABLE cart_items ADD COLUMN IF NOT EXISTS selected_image_url VARCHAR(500) NULL AFTER selected_color_code;
+ALTER TABLE cart_items ADD COLUMN IF NOT EXISTS selected_variant_key VARCHAR(255) NOT NULL DEFAULT '' AFTER selected_image_url;
+ALTER TABLE cart_items DROP INDEX IF EXISTS uq_cart_items_cart_product;
+ALTER TABLE cart_items ADD UNIQUE KEY IF NOT EXISTS uq_cart_items_cart_product_variant (cart_id, product_id, selected_variant_key);
+ALTER TABLE wishlist_items ADD COLUMN IF NOT EXISTS selected_color_name VARCHAR(60) NULL AFTER product_id;
+ALTER TABLE wishlist_items ADD COLUMN IF NOT EXISTS selected_color_code VARCHAR(20) NULL AFTER selected_color_name;
+ALTER TABLE wishlist_items ADD COLUMN IF NOT EXISTS selected_image_url VARCHAR(500) NULL AFTER selected_color_code;
+ALTER TABLE wishlist_items ADD COLUMN IF NOT EXISTS selected_variant_key VARCHAR(255) NOT NULL DEFAULT '' AFTER selected_image_url;
+ALTER TABLE wishlist_items DROP INDEX IF EXISTS uq_wishlist_items_wishlist_product;
+ALTER TABLE wishlist_items ADD UNIQUE KEY IF NOT EXISTS uq_wishlist_items_wishlist_product_variant (wishlist_id, product_id, selected_variant_key);
+ALTER TABLE order_items ADD COLUMN IF NOT EXISTS selected_color_name VARCHAR(60) NULL AFTER product_sku;
+ALTER TABLE order_items ADD COLUMN IF NOT EXISTS selected_color_code VARCHAR(20) NULL AFTER selected_color_name;
+ALTER TABLE order_items ADD COLUMN IF NOT EXISTS selected_image_url VARCHAR(500) NULL AFTER selected_color_code;
+ALTER TABLE order_items ADD COLUMN IF NOT EXISTS selected_variant_key VARCHAR(255) NOT NULL DEFAULT '' AFTER selected_image_url;

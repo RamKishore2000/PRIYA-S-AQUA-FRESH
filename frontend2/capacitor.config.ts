@@ -2,7 +2,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
   appId: "com.priyasaquafresh.app",
-  appName: "Priya Aqua Fresh",
+  appName: "Priyas Aquafresh",
   webDir: "out",
   server: {
     androidScheme: "https",

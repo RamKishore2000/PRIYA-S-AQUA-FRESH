@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +11,7 @@ const groups = [
     title: "Catalog",
     items: [
       { label: "Banners", href: "/banners", icon: "grid" },
+      { label: "About Page", href: "/about-awards", icon: "star" },
       { label: "Categories", href: "/categories", icon: "categories" },
       { label: "Subcategories", href: "/subcategories", icon: "categories" },
       { label: "Products", href: "/products", icon: "products" },
@@ -112,3 +113,4 @@ export function AdminSidebar({ collapsed, onClose }: { collapsed: boolean; onClo
     </aside>
   );
 }
+

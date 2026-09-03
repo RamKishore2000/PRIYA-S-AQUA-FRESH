@@ -12,7 +12,8 @@ async function addItem(req, res) {
 }
 
 async function removeItem(req, res) {
-  const wishlist = await wishlistService.removeItem(req.user.id, req.params.productId);
+  const selectedVariantKey = req.query.selectedVariantKey || req.body?.selectedVariantKey || "";
+  const wishlist = await wishlistService.removeItem(req.user.id, req.params.productId, selectedVariantKey);
   return sendSuccess(res, 200, "Wishlist item removed successfully.", { wishlist });
 }
 

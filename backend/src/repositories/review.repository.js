@@ -16,7 +16,7 @@ function mapReview(row) {
 }
 
 async function findAll({ includeHidden = false, limit = 20 } = {}) {
-  const where = includeHidden ? "" : "WHERE status = 'VISIBLE'";
+  const where = includeHidden ? "" : "WHERE status IN ('APPROVED', 'VISIBLE')";
   const safeLimit = Math.max(1, Math.min(Number(limit) || 20, 100));
   const [rows] = await pool.query(
     `SELECT * FROM reviews ${where} ORDER BY created_at DESC LIMIT ${safeLimit}`,
@@ -32,7 +32,7 @@ async function findById(id) {
 async function createReview(payload) {
   const [result] = await pool.execute(
     `INSERT INTO reviews (user_id, customer_name, role, rating, message, status)
-     VALUES (?, ?, ?, ?, ?, 'VISIBLE')`,
+     VALUES (?, ?, ?, ?, ?, 'PENDING')`,
     [payload.userId, payload.customerName, payload.role, payload.rating, payload.message],
   );
   return findById(result.insertId);

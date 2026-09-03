@@ -8,22 +8,36 @@ import { CartIcon, HeartIcon, ShareIcon } from "@/components/ui/icons";
 import { useCartFly } from "@/context/cart-fly-context";
 import { useShop } from "@/context/shop-context";
 import { getProductDisplayPrice } from "@/lib/pricing";
-import { getProductDetailHref } from "@/lib/product-links";
+import { getCanonicalProductUrl, getProductDetailHref } from "@/lib/product-links";
 import { PriceDisplay } from "@/components/shop/price-display";
+import { buildSelectedVariantPayload } from "@/services/shop-service";
 import type { Product } from "@/types/product";
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product, onWishlistChange }: { product: Product; onWishlistChange?: (product: Product) => void }) {
   const router = useRouter();
-  const { user, addToCart, toggleWishlist, wishlistIds, openLogin } = useShop();
+  const { user, addToCart, toggleWishlist, wishlistIds, wishlistItemKeys, openLogin } = useShop();
   const { flyToCart } = useCartFly();
-  const wished = wishlistIds.includes(product.id);
+  const displayedVariant = product.imageVariants.find((variant) => variant.imageUrl === product.image);
+  const selectedVariant = product.selectedVariantKey
+    ? {
+        selectedColorName: product.selectedColorName,
+        selectedColorCode: product.selectedColorCode,
+        selectedImageUrl: product.selectedImageUrl || product.image,
+        selectedVariantKey: product.selectedVariantKey,
+      }
+    : displayedVariant
+      ? displayedVariant
+      : null;
+  const selectedPayload = buildSelectedVariantPayload(selectedVariant);
+  const selectedVariantKey = selectedPayload.selectedVariantKey || "";
+  const wished = selectedVariantKey ? wishlistItemKeys.includes(`${product.id}:${selectedVariantKey}`) : wishlistIds.includes(product.id);
   const displayPrice = getProductDisplayPrice(product, user?.role);
   const [showBurst, setShowBurst] = useState(false);
   const burstTimer = useRef<number | null>(null);
   const rating = product.rating || 4.8;
   const reviewCount = product.reviewCount || 0;
   const productHref = getProductDetailHref(product.slug);
-  const shareLink = `https://wa.me/?text=${encodeURIComponent(`${product.name} - ${typeof window === "undefined" ? "" : window.location.origin}${productHref}`)}`;
+  const shareLink = `https://wa.me/?text=${encodeURIComponent(`${product.name} - ${getCanonicalProductUrl(product.slug)}`)}`;
 
   useEffect(() => {
     return () => {
@@ -33,7 +47,7 @@ export function ProductCard({ product }: { product: Product }) {
 
   async function handleAddToCart(event: MouseEvent<HTMLButtonElement>) {
     const startRect = event.currentTarget.closest("article")?.querySelector("[data-product-image-area]")?.getBoundingClientRect() ?? event.currentTarget.getBoundingClientRect();
-    const added = await addToCart(product.id);
+    const added = await addToCart(product.id, 1, selectedPayload);
     if (added) {
       flyToCart({ image: product.image, startRect });
     }
@@ -44,10 +58,15 @@ export function ProductCard({ product }: { product: Product }) {
       openLogin();
       return;
     }
-    router.push(`/checkout?buyNow=${product.id}`);
+    const params = new URLSearchParams({ buyNow: product.id });
+    if (selectedPayload.selectedImageUrl) params.set("selectedImageUrl", selectedPayload.selectedImageUrl);
+    if (selectedPayload.selectedColorName) params.set("selectedColorName", selectedPayload.selectedColorName);
+    if (selectedPayload.selectedColorCode) params.set("selectedColorCode", selectedPayload.selectedColorCode);
+    if (selectedPayload.selectedVariantKey) params.set("selectedVariantKey", selectedPayload.selectedVariantKey);
+    router.push(`/checkout?${params.toString()}`);
   }
 
-  function handleWishlist() {
+  async function handleWishlist() {
     if (!wished) {
       setShowBurst(false);
       window.requestAnimationFrame(() => setShowBurst(true));
@@ -57,7 +76,8 @@ export function ProductCard({ product }: { product: Product }) {
       setShowBurst(false);
     }
 
-    void toggleWishlist(product.id);
+    await toggleWishlist(product.id, selectedPayload);
+    onWishlistChange?.(product);
   }
 
   return (
@@ -131,4 +151,3 @@ export function ProductCard({ product }: { product: Product }) {
     </article>
   );
 }
-

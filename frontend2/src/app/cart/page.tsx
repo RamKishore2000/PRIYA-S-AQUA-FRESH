@@ -48,8 +48,9 @@ export default function CartPage() {
                 {cartItems.map((item) => {
                   const display = getProductDisplayPrice(item.product, user?.role);
                   const productHref = getProductDetailHref(item.product.slug);
+                  const itemKey = `${item.product.id}:${item.selectedVariantKey || ""}`;
                   return (
-                  <article key={item.product.id} data-cart-product-row className="grid grid-cols-[5.5rem_1fr] gap-3 rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-3 shadow-[0_10px_24px_rgba(0,87,200,0.07)] md:grid-cols-[7rem_1fr_auto] md:gap-5 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-5 lg:shadow-none">
+                  <article key={itemKey} data-cart-product-row className="grid grid-cols-[5.5rem_1fr] gap-3 rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-3 shadow-[0_10px_24px_rgba(0,87,200,0.07)] md:grid-cols-[7rem_1fr_auto] md:gap-5 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-5 lg:shadow-none">
                     <Link href={productHref} className="relative h-24 overflow-hidden rounded-xl bg-[#F3FAFF] md:h-28">
                       <Image src={item.product.image} alt={item.product.name} fill sizes="(max-width: 767px) 88px, 112px" className="object-contain p-2" unoptimized />
                     </Link>
@@ -58,14 +59,20 @@ export default function CartPage() {
                         {item.product.name}
                       </Link>
                       <p className="mt-1 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[#0057C8] md:mt-2 md:text-sm md:tracking-[0.18em]">{item.product.category}</p>
+                      {item.selectedColorName ? (
+                        <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-[#EAF6FF] px-2.5 py-1 text-xs font-black text-[#0057C8]">
+                          {item.selectedColorCode ? <span className="h-3 w-3 rounded-full border border-[#D8EAF8]" style={{ backgroundColor: item.selectedColorCode }} /> : null}
+                          Colour: {item.selectedColorName}
+                        </p>
+                      ) : null}
                       <p data-current-price className="mt-2 text-xl font-black text-[#0057C8] md:mt-3 md:text-2xl">Rs. {display.price.toLocaleString("en-IN")}</p>
                       <div className="mt-3 flex flex-wrap items-center gap-2 md:mt-4 md:gap-3">
                         <div className="inline-flex items-center overflow-hidden rounded-lg border border-[#D8EAF8] bg-white">
-                          <button type="button" onClick={() => void decreaseQuantity(item.product.id)} className="grid h-9 w-9 place-items-center text-lg font-black text-[#0057C8] md:h-10 md:w-10 md:text-xl">-</button>
+                          <button type="button" onClick={() => void decreaseQuantity(item.product.id, item.selectedVariantKey || "")} className="grid h-9 w-9 place-items-center text-lg font-black text-[#0057C8] md:h-10 md:w-10 md:text-xl">-</button>
                           <span className="grid h-9 w-10 place-items-center border-x border-[#D8EAF8] text-sm font-black text-[#102033] md:h-10 md:w-11">{item.quantity}</span>
-                          <button type="button" onClick={() => void increaseQuantity(item.product.id)} className="grid h-9 w-9 place-items-center text-lg font-black text-[#0057C8] md:h-10 md:w-10 md:text-xl">+</button>
+                          <button type="button" onClick={() => void increaseQuantity(item.product.id, item.selectedVariantKey || "")} className="grid h-9 w-9 place-items-center text-lg font-black text-[#0057C8] md:h-10 md:w-10 md:text-xl">+</button>
                         </div>
-                        <button type="button" onClick={() => void removeFromCart(item.product.id)} className="rounded-lg px-2 py-2 text-xs font-black text-red-600 transition hover:bg-red-50 md:px-3 md:text-sm">
+                        <button type="button" onClick={() => void removeFromCart(item.product.id, item.selectedVariantKey || "")} className="rounded-lg px-2 py-2 text-xs font-black text-red-600 transition hover:bg-red-50 md:px-3 md:text-sm">
                           Remove
                         </button>
                       </div>
@@ -102,4 +109,5 @@ export default function CartPage() {
     </SitePage>
   );
 }
+
 

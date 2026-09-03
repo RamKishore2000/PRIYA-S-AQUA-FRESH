@@ -5,18 +5,22 @@ import { useRouter } from "next/navigation";
 import { CartIcon, HeartIcon, ShareIcon } from "@/components/ui/icons";
 import { useCartFly } from "@/context/cart-fly-context";
 import { useShop } from "@/context/shop-context";
-import type { Product } from "@/types/product";
+import { getCanonicalProductUrl } from "@/lib/product-links";
+import { buildSelectedVariantPayload } from "@/services/shop-service";
+import type { Product, ProductImageVariant } from "@/types/product";
 
-export function ProductDetailActions({ product }: { product: Product }) {
+export function ProductDetailActions({ product, selectedVariant }: { product: Product; selectedVariant?: ProductImageVariant | null }) {
   const router = useRouter();
   const { user, addToCart, openLogin } = useShop();
   const { flyToCart } = useCartFly();
+  const selectedPayload = buildSelectedVariantPayload(selectedVariant);
+  const displayImage = selectedVariant?.imageUrl || product.image;
 
   async function handleAddToCart(event: MouseEvent<HTMLButtonElement>) {
     const startRect = document.querySelector("[data-product-detail-image]")?.getBoundingClientRect() ?? event.currentTarget.getBoundingClientRect();
-    const added = await addToCart(product.id);
+    const added = await addToCart(product.id, 1, selectedPayload);
     if (added) {
-      flyToCart({ image: product.image, startRect });
+      flyToCart({ image: displayImage, startRect });
     }
   }
 
@@ -25,7 +29,12 @@ export function ProductDetailActions({ product }: { product: Product }) {
       openLogin();
       return;
     }
-    router.push(`/checkout?buyNow=${product.id}`);
+    const params = new URLSearchParams({ buyNow: product.id });
+    if (selectedPayload.selectedImageUrl) params.set("selectedImageUrl", selectedPayload.selectedImageUrl);
+    if (selectedPayload.selectedColorName) params.set("selectedColorName", selectedPayload.selectedColorName);
+    if (selectedPayload.selectedColorCode) params.set("selectedColorCode", selectedPayload.selectedColorCode);
+    if (selectedPayload.selectedVariantKey) params.set("selectedVariantKey", selectedPayload.selectedVariantKey);
+    router.push(`/checkout?${params.toString()}`);
   }
 
   return (
@@ -40,7 +49,7 @@ export function ProductDetailActions({ product }: { product: Product }) {
             Buy Now
           </button>
         </div>
-        <ProductDetailIconActions product={product} desktop />
+        <ProductDetailIconActions product={product} selectedVariant={selectedVariant} desktop />
       </div>
 
       <div data-product-detail-mobile-actions className="fixed inset-x-0 bottom-0 z-[70] border-t border-[#C7E4F8] bg-[#FFFFFF]/96 px-4 pb-[calc(env(safe-area-inset-bottom)+0.65rem)] pt-2.5 shadow-[0_-12px_28px_rgba(0,87,200,0.10)] backdrop-blur-xl lg:hidden">
@@ -58,9 +67,11 @@ export function ProductDetailActions({ product }: { product: Product }) {
   );
 }
 
-export function ProductDetailIconActions({ product, desktop = false }: { product: Product; desktop?: boolean }) {
-  const { toggleWishlist, wishlistIds } = useShop();
-  const wished = wishlistIds.includes(product.id);
+export function ProductDetailIconActions({ product, selectedVariant, desktop = false }: { product: Product; selectedVariant?: ProductImageVariant | null; desktop?: boolean }) {
+  const { toggleWishlist, wishlistIds, wishlistItemKeys } = useShop();
+  const selectedPayload = buildSelectedVariantPayload(selectedVariant);
+  const selectedVariantKey = selectedPayload.selectedVariantKey || "";
+  const wished = selectedVariantKey ? wishlistItemKeys.includes(`${product.id}:${selectedVariantKey}`) : wishlistIds.includes(product.id);
   const [showBurst, setShowBurst] = useState(false);
   const burstTimer = useRef<number | null>(null);
 
@@ -79,7 +90,7 @@ export function ProductDetailIconActions({ product, desktop = false }: { product
     } else {
       setShowBurst(false);
     }
-    void toggleWishlist(product.id);
+    void toggleWishlist(product.id, selectedPayload);
   }
 
   return (
@@ -100,7 +111,7 @@ export function ProductDetailIconActions({ product, desktop = false }: { product
         ) : null}
         <HeartIcon className="h-5 w-5" />
       </button>
-      <a href={`https://wa.me/?text=${encodeURIComponent(product.name)}`} className={`grid place-items-center rounded-full border border-[#D8EAF8] bg-[#FFFFFF]/95 text-[#0057C8] shadow-[0_10px_24px_rgba(0,87,200,0.10)] backdrop-blur transition hover:border-[#0057C8] ${desktop ? "h-14 w-14" : "h-11 w-11"}`} aria-label="Share">
+      <a href={`https://wa.me/?text=${encodeURIComponent(`${product.name} - ${getCanonicalProductUrl(product.slug)}`)}`} className={`grid place-items-center rounded-full border border-[#D8EAF8] bg-[#FFFFFF]/95 text-[#0057C8] shadow-[0_10px_24px_rgba(0,87,200,0.10)] backdrop-blur transition hover:border-[#0057C8] ${desktop ? "h-14 w-14" : "h-11 w-11"}`} aria-label="Share">
         <ShareIcon className="h-5 w-5" />
       </a>
     </div>

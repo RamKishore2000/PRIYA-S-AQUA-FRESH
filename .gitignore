@@ -59,4 +59,6 @@ frontend2/android-cap8-backup-*/
 *.jks
 *.keystore
 **/keystore.properties
-.tmp/
+.tmp/priyasaquafresh-playstore-keys.txt
+*playstore-keys*.txt
+.tmp/**

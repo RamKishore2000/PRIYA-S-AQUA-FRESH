@@ -76,6 +76,16 @@ export type Banner = {
   createdDate: string;
 };
 
+
+export type AboutAward = {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  sortOrder: number;
+  status: Extract<Status, "Active" | "Inactive">;
+  createdDate: string;
+};
 export type Coupon = {
   id: string;
   code: string;
@@ -98,6 +108,14 @@ export type Coupon = {
   createdDate: string;
 };
 
+export type ProductImageVariant = {
+  imageUrl: string;
+  colorName?: string;
+  colorCode?: string;
+  isPrimary?: boolean;
+  images?: string[];
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -108,6 +126,7 @@ export type Product = {
   subcategory?: string;
   subcategoryId?: string;
   images: string[];
+  imageVariants?: ProductImageVariant[];
   customerSellingPrice: number;
   dealerSellingPrice: number;
   customerOriginalPrice: number;
@@ -160,6 +179,10 @@ export type Order = {
     productSku: string;
     productSlug?: string;
     imageUrl: string;
+    selectedColorName?: string;
+    selectedColorCode?: string;
+    selectedImageUrl?: string;
+    selectedVariantKey?: string;
     unitPrice: number;
     quantity: number;
     lineTotal: number;
@@ -199,7 +222,7 @@ export type Review = {
   role: BuyerRole;
   rating: number;
   message: string;
-  status: "Visible" | "Hidden";
+  status: "Pending" | "Approved" | "Rejected";
   createdDate: string;
 };
 
@@ -225,6 +248,7 @@ export type SiteSettings = {
   orderAdvanceAmount: number;
   trainingImages: string[];
   trainingVideos: string[];
+  aboutImages: string[];
 };
 
 export type ContactMessage = {

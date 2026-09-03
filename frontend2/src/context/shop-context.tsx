@@ -12,6 +12,8 @@ import {
   updateCartItem,
   type CartItem,
   type CartState,
+  type SelectedProductVariant,
+  buildSelectedVariantPayload,
 } from "@/services/shop-service";
 
 type ShopContextValue = {
@@ -21,13 +23,14 @@ type ShopContextValue = {
   subtotal: number;
   wishlistCount: number;
   wishlistIds: string[];
+  wishlistItemKeys: string[];
   openLogin: () => void;
   logout: () => void;
-  addToCart: (productId: string, quantity?: number) => Promise<boolean>;
-  removeFromCart: (productId: string) => Promise<void>;
-  increaseQuantity: (productId: string) => Promise<void>;
-  decreaseQuantity: (productId: string) => Promise<void>;
-  toggleWishlist: (productId: string) => Promise<void>;
+  addToCart: (productId: string, quantity?: number, variant?: SelectedProductVariant | null) => Promise<boolean>;
+  removeFromCart: (productId: string, selectedVariantKey?: string) => Promise<void>;
+  increaseQuantity: (productId: string, selectedVariantKey?: string) => Promise<void>;
+  decreaseQuantity: (productId: string, selectedVariantKey?: string) => Promise<void>;
+  toggleWishlist: (productId: string, variant?: SelectedProductVariant | null) => Promise<void>;
   refreshCart: () => Promise<void>;
   clearCartState: () => void;
 };
@@ -44,6 +47,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [cart, setCart] = useState<CartState | null>(null);
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+  const [wishlistItemKeys, setWishlistItemKeys] = useState<string[]>([]);
   const [loginOpen, setLoginOpen] = useState(false);
   const [mode, setMode] = useState<"otp">("otp");
   const [otpSent, setOtpSent] = useState(false);
@@ -78,11 +82,12 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       setUser(storedUser);
       if (storedUser) {
         fetchCart().then(setCart).catch(() => undefined);
-        fetchWishlist().then((wishlist) => setWishlistIds(wishlist.productIds.map(String))).catch(() => undefined);
+        fetchWishlist().then((wishlist) => { setWishlistIds(wishlist.productIds.map(String)); setWishlistItemKeys((wishlist.itemKeys || wishlist.productIds).map(String)); }).catch(() => undefined);
         return;
       }
       setCart(null);
       setWishlistIds([]);
+      setWishlistItemKeys([]);
     };
     sync();
     window.addEventListener("priyas-auth-changed", sync);
@@ -139,14 +144,14 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       showToast(nextMessage, "error");
     }
   }
-  const addToCart = useCallback(async (productId: string, quantity = 1) => {
+  const addToCart = useCallback(async (productId: string, quantity = 1, variant?: SelectedProductVariant | null) => {
     if (!user) {
       setLoginOpen(true);
       showToast("Please login to add products to cart.", "info");
       return false;
     }
     try {
-      setCart(await addCartItem(productId, quantity));
+      setCart(await addCartItem(productId, quantity, variant));
       showToast("Product added to cart", "success");
       return true;
     } catch (error) {
@@ -155,45 +160,50 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
-  async function removeFromCart(productId: string) {
+  async function removeFromCart(productId: string, selectedVariantKey = "") {
     if (!user) return;
     try {
-      setCart(await removeCartItem(productId));
+      setCart(await removeCartItem(productId, selectedVariantKey));
       showToast("Cart updated", "success");
     } catch (error) {
       showToast(error instanceof Error ? error.message : "Unable to update cart", "error");
     }
   }
 
-  async function increaseQuantity(productId: string) {
+  async function increaseQuantity(productId: string, selectedVariantKey = "") {
     if (!user) return;
-    const current = cart?.items.find((item) => item.product.id === productId);
-    setCart(await updateCartItem(productId, (current?.quantity || 0) + 1));
+    const current = cart?.items.find((item) => item.product.id === productId && (item.selectedVariantKey || "") === selectedVariantKey);
+    setCart(await updateCartItem(productId, (current?.quantity || 0) + 1, selectedVariantKey));
     showToast("Cart updated", "success");
   }
 
-  async function decreaseQuantity(productId: string) {
+  async function decreaseQuantity(productId: string, selectedVariantKey = "") {
     if (!user) return;
-    const current = cart?.items.find((item) => item.product.id === productId);
+    const current = cart?.items.find((item) => item.product.id === productId && (item.selectedVariantKey || "") === selectedVariantKey);
     const quantity = Math.max(0, (current?.quantity || 1) - 1);
-    setCart(await updateCartItem(productId, quantity));
+    setCart(await updateCartItem(productId, quantity, selectedVariantKey));
     showToast("Cart updated", "success");
   }
 
-  async function toggleWishlist(productId: string) {
+  async function toggleWishlist(productId: string, variant?: SelectedProductVariant | null) {
     if (!user) {
       setLoginOpen(true);
       showToast("Please login to use wishlist.", "info");
       return;
     }
-    if (wishlistIds.includes(productId)) {
-      const next = await removeWishlistItem(productId);
+    const selection = buildSelectedVariantPayload(variant);
+    const selectedVariantKey = selection.selectedVariantKey || "";
+    const itemKey = `${productId}:${selectedVariantKey}`;
+    if (wishlistItemKeys.includes(itemKey) || (!selectedVariantKey && wishlistIds.includes(productId))) {
+      const next = await removeWishlistItem(productId, selectedVariantKey);
       setWishlistIds(next.productIds.map(String));
+      setWishlistItemKeys((next.itemKeys || next.productIds).map(String));
       showToast("Removed from wishlist", "success");
       return;
     }
-    const next = await addWishlistItem(productId);
+    const next = await addWishlistItem(productId, variant);
     setWishlistIds(next.productIds.map(String));
+    setWishlistItemKeys((next.itemKeys || next.productIds).map(String));
     showToast("Added to wishlist", "success");
   }
 
@@ -226,6 +236,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     subtotal: user ? cart?.subtotal || 0 : 0,
     wishlistCount: user ? wishlistIds.length : 0,
     wishlistIds,
+    wishlistItemKeys,
     openLogin: () => {
       setMode("otp");
       setOtpSent(false);
@@ -239,6 +250,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       setUser(null);
       setCart(null);
       setWishlistIds([]);
+      setWishlistItemKeys([]);
     },
     addToCart,
     removeFromCart,
@@ -369,5 +381,8 @@ function OtpBoxes({ value, onChange }: { value: string; onChange: (value: string
     </div>
   );
 }
+
+
+
 
 

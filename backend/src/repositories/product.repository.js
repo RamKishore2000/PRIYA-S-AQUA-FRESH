@@ -44,6 +44,8 @@ function mapProductRows(rows) {
         altText: row.alt_text,
         sortOrder: row.image_sort_order,
         isPrimary: Boolean(row.is_primary),
+        colorName: row.color_name || "",
+        colorCode: row.color_code || "",
       });
     }
   }
@@ -56,7 +58,7 @@ const productSelect = `
          c.name AS category_name, c.slug AS category_slug,
          sc.name AS subcategory_name, sc.slug AS subcategory_slug,
          pp.customer_original_price, pp.customer_selling_price, pp.dealer_original_price, pp.dealer_selling_price,
-         pi.id AS image_id, pi.image_url, pi.alt_text, pi.sort_order AS image_sort_order, pi.is_primary
+         pi.id AS image_id, pi.image_url, pi.alt_text, pi.sort_order AS image_sort_order, pi.is_primary, pi.color_name, pi.color_code
   FROM products p
   INNER JOIN categories c ON c.id = p.category_id
   LEFT JOIN subcategories sc ON sc.id = p.subcategory_id
@@ -201,9 +203,9 @@ async function updateProduct(id, payload) {
 async function insertImages(connection, productId, images, productName) {
   for (const [index, image] of images.entries()) {
     await connection.execute(
-      `INSERT INTO product_images (product_id, image_url, alt_text, sort_order, is_primary)
-       VALUES (?, ?, ?, ?, ?)`,
-      [productId, image.imageUrl, image.altText || productName, index, index === 0],
+      `INSERT INTO product_images (product_id, image_url, alt_text, sort_order, is_primary, color_name, color_code)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [productId, image.imageUrl, image.altText || productName, index, index === 0, image.colorName || null, image.colorCode || null],
     );
   }
 }

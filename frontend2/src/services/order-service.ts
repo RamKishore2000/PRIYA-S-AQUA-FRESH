@@ -36,6 +36,10 @@ export type Order = {
     productSku: string;
     productSlug?: string;
     imageUrl?: string | null;
+    selectedColorName?: string | null;
+    selectedColorCode?: string | null;
+    selectedImageUrl?: string | null;
+    selectedVariantKey?: string | null;
     unitPrice: number;
     quantity: number;
     lineTotal: number;
@@ -78,6 +82,10 @@ type CreateOrderPayload = ({ addressId: number } | { shippingAddress: Omit<Addre
   buyNow?: {
     productId: string | number;
     quantity: number;
+    selectedColorName?: string;
+    selectedColorCode?: string;
+    selectedImageUrl?: string;
+    selectedVariantKey?: string;
   };
 };
 
@@ -136,3 +144,7 @@ export function orderImageUrl(imageUrl?: string | null) {
   if (imageUrl.startsWith("/")) return imageUrl;
   return `${base}${imageUrl}`;
 }
+
+
+
+

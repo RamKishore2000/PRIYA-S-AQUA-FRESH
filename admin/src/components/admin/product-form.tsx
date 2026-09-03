@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ImageUploader } from "@/components/admin/image-uploader";
 import { AdminToast } from "@/components/admin/admin-toast";
 import { adminApi } from "@/services/api";
-import type { Category, Product, Subcategory } from "@/types/admin";
+import type { Category, Product, ProductImageVariant, Subcategory } from "@/types/admin";
 import { generateSlug } from "@/utils/slug";
 
 type ProductFormMode = "add" | "edit";
@@ -30,6 +30,7 @@ type ProductFormState = {
   reviewCount: string;
   sortOrder: string;
   images: string[];
+  imageVariants: ProductImageVariant[];
   description: string;
   status: "Active" | "Inactive";
 };
@@ -83,6 +84,7 @@ function getInitialState(initialProduct?: Product): ProductFormState {
     reviewCount: initialProduct ? String(initialProduct.reviewCount) : "0",
     sortOrder: initialProduct ? String(initialProduct.sortOrder ?? 999) : "999",
     images: initialProduct?.images ?? [],
+    imageVariants: initialProduct?.imageVariants ?? initialProduct?.images.map((imageUrl) => ({ imageUrl })) ?? [],
     description: initialProduct?.description ?? "",
     status: initialProduct?.status ?? "Active",
   };
@@ -136,8 +138,17 @@ export function ProductForm({ mode = "add", initialProduct }: ProductFormProps) 
     }
     if (isPositiveAmount(form.dealerOriginalPrice) && isPositiveAmount(form.dealerSellingPrice) && dealerSelling > dealerOriginal) {
       nextErrors.dealerSellingPrice = "Dealer selling price cannot be greater than original price.";
+    }    const commonImage = form.imageVariants.find((image) => image.isPrimary && !image.colorName && !image.colorCode);
+    const colorVariants = form.imageVariants.filter((image) => !image.isPrimary);
+    if (!commonImage?.imageUrl) {
+      nextErrors.images = "Upload the common product main image.";
+    } else if (colorVariants.length < 1) {
+      nextErrors.images = "Add at least one color variant with a main image.";
+    } else if (colorVariants.some((image) => !String(image.colorName || "").trim())) {
+      nextErrors.images = "Color name is required for every color variant.";
+    } else if (colorVariants.some((image) => !image.imageUrl)) {
+      nextErrors.images = "Variant main image is required for every color variant.";
     }
-    if (form.images.length < 1) nextErrors.images = "Upload at least one product image.";
     if (!Number.isFinite(rating) || rating < 0 || rating > 5) nextErrors.rating = "Rating must be between 0 and 5.";
     if (!Number.isInteger(reviewCount) || reviewCount < 0) nextErrors.reviewCount = "Review count must be 0 or more.";
     if (!Number.isInteger(sortOrder) || sortOrder < 0) nextErrors.sortOrder = "Display order must be 0 or more.";
@@ -264,8 +275,8 @@ export function ProductForm({ mode = "add", initialProduct }: ProductFormProps) 
       </FormSection>
 
       <FormSection title="Product Images">
-        <p className="mb-4 text-sm text-slate-500">Upload minimum 1 and maximum 4 product images. The first image is the Main Image. Each image must be exactly 800 x 800 px.</p>
-        <ImageUploader initialImages={form.images} onImagesChange={(images) => updateField("images", images)} />
+        <p className="mb-4 text-sm text-slate-500">Upload one common product main image, then add color variants. Each color supports 4 images total: first image is used in cart/wishlist/buy now, other images are detail gallery only. Each image must be exactly 800 x 800 px.</p>
+        <ImageUploader initialImages={form.images} initialVariants={form.imageVariants} onImagesChange={(images) => updateField("images", images)} onVariantsChange={(imageVariants) => updateField("imageVariants", imageVariants)} />
         {errors.images ? <p className="mt-3 text-xs font-semibold text-red-600">{errors.images}</p> : null}
       </FormSection>
 

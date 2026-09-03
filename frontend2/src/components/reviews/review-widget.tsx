@@ -43,7 +43,7 @@ export function ReviewWidget() {
       setMessage("");
       setRating(5);
       setOpen(false);
-      setNotice("Review added. Thank you for sharing your experience.");
+      setNotice("Review submitted. It will show after admin approval.");
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "Unable to add review.");
     } finally {

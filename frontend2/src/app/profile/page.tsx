@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { FileText, Heart, Home, Package, ShieldCheck, Truck, Undo2, UserIcon } from "lucide-react";
 import { SitePage } from "@/components/layout/site-page";
-import { getStoredUser, logoutUser, type AuthUser } from "@/services/auth-service";
+import { useShop } from "@/context/shop-context";
 
 export default function ProfilePage() {
-  const [user] = useState<AuthUser | null>(() => getStoredUser());
+  const { user, logout } = useShop();
 
   if (!user) {
     return (
@@ -52,7 +52,7 @@ export default function ProfilePage() {
                 <Info label="Mobile Number" value={user.mobile} />
                 <Info label="Account Type" value={user.role} />
               </div>
-              <button onClick={logoutUser} className="mt-6 h-11 rounded-full border border-red-200 px-6 text-sm font-black text-red-600 hover:bg-red-50">
+              <button onClick={logout} className="mt-6 h-11 rounded-full border border-red-200 px-6 text-sm font-black text-red-600 hover:bg-red-50">
                 Logout
               </button>
             </section>

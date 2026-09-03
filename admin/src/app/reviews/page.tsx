@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { AdminShell } from "@/components/admin/admin-shell";
@@ -9,10 +9,14 @@ import { StatusBadge } from "@/components/admin/status-badge";
 import { adminApi } from "@/services/api";
 import type { Review } from "@/types/admin";
 
+const statusFilters = ["All", "Pending", "Approved", "Rejected"] as const;
+type StatusFilter = (typeof statusFilters)[number];
+
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<StatusFilter>("All");
 
   useEffect(() => {
     adminApi.listReviews()
@@ -21,42 +25,58 @@ export default function ReviewsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  function toggleReview(review: Review) {
-    const nextStatus = review.status === "Visible" ? "HIDDEN" : "VISIBLE";
-    adminApi.setReviewStatus(review.id, nextStatus)
+  function updateReviewStatus(review: Review, status: "PENDING" | "APPROVED" | "REJECTED") {
+    adminApi.setReviewStatus(review.id, status)
       .then((updatedReview) => {
         setReviews((current) => current.map((item) => (item.id === review.id ? updatedReview : item)));
-        setMessage(nextStatus === "VISIBLE" ? "Review is visible now." : "Review hidden from homepage.");
+        setMessage(status === "APPROVED" ? "Review approved and visible on website." : status === "REJECTED" ? "Review rejected and hidden from website." : "Review moved to pending.");
       })
       .catch((error) => setMessage(error instanceof Error ? error.message : "Unable to update review."));
   }
 
-  const visibleCount = reviews.filter((review) => review.status === "Visible").length;
+  const pendingCount = reviews.filter((review) => review.status === "Pending").length;
+  const approvedCount = reviews.filter((review) => review.status === "Approved").length;
+  const rejectedCount = reviews.filter((review) => review.status === "Rejected").length;
+  const filteredReviews = filter === "All" ? reviews : reviews.filter((review) => review.status === filter);
 
   return (
     <AdminShell>
       <AdminToast message={message} />
 
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-950">Reviews</h1>
-        <p className="mt-1 text-sm text-slate-500">User reviews are visible by default. Hide bad reviews or delete spam.</p>
+      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-950">Reviews</h1>
+          <p className="mt-1 text-sm text-slate-500">New customer and dealer reviews wait here until admin approval.</p>
+        </div>
+        <div className="flex flex-wrap gap-2 rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
+          {statusFilters.map((item) => (
+            <button
+              key={item}
+              type="button"
+              onClick={() => setFilter(item)}
+              className={`rounded-md px-3 py-2 text-xs font-bold transition ${filter === item ? "bg-teal-600 text-white" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatsCard title="Total Reviews" value={String(reviews.length)} trend="Submitted by customers and dealers" icon="star" />
-        <StatsCard title="Visible" value={String(visibleCount)} trend="Shown on frontend home page" icon="check" />
-        <StatsCard title="Hidden" value={String(reviews.length - visibleCount)} trend="Hidden by admin" icon="alert" />
+        <StatsCard title="Pending" value={String(pendingCount)} trend="Needs admin checking" icon="alert" />
+        <StatsCard title="Approved" value={String(approvedCount)} trend="Shown on frontend" icon="check" />
+        <StatsCard title="Rejected" value={String(rejectedCount)} trend="Hidden from frontend" icon="orders" />
         <StatsCard title="Average Rating" value={averageRating(reviews)} trend="Across all reviews" icon="star" />
       </div>
 
       <section className="mt-5 rounded-lg border border-slate-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] text-left text-sm">
+          <table className="w-full min-w-[980px] text-left text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
               <tr>{["Customer", "Role", "Rating", "Review", "Status", "Created Date", "Actions"].map((header) => <th key={header} className="px-5 py-3 font-bold">{header}</th>)}</tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {reviews.map((review) => (
+              {filteredReviews.map((review) => (
                 <tr key={review.id}>
                   <td className="px-5 py-4">
                     <p className="font-bold text-slate-950">{review.customerName}</p>
@@ -65,14 +85,16 @@ export default function ReviewsPage() {
                   <td className="px-5 py-4"><StatusBadge value={review.role} /></td>
                   <td className="px-5 py-4 font-bold text-amber-500">{review.rating.toFixed(1)} / 5</td>
                   <td className="px-5 py-4">
-                    <p className="line-clamp-2 max-w-lg text-slate-600">{review.message}</p>
+                    <p className="line-clamp-3 max-w-xl text-slate-600">{review.message}</p>
                   </td>
                   <td className="px-5 py-4"><StatusBadge value={review.status} /></td>
                   <td className="px-5 py-4 text-slate-500">{review.createdDate}</td>
                   <td className="px-5 py-4">
                     <RowActionsDropdown
                       actions={[
-                        { label: review.status === "Visible" ? "Hide Review" : "Show Review", icon: "settings", onClick: () => toggleReview(review) },
+                        ...(review.status !== "Approved" ? [{ label: "Approve Review", icon: "check", onClick: () => updateReviewStatus(review, "APPROVED") }] : []),
+                        ...(review.status !== "Rejected" ? [{ label: "Reject Review", icon: "settings", onClick: () => updateReviewStatus(review, "REJECTED") }] : []),
+                        ...(review.status !== "Pending" ? [{ label: "Move to Pending", icon: "alert", onClick: () => updateReviewStatus(review, "PENDING") }] : []),
                         {
                           label: "Delete Review",
                           confirmItemName: "Review",
@@ -92,7 +114,7 @@ export default function ReviewsPage() {
               ))}
             </tbody>
           </table>
-          {!loading && reviews.length === 0 ? <p className="p-5 text-sm font-semibold text-slate-500">No reviews found yet.</p> : null}
+          {!loading && filteredReviews.length === 0 ? <p className="p-5 text-sm font-semibold text-slate-500">No reviews found for this filter.</p> : null}
         </div>
       </section>
     </AdminShell>

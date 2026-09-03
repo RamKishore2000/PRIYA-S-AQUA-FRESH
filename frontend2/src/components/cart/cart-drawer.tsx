@@ -54,23 +54,30 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
             <div className="grid gap-4">
               {cartItems.map((item) => {
                 const display = getProductDisplayPrice(item.product, user?.role);
+                const selectedVariantKey = item.selectedVariantKey || "";
                 return (
-                <article key={item.product.id} className="grid grid-cols-[76px_1fr] gap-4 rounded-xl border border-[#D8EAF8] bg-[#FFFFFF] p-3">
+                <article key={`${item.product.id}:${selectedVariantKey}`} className="grid grid-cols-[76px_1fr] gap-4 rounded-xl border border-[#D8EAF8] bg-[#FFFFFF] p-3">
                   <div className="relative h-[76px] w-[76px] rounded-lg bg-[#F3FAFF]">
                     <Image src={item.product.image} alt={item.product.name} fill sizes="76px" className="object-contain p-2" unoptimized />
                   </div>
                   <div className="min-w-0">
                     <div className="flex gap-2">
                       <h3 className="flex-1 truncate text-sm font-black">{item.product.name}</h3>
-                      <button type="button" onClick={() => void removeFromCart(item.product.id)} className="text-[#0057C8] transition hover:text-red-600" aria-label={`Remove ${item.product.name}`}>
+                      <button type="button" onClick={() => void removeFromCart(item.product.id, selectedVariantKey)} className="text-[#0057C8] transition hover:text-red-600" aria-label={`Remove ${item.product.name}`}>
                         <TrashIcon className="h-4 w-4" />
                       </button>
                     </div>
+                    {item.selectedColorName ? (
+                      <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-[#EAF6FF] px-2 py-0.5 text-[0.68rem] font-black text-[#0057C8]">
+                        {item.selectedColorCode ? <span className="h-2.5 w-2.5 rounded-full border border-[#D8EAF8]" style={{ backgroundColor: item.selectedColorCode }} /> : null}
+                        Colour: {item.selectedColorName}
+                      </p>
+                    ) : null}
                     <p data-current-price className="mt-1 text-sm font-black text-[#0057C8]">Rs. {display.price.toLocaleString("en-IN")}</p>
                     <div className="mt-3 inline-flex items-center overflow-hidden rounded-lg border border-[#D8EAF8] bg-white">
-                      <button type="button" onClick={() => void decreaseQuantity(item.product.id)} className="grid h-8 w-8 place-items-center font-black text-[#0057C8]">-</button>
+                      <button type="button" onClick={() => void decreaseQuantity(item.product.id, selectedVariantKey)} className="grid h-8 w-8 place-items-center font-black text-[#0057C8]">-</button>
                       <span className="grid h-8 w-9 place-items-center border-x border-[#D8EAF8] text-sm font-black">{item.quantity}</span>
-                      <button type="button" onClick={() => void increaseQuantity(item.product.id)} className="grid h-8 w-8 place-items-center font-black text-[#0057C8]">+</button>
+                      <button type="button" onClick={() => void increaseQuantity(item.product.id, selectedVariantKey)} className="grid h-8 w-8 place-items-center font-black text-[#0057C8]">+</button>
                     </div>
                   </div>
                 </article>
@@ -98,5 +105,3 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
     </div>
   );
 }
-
-

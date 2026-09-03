@@ -17,7 +17,8 @@ async function updateItem(req, res) {
 }
 
 async function removeItem(req, res) {
-  const cart = await cartService.removeItem(req.user.id, req.params.productId, req.user.role);
+  const selectedVariantKey = req.query.selectedVariantKey || req.body?.selectedVariantKey || "";
+  const cart = await cartService.removeItem(req.user.id, req.params.productId, req.user.role, selectedVariantKey);
   return sendSuccess(res, 200, "Cart item removed successfully.", { cart });
 }
 

@@ -11,10 +11,10 @@ export default function WishlistPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     fetchWishlist().then((wishlist) => setProducts(wishlist.products)).catch((error) => setMessage(error.message)).finally(() => setLoading(false));
   }, []);
+
 
   return (
     <SitePage eyebrow="Wishlist" title="Saved products" description="Products you saved for later.">
@@ -23,7 +23,9 @@ export default function WishlistPage() {
           {loading ? (
             <ProductGridSkeleton />
           ) : products.length ? (
-            <ProductGrid products={products} />
+            <ProductGrid products={products} onWishlistChange={(changedProduct) => {
+              setProducts((current) => current.filter((product) => `${product.id}:${product.selectedVariantKey || ""}` !== `${changedProduct.id}:${changedProduct.selectedVariantKey || ""}`));
+            }} />
           ) : (
             <div className="rounded-2xl border border-[#D8EAF8] bg-[#FFFFFF] p-6 text-center font-semibold text-[#40576C] shadow-[0_10px_30px_rgba(0,87,200,0.07)] md:p-10">
               {message}

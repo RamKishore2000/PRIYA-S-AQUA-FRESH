@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -74,6 +74,7 @@ const footerColumns = [
       { label: "Returns", href: "/refund-policy" },
       { label: "Warranty", href: "/warranty" },
       { label: "Privacy Policy", href: "/privacy-policy" },
+      { label: "Account Deletion", href: "/account-deletion" },
       { label: "Terms & Conditions", href: "/terms" },
     ],
   },
@@ -114,7 +115,7 @@ export function Footer() {
       <div className="relative mx-auto grid max-w-7xl gap-10 px-5 py-14 md:grid-cols-[1.2fr_1.4fr] md:px-8">
         <div>
           <Link href="/" className="inline-flex" aria-label="Priya's Aqua Fresh home">
-            <Image src="/logo-header.png" alt="Priya's Aquafresh" width={486} height={191} className="h-auto w-[180px] object-contain" />
+            <Image src="/images/brand/priyas-aqua-fresh-logo-transparent.png" alt="Priya's Aquafresh" width={1180} height={445} className="h-auto w-[180px] object-contain" />
           </Link>
           <p className="mt-5 max-w-sm text-sm font-semibold leading-6 text-[#40576C]">
             Premium water purification solutions for homes, businesses, and everyday healthy living.

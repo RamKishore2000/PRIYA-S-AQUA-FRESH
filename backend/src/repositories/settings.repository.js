@@ -14,6 +14,13 @@ const defaultTrainingImages = [
   "",
 ];
 
+
+const defaultAboutImages = [
+  "/Untitled-design-10-2048x2048.png",
+  "/Untitled-design-10-2048x2048.png",
+  "/WhatsApp Image 2026-08-28 at 5.03.19 PM.jpeg",
+  "/WhatsApp Image 2026-08-28 at 5.04.41 PM.jpeg",
+];
 const defaultSiteSettings = {
   phone: "+919951078699",
   whatsapp: "919121043483",
@@ -28,6 +35,7 @@ const defaultSiteSettings = {
   orderAdvanceAmount: 500,
   trainingImages: defaultTrainingImages,
   trainingVideos: [],
+  aboutImages: defaultAboutImages,
 };
 
 function parseSettings(value) {
@@ -65,6 +73,7 @@ function normalizeSettings(input = {}) {
     orderAdvanceAmount: Math.max(1, Number(input.orderAdvanceAmount ?? defaultSiteSettings.orderAdvanceAmount) || defaultSiteSettings.orderAdvanceAmount),
     trainingImages: normalizeList(input.trainingImages, defaultTrainingImages, 9),
     trainingVideos: normalizeOptionalList(input.trainingVideos),
+    aboutImages: normalizeList(input.aboutImages, defaultAboutImages, 4),
   };
 }
 
@@ -105,3 +114,4 @@ module.exports = {
   updateSiteSettings,
   defaultSiteSettings,
 };
+

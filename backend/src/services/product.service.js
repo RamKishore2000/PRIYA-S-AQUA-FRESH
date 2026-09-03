@@ -81,8 +81,8 @@ async function normalizeProductPayload(payload) {
   }
 
   const images = Array.isArray(payload.images) ? payload.images : [];
-  if (images.length === 0 || images.length > 4) {
-    throw new ApiError(422, "Product must have 1 to 4 images.", { images: "Product must have 1 to 4 images." });
+  if (images.length === 0 || images.length > 25) {
+    throw new ApiError(422, "Product must have 1 to 25 images.", { images: "Product must have 1 to 25 images." });
   }
 
   const productSku = payload.sku && payload.sku.trim()
@@ -107,6 +107,8 @@ async function normalizeProductPayload(payload) {
     images: images.map((image) => ({
       imageUrl: image.imageUrl,
       altText: image.altText,
+      colorName: String(image.colorName || "").trim(),
+      colorCode: String(image.colorCode || "").trim(),
     })),
   };
 }

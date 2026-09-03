@@ -19,6 +19,8 @@ async function initDatabase() {
     await addColumnIfMissing(connection, "products", "review_count", "INT UNSIGNED NOT NULL DEFAULT 0");
     await addColumnIfMissing(connection, "products", "sort_order", "INT UNSIGNED NOT NULL DEFAULT 999 AFTER status");
     await addIndexIfMissing(connection, "products", "idx_products_sort_order", "sort_order");
+    await addColumnIfMissing(connection, "product_images", "color_name", "VARCHAR(60) NULL AFTER is_primary");
+    await addColumnIfMissing(connection, "product_images", "color_code", "VARCHAR(20) NULL AFTER color_name");
     await normalizeSubcategoriesTable(connection);
     await addColumnIfMissing(connection, "testimonials", "role", "VARCHAR(80) NULL AFTER customer_name");
     await addColumnIfMissing(connection, "testimonials", "image_url", "VARCHAR(500) NULL AFTER message");
@@ -34,9 +36,11 @@ async function initDatabase() {
     await addColumnIfMissing(connection, "orders", "advance_amount", "DECIMAL(12,2) NOT NULL DEFAULT 0.00 AFTER payment_method");
     await addColumnIfMissing(connection, "orders", "balance_amount", "DECIMAL(12,2) NOT NULL DEFAULT 0.00 AFTER advance_amount");
     await normalizeOrdersTable(connection);
+    await normalizeProductVariantSelections(connection);
     await normalizeWebhookEventsTable(connection);
     await normalizeTestimonialsTable(connection);
     await normalizeSettingsTable(connection);
+    await normalizeAboutAwardsTable(connection);
     await normalizeTrainingEnquiriesTable(connection);
     await policyRepository.ensureDefaultPolicyPages(connection);
 
@@ -95,6 +99,27 @@ async function normalizeWebhookEventsTable(connection) {
   `)`);
 }
 
+async function normalizeProductVariantSelections(connection) {
+  await addColumnIfMissing(connection, "cart_items", "selected_color_name", "VARCHAR(60) NULL AFTER quantity");
+  await addColumnIfMissing(connection, "cart_items", "selected_color_code", "VARCHAR(20) NULL AFTER selected_color_name");
+  await addColumnIfMissing(connection, "cart_items", "selected_image_url", "VARCHAR(500) NULL AFTER selected_color_code");
+  await addColumnIfMissing(connection, "cart_items", "selected_variant_key", "VARCHAR(255) NOT NULL DEFAULT '' AFTER selected_image_url");
+  await dropIndexIfExists(connection, "cart_items", "uq_cart_items_cart_product");
+  await addUniqueIndexIfMissing(connection, "cart_items", "uq_cart_items_cart_product_variant", "cart_id, product_id, selected_variant_key");
+
+  await addColumnIfMissing(connection, "wishlist_items", "selected_color_name", "VARCHAR(60) NULL AFTER product_id");
+  await addColumnIfMissing(connection, "wishlist_items", "selected_color_code", "VARCHAR(20) NULL AFTER selected_color_name");
+  await addColumnIfMissing(connection, "wishlist_items", "selected_image_url", "VARCHAR(500) NULL AFTER selected_color_code");
+  await addColumnIfMissing(connection, "wishlist_items", "selected_variant_key", "VARCHAR(255) NOT NULL DEFAULT '' AFTER selected_image_url");
+  await dropIndexIfExists(connection, "wishlist_items", "uq_wishlist_items_wishlist_product");
+  await addUniqueIndexIfMissing(connection, "wishlist_items", "uq_wishlist_items_wishlist_product_variant", "wishlist_id, product_id, selected_variant_key");
+
+  await addColumnIfMissing(connection, "order_items", "selected_color_name", "VARCHAR(60) NULL AFTER product_sku");
+  await addColumnIfMissing(connection, "order_items", "selected_color_code", "VARCHAR(20) NULL AFTER selected_color_name");
+  await addColumnIfMissing(connection, "order_items", "selected_image_url", "VARCHAR(500) NULL AFTER selected_color_code");
+  await addColumnIfMissing(connection, "order_items", "selected_variant_key", "VARCHAR(255) NOT NULL DEFAULT '' AFTER selected_image_url");
+}
+
 async function normalizeOrdersTable(connection) {
   await connection.query(
     "ALTER TABLE `orders` MODIFY COLUMN `payment_status` ENUM('PENDING', 'PARTIAL', 'PAID', 'FAILED', 'REFUNDED') NOT NULL DEFAULT 'PENDING'",
@@ -114,6 +139,17 @@ async function normalizeTestimonialsTable(connection) {
   await connection.query("ALTER TABLE `testimonials` MODIFY COLUMN `rating` DECIMAL(2,1) NOT NULL DEFAULT 5.0");
 }
 
+async function normalizeReviewsTable(connection) {
+  await connection.query(
+    "ALTER TABLE `reviews` MODIFY COLUMN `status` ENUM('PENDING', 'APPROVED', 'REJECTED', 'VISIBLE', 'HIDDEN') NOT NULL DEFAULT 'PENDING'",
+  );
+  await connection.query("UPDATE `reviews` SET `status` = 'APPROVED' WHERE `status` = 'VISIBLE'");
+  await connection.query("UPDATE `reviews` SET `status` = 'REJECTED' WHERE `status` = 'HIDDEN'");
+  await connection.query(
+    "ALTER TABLE `reviews` MODIFY COLUMN `status` ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'PENDING'",
+  );
+}
+
 async function normalizeSettingsTable(connection) {
   await connection.query(`CREATE TABLE IF NOT EXISTS settings (` +
     `id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,` +
@@ -126,6 +162,21 @@ async function normalizeSettingsTable(connection) {
   `)`);
 }
 
+
+async function normalizeAboutAwardsTable(connection) {
+  await connection.query(`CREATE TABLE IF NOT EXISTS about_awards (` +
+    `id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,` +
+    `title VARCHAR(160) NOT NULL,` +
+    `description VARCHAR(500) NOT NULL,` +
+    `image_url VARCHAR(500) NOT NULL,` +
+    `sort_order INT UNSIGNED NOT NULL DEFAULT 0,` +
+    `status ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',` +
+    `created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,` +
+    `updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,` +
+    `PRIMARY KEY (id),` +
+    `KEY idx_about_awards_status_sort (status, sort_order)` +
+  `)`);
+}
 async function normalizeTrainingEnquiriesTable(connection) {
   await connection.query(`CREATE TABLE IF NOT EXISTS training_enquiries (` +
     `id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,` +
@@ -147,6 +198,26 @@ async function normalizeTrainingEnquiriesTable(connection) {
     `KEY idx_training_enquiries_created_at (created_at)` +
   `)`);
 }
+async function dropIndexIfExists(connection, table, indexName) {
+  const [rows] = await connection.execute(
+    "SELECT COUNT(*) AS total FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = ? AND index_name = ?",
+    [table, indexName],
+  );
+  if (Number(rows[0]?.total || 0) > 0) {
+    await connection.query("ALTER TABLE `" + table + "` DROP INDEX `" + indexName + "`");
+  }
+}
+
+async function addUniqueIndexIfMissing(connection, table, indexName, columns) {
+  const [rows] = await connection.execute(
+    "SELECT COUNT(*) AS total FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = ? AND index_name = ?",
+    [table, indexName],
+  );
+  if (Number(rows[0]?.total || 0) === 0) {
+    await connection.query("ALTER TABLE `" + table + "` ADD UNIQUE KEY `" + indexName + "` (" + columns + ")");
+  }
+}
+
 async function addColumnIfMissing(connection, tableName, columnName, definition) {
   const [rows] = await connection.query(
     `SELECT COLUMN_NAME
@@ -192,4 +263,6 @@ if (require.main === module) {
 }
 
 module.exports = initDatabase;
+
+
 

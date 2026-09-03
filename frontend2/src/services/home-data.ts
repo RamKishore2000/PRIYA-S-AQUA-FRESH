@@ -20,7 +20,7 @@ export async function getHomeData() {
     getTestimonials().catch(() => []),
     getReviews().catch(() => []),
   ]);
-  const customerFeedback = [...reviews.map(reviewToTestimonial), ...testimonials];
+  const customerFeedback = reviews.length > 0 ? reviews.map(reviewToTestimonial) : testimonials;
 
   return {
     categories,

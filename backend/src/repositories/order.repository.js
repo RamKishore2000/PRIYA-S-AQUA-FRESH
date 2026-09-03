@@ -49,6 +49,10 @@ function mapOrderRows(rows) {
         productSku: row.product_sku,
         productSlug: row.product_slug,
         imageUrl: row.image_url,
+        selectedColorName: row.selected_color_name || "",
+        selectedColorCode: row.selected_color_code || "",
+        selectedImageUrl: row.selected_image_url || "",
+        selectedVariantKey: row.selected_variant_key || "",
         unitPrice: Number(row.unit_price),
         quantity: Number(row.quantity),
         lineTotal: Number(row.line_total),
@@ -62,15 +66,15 @@ const orderSelect = `
   SELECT o.id, o.order_number, o.subtotal_amount, o.discount_amount, o.shipping_amount, o.total_amount,
          o.payment_status, o.payment_method, o.advance_amount, o.balance_amount, o.order_status, o.shipping_address_json, o.created_at,
          u.id AS customer_id, u.full_name AS customer_name, u.mobile AS customer_mobile, u.email AS customer_email, u.role AS customer_role,
-         oi.id AS item_id, oi.product_id, oi.product_name, oi.product_sku, oi.unit_price, oi.quantity, oi.line_total,
+         oi.id AS item_id, oi.product_id, oi.product_name, oi.product_sku, oi.selected_color_name, oi.selected_color_code, oi.selected_image_url, oi.selected_variant_key, oi.unit_price, oi.quantity, oi.line_total,
          p.slug AS product_slug,
-         (
+         COALESCE(oi.selected_image_url, (
            SELECT image_url
            FROM product_images pi
            WHERE pi.product_id = oi.product_id
            ORDER BY pi.is_primary DESC, pi.sort_order ASC, pi.id ASC
            LIMIT 1
-         ) AS image_url
+         )) AS image_url
   FROM orders o
   INNER JOIN users u ON u.id = o.user_id
   LEFT JOIN order_items oi ON oi.order_id = o.id
@@ -194,6 +198,7 @@ async function markPaymentFailedWithoutProviderId(orderId, rawResponse) {
     [JSON.stringify(rawResponse || { reason: "checkout_dismissed" }), orderId],
   );
 }
+
 async function findCouponIdByOrderId(orderId) {
   const [rows] = await pool.execute("SELECT coupon_id, user_id, discount_amount FROM orders WHERE id = ? LIMIT 1", [orderId]);
   return rows[0] || null;
@@ -211,5 +216,3 @@ module.exports = {
   findCouponIdByOrderId,
   pool,
 };
-
-

@@ -15,7 +15,7 @@ const reviewPayloadValidator = [
 ];
 
 const reviewStatusValidator = [
-  body("status").isIn(["VISIBLE", "HIDDEN"]).withMessage("Review status is invalid."),
+  body("status").isIn(["PENDING", "APPROVED", "REJECTED", "VISIBLE", "HIDDEN"]).withMessage("Review status is invalid."),
 ];
 
 module.exports = {

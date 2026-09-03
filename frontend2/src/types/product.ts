@@ -1,3 +1,11 @@
+export type ProductImageVariant = {
+  imageUrl: string;
+  colorName?: string;
+  colorCode?: string;
+  isPrimary?: boolean;
+  images?: string[];
+};
+
 export type Product = {
   id: string;
   slug: string;
@@ -19,9 +27,14 @@ export type Product = {
   reviewCount: number;
   image: string;
   images: string[];
+  imageVariants: ProductImageVariant[];
   stock: "in-stock" | "low-stock" | "out-of-stock";
   createdAt?: string;
   sortOrder: number;
+  selectedColorName?: string;
+  selectedColorCode?: string;
+  selectedImageUrl?: string;
+  selectedVariantKey?: string;
 };
 
 export type Subcategory = {
@@ -42,6 +55,14 @@ export type Category = {
   subcategories?: Subcategory[];
 };
 
+
+export type AboutAward = {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  sortOrder: number;
+};
 export type Banner = {
   id: string;
   title: string;
@@ -87,6 +108,6 @@ export type Review = {
   role: "Customer" | "Dealer";
   rating: number;
   message: string;
-  status?: "Visible" | "Hidden";
+  status?: "Pending" | "Approved" | "Rejected";
   createdAt: string;
 };

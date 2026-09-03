@@ -1,6 +1,6 @@
 import type { BuyerRole, CouponComputedStatus, OrderStatus, ServiceStatus, Status } from "@/types/admin";
 
-type BadgeValue = Status | CouponComputedStatus | OrderStatus | ServiceStatus | BuyerRole | "Paid" | "Partial" | "Failed" | "Visible" | "Hidden";
+type BadgeValue = Status | CouponComputedStatus | OrderStatus | ServiceStatus | BuyerRole | "Paid" | "Partial" | "Failed" | "Visible" | "Hidden" | "Approved" | "Rejected";
 
 const colorMap: Record<string, string> = {
   Active: "bg-emerald-50 text-emerald-700 ring-emerald-200",
@@ -24,7 +24,9 @@ const colorMap: Record<string, string> = {
   Partial: "bg-blue-50 text-blue-700 ring-blue-200",
   Failed: "bg-red-50 text-red-700 ring-red-200",
   Visible: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+  Approved: "bg-emerald-50 text-emerald-700 ring-emerald-200",
   Hidden: "bg-slate-100 text-slate-600 ring-slate-200",
+  Rejected: "bg-red-50 text-red-700 ring-red-200",
 };
 
 export function StatusBadge({ value }: { value: BadgeValue }) {

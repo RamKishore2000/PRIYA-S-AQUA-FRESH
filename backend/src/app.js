@@ -3,6 +3,7 @@ const path = require("path");
 const cors = require("cors");
 const env = require("./config/env");
 const addressRoutes = require("./routes/address.routes");
+const aboutAwardRoutes = require("./routes/aboutAward.routes");
 const authRoutes = require("./routes/auth.routes");
 const bannerRoutes = require("./routes/banner.routes");
 const cartRoutes = require("./routes/cart.routes");
@@ -42,6 +43,7 @@ app.use(express.json({ limit: "1mb" }));
 app.use("/uploads", express.static(path.resolve(__dirname, "../public/uploads")));
 
 app.use("/api", healthRoutes);
+app.use("/api/about-awards", aboutAwardRoutes);
 app.use("/api/addresses", addressRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/banners", bannerRoutes);
@@ -74,6 +76,8 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 module.exports = app;
+
+
 
 
 

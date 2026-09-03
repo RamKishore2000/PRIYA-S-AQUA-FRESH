@@ -29,9 +29,11 @@ const productPayloadValidator = [
   body("customerSellingPrice").isFloat({ min: 0 }).withMessage("Customer selling price is required."),
   body("dealerOriginalPrice").isFloat({ min: 0 }).withMessage("Dealer original price is required."),
   body("dealerSellingPrice").isFloat({ min: 0 }).withMessage("Dealer selling price is required."),
-  body("images").isArray({ min: 1, max: 4 }).withMessage("Upload 1 to 4 product images."),
+  body("images").isArray({ min: 1, max: 25 }).withMessage("Upload 1 to 25 product images."),
   body("images.*.imageUrl").trim().notEmpty().withMessage("Image URL is required.").isLength({ max: 500 }).withMessage("Image URL is too long."),
   body("images.*.altText").optional({ nullable: true, checkFalsy: true }).isLength({ max: 180 }).withMessage("Image alt text is too long."),
+  body("images.*.colorName").optional({ nullable: true, checkFalsy: true }).trim().isLength({ max: 60 }).withMessage("Color name is too long."),
+  body("images.*.colorCode").optional({ nullable: true, checkFalsy: true }).trim().matches(/^#?[0-9A-Fa-f]{6}$/).withMessage("Color code must be a valid hex color."),
 ];
 
 module.exports = {

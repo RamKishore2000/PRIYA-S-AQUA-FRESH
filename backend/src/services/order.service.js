@@ -9,6 +9,7 @@ const productRepository = require("../repositories/product.repository");
 const settingsRepository = require("../repositories/settings.repository");
 const env = require("../config/env");
 const { ApiError } = require("../utils/apiError");
+const { normalizeSelection } = require("./cart.service");
 
 async function createOrder(userId, payload, role) {
   const items = payload.buyNow
@@ -52,9 +53,21 @@ async function createOrder(userId, payload, role) {
     for (const item of items) {
       await connection.execute(
         `INSERT INTO order_items
-         (order_id, product_id, product_name, product_sku, unit_price, quantity, line_total)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [orderId, item.product.id, item.product.name, item.product.sku, item.unitPrice, item.quantity, item.lineTotal],
+         (order_id, product_id, product_name, product_sku, selected_color_name, selected_color_code, selected_image_url, selected_variant_key, unit_price, quantity, line_total)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          orderId,
+          item.product.id,
+          item.product.name,
+          item.product.sku,
+          item.selectedColorName || null,
+          item.selectedColorCode || null,
+          item.selectedImageUrl || null,
+          item.selectedVariantKey || "",
+          item.unitPrice,
+          item.quantity,
+          item.lineTotal,
+        ],
       );
     }
     await connection.commit();
@@ -82,6 +95,10 @@ async function buildCartItems(userId, role) {
     items.push({
       product,
       quantity,
+      selectedColorName: row.selected_color_name || "",
+      selectedColorCode: row.selected_color_code || "",
+      selectedImageUrl: row.selected_image_url || "",
+      selectedVariantKey: row.selected_variant_key || "",
       unitPrice,
       lineTotal: unitPrice * quantity,
     });
@@ -100,10 +117,15 @@ async function buildBuyNowItems(buyNow, role) {
   if (!product || product.status !== "ACTIVE") {
     throw new ApiError(422, "Product is not available.", { productId: "Product is not available." });
   }
+  const selection = normalizeSelection(product, buyNow);
   const unitPrice = getSellingPrice(product, role);
   return [{
     product,
     quantity,
+    selectedColorName: selection.colorName || "",
+    selectedColorCode: selection.colorCode || "",
+    selectedImageUrl: selection.imageUrl || "",
+    selectedVariantKey: selection.variantKey || "",
     unitPrice,
     lineTotal: unitPrice * quantity,
   }];
@@ -193,7 +215,6 @@ async function verifyRazorpayPayment(userId, payload) {
   return getOrder(userId, payload.orderId);
 }
 
-
 async function markPaymentFailedByUser(userId, orderId, payload = {}) {
   const order = await getOrder(userId, orderId);
   if (order.paymentStatus !== "PENDING") return order;
@@ -203,6 +224,7 @@ async function markPaymentFailedByUser(userId, orderId, payload = {}) {
   });
   return getOrder(userId, orderId);
 }
+
 async function recordCouponUsageIfNeeded(orderId) {
   const couponRow = await orderRepository.findCouponIdByOrderId(orderId);
   if (!couponRow?.coupon_id || Number(couponRow.discount_amount) <= 0) return;
@@ -275,6 +297,7 @@ async function handleRazorpayWebhook(rawBody, signature) {
     throw error;
   }
 }
+
 async function resolveShippingAddress(userId, payload) {
   if (payload.addressId) {
     const savedAddress = await addressRepository.findByIdForUser(payload.addressId, userId);
@@ -322,7 +345,3 @@ module.exports = {
   markPaymentFailedByUser,
   handleRazorpayWebhook,
 };
-
-
-
-
